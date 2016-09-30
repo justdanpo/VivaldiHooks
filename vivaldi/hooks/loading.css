@@ -1,0 +1,7 @@
+﻿div.tab-header span.progressing + span.favicon {
+	background-image: url(/hooks/loading.gif) !important
+}
+
+div.tab-header span.progressing + span.favicon svg {
+	display: none
+}

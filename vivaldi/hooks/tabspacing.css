@@ -1,0 +1,45 @@
+﻿/* Fixes Tab/Window Spacer for different modes and Tab Bar positions */
+
+#tabs-container.top {
+    padding-top: 0 /*7px;*/
+}
+
+.topmenu+#tabs-container.top {
+    padding-top: 0 /*2px;*/
+}
+
+.maximized.tabs-at-edge #tabs-container.top {
+    padding-top: 0;
+}
+
+#tabs-container.bottom,
+.stacks-on #tabs-container.bottom {
+    padding-bottom: 0;
+}
+
+#browser #header{
+    padding-top: 7px;
+}
+
+#browser.horizontal-menu #header {
+    padding-top: 0 /*2px;*/
+}
+
+#browser.maximized.tabs-at-edge #header {
+    padding-top: 0;
+}
+
+#browser.native #header {
+    padding-top: 0; /*2px;*/
+}
+
+#browser.native.tabs-bottom #header,
+#browser.native.tabs-left #header,
+#browser.native.tabs-right #header {
+    min-height: 0;
+    height: 0;
+}
+
+#browser.native #tabs-container.top {
+    padding-top: 0 !important
+}

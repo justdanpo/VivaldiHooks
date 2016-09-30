@@ -1,0 +1,5 @@
+﻿#browser.hasfocus #header,
+#browser.hasfocus #tabs-container
+{
+	background: #4fadff;
+}
