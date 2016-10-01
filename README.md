@@ -24,7 +24,7 @@ Note: **browser.html** will be overwritten.
 ###Manual
 Copy **vivaldi** folder into **Vivaldi\Application\{version}\resources**
 
-Or if you want to keep mods you've installed into **browser.html**, copy **vivaldi\hooks** folder into **Vivaldi\Application\{version}\resources\vivaldi**, open **Vivaldi\Application{version}\resources\vivaldi\browser.html** in a text editor, add line
+Or if you want to keep mods you've installed into **browser.html**, copy **vivaldi\hooks** folder and **vivaldi\jdhooks.js** into **Vivaldi\Application\{version}\resources\vivaldi**, open **Vivaldi\Application{version}\resources\vivaldi\browser.html** in a text editor, add line
 
     <script src="jdhooks.js"></script>
 
