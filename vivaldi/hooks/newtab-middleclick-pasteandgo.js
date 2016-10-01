@@ -41,7 +41,8 @@ vivaldi.jdhooks.onUIReady(function() {
     var obs = new MutationObserver(function(mutations, observer) {
         mutations.forEach(function(mutation) {
             mutation.addedNodes.forEach(function(itm) {
-                setupButton(itm);
+                if (("undefined" !== itm.className) && (itm.className === "tab-strip"))
+                    setupButton(itm);
             });
         });
     });
