@@ -6,11 +6,6 @@
 
 (function() {
 
-    if ("undefined" !== typeof vivaldi.jdhooks) {
-        document.dispatchEvent(new Event('jdhooks.continueload'));
-        return;
-    }
-
     vivaldi.jdhooks = {};
 
     var oldWebpackJsonp = window.webpackJsonp;
@@ -335,6 +330,9 @@
                         dirItems.forEach(function(dirItem) {
                             if (dirItem.isDirectory && dirItem.name == "hooks") {
                                 dirItem.createReader().readEntries(function(dirItems) {
+
+                                    var pendingscripts = {};
+
                                     for (var i in dirItems) {
                                         var dirItem = dirItems[i];
                                         var Elem;
@@ -343,6 +341,15 @@
 
                                             Elem = document.createElement('script');
                                             Elem.src = 'hooks/' + dirItem.name;
+                                            pendingscripts[Elem.src] = true;
+
+                                            Elem.onload = function(e) {
+                                                delete pendingscripts[this.src];
+                                                if (0 === Object.keys(pendingscripts).length) {
+                                                    //all scripts are a loaded
+                                                    oldWebpackJsonp(chunkIds, modules);
+                                                }
+                                            };
 
                                         } else if (dirItem.name.split('.').pop().toUpperCase() === "CSS") {
 
@@ -355,15 +362,6 @@
 
                                         document.head.appendChild(Elem);
                                     }
-
-                                    //run oldWebpackJsonp after all hook scripts executed
-                                    document.addEventListener('jdhooks.continueload', function() {
-                                        oldWebpackJsonp(chunkIds, modules);
-                                    }, true);
-
-                                    var Elem = document.createElement('script');
-                                    Elem.src = 'jdhooks.js?v2';
-                                    document.head.appendChild(Elem);
                                 })
                             }
                         })
