@@ -7,7 +7,7 @@ vivaldi.jdhooks.onUIReady(function() {
     var ReactDOM = vivaldi.jdhooks.require('react_ReactDOM');
 
     var button = document.createElement('div');
-    button.className = 'button-toolbar';
+    button.className = 'button-toolbar bookmarksbutton';
     button.innerHTML = vivaldi.jdhooks.require('_svg_panel_bookmarks');
 
     var hiddenToolbarContainer = document.createElement('div');
@@ -42,9 +42,10 @@ vivaldi.jdhooks.onUIReady(function() {
         };
 
         var data = clone(vivaldi.jdhooks.require('_BookmarkStore').getBookmarksData());
-        treeSort.treeSort(data, comparator, false);
-        hiddenToolbarObject.state.renderedArray = data;
-
+        treeSort.treeSort(data, comparator);
+        hiddenToolbarObject.state.renderedArray = data.filter(function(o) {
+            return !o.trash
+        });
         vivaldi.jdhooks.require('_ShowMenu')(hiddenToolbarObject.getExtenderButtonItems(), null, "bottom", button)(e);
     }
 
