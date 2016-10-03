@@ -29,7 +29,7 @@ vivaldi.jdhooks.onUIReady(function() {
     };
 
     chrome.contextMenus.onClicked.addListener(function(menuItem) {
-        if ("undefined" !== submenuitems[menuItem.menuItemId]) {
+        if ("undefined" !== typeof submenuitems[menuItem.menuItemId]) {
             var url = submenuitems[menuItem.menuItemId].replace("%s", encodeURIComponent(menuItem.selectionText)).replace("%S", menuItem.selectionText);
 
             vivaldi.jdhooks.require('_PageActions').openURL(url, {

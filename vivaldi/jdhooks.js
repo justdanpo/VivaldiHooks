@@ -263,6 +263,7 @@
                 "react_ReactInjection": ["EventEmitter:"],
                 "react_ReactInputSelection": ["hasSelectionCapabilities:"],
                 "react_ReactInstanceMap": ["._reactInternalInstance"],
+                "react_ReactList": ["ReactList", "getScrollParent", "getViewportSize", "getItemSizeAndItemsPerRow"],
                 "react_ReactMarkupChecksum": ["canReuseMarkup:"],
                 "react_ReactMount": ['_mountImageIntoNode:'],
                 "react_ReactMultiChild": ["createChild:"],
