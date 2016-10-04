@@ -30,15 +30,15 @@ vivaldi.jdhooks.onUIReady(function() {
 
         var defaultComparator = treeSort.getDefaultComparator(bookmarkSorting.sortOrder, bookmarkSorting.sortField);
 
-        var comparator = function(fisrt, second) {
+        var comparator = function(first, second) {
             var isFolder = function(treeItem) {
                 return !!treeItem && (treeItem.children && treeItem.children.length > 0 || void 0 === treeItem.url)
             };
-            if (fisrt.trash) return 1;
+            if (first.trash) return 1;
             if (second.trash) return -1;
-            if (isFolder(fisrt) && !isFolder(second)) return -1;
-            if (isFolder(second) && !isFolder(fisrt)) return 1;
-            return defaultComparator(fisrt, second);
+            if (isFolder(first) && !isFolder(second)) return -1;
+            if (isFolder(second) && !isFolder(first)) return 1;
+            return defaultComparator(first, second);
         };
 
         var data = clone(vivaldi.jdhooks.require('_BookmarkStore').getBookmarksData());

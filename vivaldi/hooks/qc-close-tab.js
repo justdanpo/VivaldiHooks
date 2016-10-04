@@ -30,12 +30,12 @@ vivaldi.jdhooks.hookClass('QuickCommandItem', function(reactClass) {
 
                         var downloadTabPageStore = vivaldi.jdhooks.require('_PageStore');
 
-                        var tab = downloadTabPageStore.getPages().find(function(page) {
+                        var page = downloadTabPageStore.getPages().find(function(page) {
                             return page.get("id") === this_quickCommandItem.props.commandObj.id
                         });
 
-                        if (tab) {
-                            vivaldi.jdhooks.require('_PageActions').closePage(tab);
+                        if (page) {
+                            vivaldi.jdhooks.require('_PageActions').closePage(page);
                             e.target.closest('li').style.display = 'none';
 
                             //var inp = document.querySelector('input.quick-command-search');
