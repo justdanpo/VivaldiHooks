@@ -30,6 +30,10 @@ vivaldi.jdhooks.onUIReady(function() {
 
     chrome.contextMenus.onClicked.addListener(function(menuItem) {
         if ("undefined" !== typeof submenuitems[menuItem.menuItemId]) {
+
+            if (!document.querySelector("#browser.hasfocus"))
+                return;
+
             var url = submenuitems[menuItem.menuItemId].replace("%s", encodeURIComponent(menuItem.selectionText)).replace("%S", menuItem.selectionText);
 
             vivaldi.jdhooks.require('_PageActions').openURL(url, {
