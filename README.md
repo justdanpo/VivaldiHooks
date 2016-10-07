@@ -63,3 +63,11 @@ right before a line with **bundle.js**.
 ### [zoom-buttons.js](vivaldi/hooks/zoom-buttons.js)
 
 ![zoom-buttons.png](screenshots/zoom-buttons.png)
+
+### [searchfield-current-engine-icon.js](vivaldi/hooks/searchfield-current-engine-icon.js)
+
+![searchfield-current-engine-icon.png](screenshots/searchfield-current-engine-icon.png)
+
+### [devtools.js](vivaldi/hooks/devtools.js)
+
+![devtools.png](screenshots/devtools.png)
