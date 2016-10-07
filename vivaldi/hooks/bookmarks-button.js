@@ -42,7 +42,10 @@ vivaldi.jdhooks.onUIReady(function() {
         };
 
         var data = clone(vivaldi.jdhooks.require('_BookmarkStore').getBookmarksData());
-        treeSort.treeSort(data, comparator);
+
+        if (bookmarkSorting.sortOrder != treeSort.NO_SORTING)
+            treeSort.treeSort(data, comparator);
+
         hiddenToolbarObject.state.renderedArray = data.filter(function(o) {
             return !o.trash
         });
