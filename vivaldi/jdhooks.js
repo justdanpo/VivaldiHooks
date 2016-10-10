@@ -339,6 +339,13 @@
 
                                     var pendingscripts = {};
 
+                                    function checkFinished() {
+                                        if (0 === Object.keys(pendingscripts).length) {
+                                            //all scripts are a loaded
+                                            oldWebpackJsonp(chunkIds, modules);
+                                        }
+                                    }
+
                                     for (var i in dirItems) {
                                         var dirItem = dirItems[i];
                                         var Elem;
@@ -351,10 +358,7 @@
 
                                             Elem.onload = function(e) {
                                                 delete pendingscripts[this.src];
-                                                if (0 === Object.keys(pendingscripts).length) {
-                                                    //all scripts are a loaded
-                                                    oldWebpackJsonp(chunkIds, modules);
-                                                }
+                                                checkFinished();
                                             };
 
                                         } else if (dirItem.name.split('.').pop().toUpperCase() === "CSS") {
@@ -368,6 +372,8 @@
 
                                         document.head.appendChild(Elem);
                                     }
+
+                                    checkFinished();
                                 })
                             }
                         })
