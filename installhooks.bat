@@ -1,33 +1,70 @@
-@echo off
-::try path from commandline
-if not "%~1a"=="a" set vivaldipath=%~1
-::search vivaldi in associations
-if "%vivaldipath%"a==""a for /f "tokens=2* delims==" %%i in ('ftype ^| find /i "vivaldi.exe"') do call :getpath %%i
-::search vivaldi in the registry
-if "%vivaldipath%"a==""a for /f "usebackq skip=2 tokens=2,*" %%i in (`reg query "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe" /v Path`) do set vivaldipath=%%~j
+@set installhooks_args=%~1& set installhooks_self=%~f0& powershell -c "(gc \"%~f0\") -replace '@set installhooks_args.*','#' | Write-Host" | powershell -c -& goto :eof
 
-if "%vivaldipath%"a==""a (
-  echo Cannot find Vivaldi.exe
-  exit /b 1
-)
+$srcdir = split-path $env:installhooks_self
 
-for /F %%i in ('dir /b /od "%vivaldipath%" ^| findstr ^[0-9][0-9]*.') do if exist "%vivaldipath%\%%i\resources\vivaldi\bundle.js" set latest=%%i
+$vivpath = $env:installhooks_args
 
-if %latest%a==a (
-  echo Cannot find Vivaldi version
-  exit /b 1
-)
+if($vivpath -eq $null) {
+  Try {
+    $vivprop = Split-Path ((Get-ItemProperty -ErrorAction SilentlyContinue 'Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe').'(default)')
+  }
+  Catch {
+  }
+}
 
-echo Vivaldi path="%vivaldipath%", version=%latest%
+if($vivpath -eq $null) {
+  Try {
+    $ftypestring=( (cmd /c ftype) | where { $_.contains('Vivaldi') } ).split('=')[1]
+    $vivpath = Split-Path ([management.automation.psparser]::Tokenize($ftypestring, [ref]$null)[0].content)
+  }
+  Catch {
+  }
+}
 
-set browserhtml="%vivaldipath%\%latest%\resources\vivaldi\browser.html"
-set tmpfilename="%vivaldipath%\%latest%\resources\vivaldi\tmpbrowser.html"
-if exist %tmpfilename% del %tmpfilename%
+if($vivpath -eq $null) {
+  write-error "Can't find Vivaldi installation path"
+} else {
+  Try {
+    $dstdir = split-path ((ls -path $vivpath -r localeSettings-bundle.js | sort -property CreationTime -descending | select -first 1).FullName)
+    write-host "Destination directory: $dstdir"
 
-xcopy /e /y /i "vivaldi" "%vivaldipath%\%latest%\resources\vivaldi" > nul
+    write-host "Patching vendor-bundle.js"
+    $encoding = (New-Object System.Text.UTF8Encoding($False))
+    $vbfname = (join-path $dstdir "vendor-bundle.js")
+    $vb = [IO.File]::ReadAllLines( $vbfname, $encoding )
+    $vb = $vb -replace "^(\s*!\s*function\s*\(\s*\w+\s*\)\s*{)\s*function", "`$1 vivaldi.jdhooks={_modules:arguments[0]}; function"
+    [System.IO.File]::WriteAllLines( $vbfname, $vb, $encoding)
 
-echo ok
-goto :eof
+    write-host "Updating browser.html"
+    $html = gc (join-path $dstdir "browser.html") -encoding UTF8
+    $outhtml = @()
+    $html |% {
+      $line = $_
+      if($line.tolower().contains('<script src="jdhooks.js"></script>')) {
+        return
+      } elseif($line.tolower().contains('<script src="bundle.js"></script>')) {
+        $outhtml += '    <script src="jdhooks.js"></script>'
+      } 
+      $outhtml += $_
+    }  
+    [System.IO.File]::WriteAllLines( (join-path $srcdir "vivaldi" | join-path -childpath "browser.html" ), $outhtml, $encoding)
 
-:getpath
-if exist "%~f1" set vivaldipath=%~dp1
+    write-host "Copying files"
+    copy-item (join-path $srcdir "vivaldi" | join-path -childpath "*") $dstdir -recurse -force
+
+    write-host "Done"
+  }
+  Catch {
+    write-host "Error: " $_
+  }
+}
+
+
+Try {
+#last try is ot executed :-\
+}
+Catch {
+}
+
+Write-Host -NoNewLine "Press any key to continue..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

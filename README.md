@@ -20,8 +20,12 @@ You may specify a path in a command line:
     installhooks.bat C:\programz\Vivaldi-snapshots\1.5.609.8\Application
     installhooks.bat "C:\some path with spaces\Vivaldi\Application"
 
+Another easy way: drag Vivaldi directory and drop it on **installhooks.bat**.
+
 Note: **browser.html** will be overwritten.
+
 ###Manual
+
 Copy **vivaldi** folder into **Vivaldi\Application\{version}\resources**
 
 Or if you want to keep mods you've installed into **browser.html**, copy **vivaldi\hooks** folder and **vivaldi\jdhooks.js** into **Vivaldi\Application\{version}\resources\vivaldi**, open **Vivaldi\Application{version}\resources\vivaldi\browser.html** in a text editor, add line
@@ -29,6 +33,8 @@ Or if you want to keep mods you've installed into **browser.html**, copy **vival
     <script src="jdhooks.js"></script>
 
 right before a line with **bundle.js**.
+
+If Vivaldi will prompt you to save **vendor-bundle.js**, save it into the same directory.    
 
 ##Screenshots
 
