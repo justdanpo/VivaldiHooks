@@ -6,10 +6,53 @@
 
 (function() {
 
-    vivaldi.jdhooks = {};
-
     var oldWebpackJsonp = window.webpackJsonp;
     window.webpackJsonp = function(chunkIds, modules) {
+        if (chunkIds.indexOf(6) < 0) {
+            return oldWebpackJsonp(chunkIds, modules);
+        }
+
+        //save patched vendor-bundle.js
+        if (!vivaldi.jdhooks || !vivaldi.jdhooks._modules) {
+            var htmlRequest = new XMLHttpRequest();
+            htmlRequest.onreadystatechange = function() {
+                if (4 == this.readyState) {
+                    if (this.status === 200) {
+                        var vendorBundle = this.response.replace(/^(\s*!\s*function\s*\(\s*\w+\s*\)\s*{)/, '$& vivaldi.jdhooks={_modules:arguments[0]}; ');
+
+                        console.log('vendor-b:', vendorBundle.substr(0, 100));
+
+                        chrome.fileSystem.chooseEntry({
+                            type: 'saveFile',
+                            suggestedName: 'vendor-bundle.js',
+                            accepts: [{
+                                extensions: ['js']
+                            }]
+                        }, function(saveEntry) {
+
+                            if (chrome.runtime.lastError) return;
+
+                            saveEntry.createWriter(function(fileWriter) {
+                                fileWriter.onwriteend = function(e) {
+                                    fileWriter.onwriteend = null;
+                                    fileWriter.truncate(e.total);
+                                };
+                                var blob = new Blob([vendorBundle], {
+                                    'type': 'text/plain'
+                                });
+                                fileWriter.write(blob);
+                            }, function(e) {});
+
+                        })
+
+                    }
+                }
+            };
+            htmlRequest.open("GET", "vendor-bundle.js", true);
+            htmlRequest.send();
+
+            return oldWebpackJsonp(chunkIds, modules);
+        }
 
         //-build module names--------------------------------------------------
         (function() {
@@ -297,9 +340,14 @@
             };
 
             vivaldi.jdhooks._moduleMap = {};
-            vivaldi.jdhooks._modules = modules;
 
-            modules.forEach(function(mod, modIndex) {
+            for (var moduleNum in modules) {
+                //Merge arrays for easier signatures detection.
+                //These items will be rewritten again later in vendor-bundle.js
+                vivaldi.jdhooks._modules[moduleNum] = modules[moduleNum];
+            }
+
+            vivaldi.jdhooks._modules.forEach(function(mod, modIndex) {
                 var fntxt = ('' + mod);
                 var idx = fntxt.indexOf('displayName');
                 if (idx > -1) {
@@ -310,7 +358,7 @@
             });
 
             for (var moduleName in moduleSignatures) {
-                var idx = modules.findIndex(function(mod) {
+                var idx = vivaldi.jdhooks._modules.findIndex(function(mod) {
                     var fntxt = ('' + mod);
 
                     for (var moduleDescItm in moduleSignatures[moduleName]) {
@@ -323,7 +371,8 @@
                     if ("undefined" !== typeof vivaldi.jdhooks._moduleMap[moduleName])
                         console.log('jdhooks: repeated module name "' + moduleName + '"');
                     vivaldi.jdhooks._moduleMap[moduleName] = idx;
-                }
+                } else
+                    console.log('jdhooks: unknown module', moduleName);
             }
         })();
 
@@ -333,64 +382,74 @@
             chrome.runtime.getPackageDirectoryEntry(function(dir) {
 
                     dir.createReader().readEntries(function(dirItems) {
-                        dirItems.forEach(function(dirItem) {
-                            if (dirItem.isDirectory && dirItem.name == "hooks") {
-                                dirItem.createReader().readEntries(function(dirItems) {
 
-                                    var pendingscripts = {};
+                        var pendingscripts = {};
 
-                                    function checkFinished() {
-                                        if (0 === Object.keys(pendingscripts).length) {
-                                            //all scripts are a loaded
-                                            oldWebpackJsonp(chunkIds, modules);
-                                        }
-                                    }
-
-                                    for (var i in dirItems) {
-                                        var dirItem = dirItems[i];
-                                        var Elem;
-
-                                        if (dirItem.name.split('.').pop().toUpperCase() === "JS") {
-
-                                            Elem = document.createElement('script');
-                                            Elem.src = 'hooks/' + dirItem.name;
-                                            pendingscripts[Elem.src] = true;
-
-                                            Elem.onload = function(e) {
-                                                delete pendingscripts[this.src];
-                                                checkFinished();
-                                            };
-
-                                        } else if (dirItem.name.split('.').pop().toUpperCase() === "CSS") {
-
-                                            Elem = document.createElement('link');
-                                            Elem.href = 'hooks/' + dirItem.name;
-                                            Elem.rel = "stylesheet";
-
-                                        } else
-                                            continue;
-
-                                        document.head.appendChild(Elem);
-                                    }
-
-                                    checkFinished();
-                                })
+                        function checkFinished() {
+                            if (0 === Object.keys(pendingscripts).length) {
+                                //all scripts are a loaded
+                                oldWebpackJsonp(chunkIds, modules);
                             }
-                        })
+                        }
+
+                        var dirItem = dirItems.find(function(dirItem) {
+                            return dirItem.isDirectory && dirItem.name == "hooks"
+                        });
+
+                        if (!dirItem) {
+                            checkFinished();
+                        } else {
+                            dirItem.createReader().readEntries(function(dirItems) {
+
+                                for (var i in dirItems) {
+                                    var dirItem = dirItems[i];
+                                    var Elem;
+
+                                    if (dirItem.name.split('.').pop().toUpperCase() === "JS") {
+
+                                        Elem = document.createElement('script');
+                                        Elem.src = 'hooks/' + dirItem.name;
+                                        pendingscripts[Elem.src] = true;
+
+                                        Elem.onload = function(e) {
+                                            delete pendingscripts[this.src];
+                                            checkFinished();
+                                        };
+
+                                    } else if (dirItem.name.split('.').pop().toUpperCase() === "CSS") {
+
+                                        Elem = document.createElement('link');
+                                        Elem.href = 'hooks/' + dirItem.name;
+                                        Elem.rel = "stylesheet";
+
+                                    } else
+                                        continue;
+
+                                    document.head.appendChild(Elem);
+                                }
+                                checkFinished();
+                            });
+                        }
+
                     })
                 }) //getPackageDirectoryEntry
         };
 
         //-inject-----------------------------------------------------------
         (function() {
+            function setModuleItem(i, value) {
+                if (undefined !== modules[i])
+                    modules[i] = value;
+                vivaldi.jdhooks._modules[i] = value;
+            }
+
             //hookModule(moduleName, function(moduleInfo));
             var hookModule = vivaldi.jdhooks.hookModule = function(moduleName, newfn) {
-                var oldfn = modules[vivaldi.jdhooks._moduleMap[moduleName]];
-                modules[vivaldi.jdhooks._moduleMap[moduleName]] = function(moduleInfo, exports, nrequire) {
+                var oldfn = vivaldi.jdhooks._modules[vivaldi.jdhooks._moduleMap[moduleName]];
+                setModuleItem(vivaldi.jdhooks._moduleMap[moduleName], function(moduleInfo, exports, nrequire) {
                     oldfn(moduleInfo, exports, nrequire);
                     newfn(moduleInfo);
-                };
-
+                });
             };
 
             //hookClass(className, function(class))
@@ -444,8 +503,8 @@
 
             //require
             //we don't use hookModule for this special case
-            var oldm0 = modules[0];
-            modules[0] = function(moduleInfo, exports, nrequire) {
+            var oldm0 = vivaldi.jdhooks._modules[0];
+            setModuleItem(0, function(moduleInfo, exports, nrequire) {
                 vivaldi.jdhooks.require = function(module) {
                     if ('number' === typeof module) return nrequire(module);
 
@@ -455,7 +514,7 @@
                     return nrequire(vivaldi.jdhooks._moduleMap[module])
                 };
                 oldm0(moduleInfo, exports, nrequire);
-            };
+            });
 
             //hookModule('_ShowUI', function(moduleInfo) {
             //    //all classes created
@@ -485,7 +544,6 @@
 
             loadHooks();
         })();
-
     }; //window.webpackJsonp
 
 })();
