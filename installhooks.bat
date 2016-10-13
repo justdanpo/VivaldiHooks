@@ -6,7 +6,7 @@ $vivpath = $env:installhooks_args
 
 if($vivpath -eq $null) {
   Try {
-    $vivprop = Split-Path ((Get-ItemProperty -ErrorAction SilentlyContinue 'Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe').'(default)')
+    $vivpath = Split-Path ((Get-ItemProperty -ErrorAction SilentlyContinue 'Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\App Paths\vivaldi.exe').'(default)')
   }
   Catch {
   }
@@ -22,7 +22,7 @@ if($vivpath -eq $null) {
 }
 
 if($vivpath -eq $null) {
-  write-error "Can't find Vivaldi installation path"
+  write-warning "Can't find Vivaldi installation path"
 } else {
   Try {
     $dstdir = split-path ((ls -path $vivpath -r localeSettings-bundle.js | sort -property CreationTime -descending | select -first 1).FullName)
