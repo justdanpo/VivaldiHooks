@@ -1,0 +1,37 @@
+﻿/* multiline tabs */
+
+#tabs-container {
+    height: auto !important;
+}
+.resize {
+    display: block !important;
+}
+.tab-strip {
+    display: block;
+}
+.tab-strip > span {
+    display: inline-block;
+}
+.tab-strip > span > .tab-position {
+    left: 0px !important;
+    position: relative;
+    height: 30px !important;
+    width: auto !important;
+}
+.tab-strip > span > .tab-position > .tab:not(.pinned){
+    width: 220px !important;
+}
+.tab-strip > span > .tab-position > .tab.pinned{
+    width: 30px !important;
+}
+.tab-strip > .newtab {
+    left: 0px !important;
+    top: 0px !important;
+    position: relative !important;
+    display: inline-block;
+    padding: 0;
+    vertical-align: top;
+}
+.tab-header > .favicon > svg {
+    height: 17px;
+}

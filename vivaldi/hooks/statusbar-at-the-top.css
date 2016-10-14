@@ -1,0 +1,5 @@
+﻿/* move statusbar to the top */
+
+#main { order: 1 }
+#footer .callout {bottom: inherit}
+#footer .callout::after,#footer .callout::before {display:none}
