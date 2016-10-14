@@ -77,3 +77,7 @@ If Vivaldi will prompt you to save **vendor-bundle.js**, save it into the same d
 ### [devtools.js](vivaldi/hooks/devtools.js)
 
 ![devtools.png](screenshots/devtools.png)
+
+### [jdhooks-startup-settings.js](vivaldi/hooks/jdhooks-startup-settings.js)
+
+![jdhooks-startup-settings.png](screenshots/jdhooks-startup-settings.png)

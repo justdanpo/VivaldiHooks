@@ -399,33 +399,54 @@
                         } else {
                             dirItem.createReader().readEntries(function(dirItems) {
 
-                                for (var i in dirItems) {
-                                    var dirItem = dirItems[i];
-                                    var Elem;
+                                chrome.storage.local.get('JDHOOKS_STARTUP', function(cfg) {
+                                    if (undefined === cfg.JDHOOKS_STARTUP) cfg.JDHOOKS_STARTUP = {};
+                                    if (undefined === cfg.JDHOOKS_STARTUP.defaultLoad) cfg.JDHOOKS_STARTUP.defaultLoad = true;
+                                    if (undefined === cfg.JDHOOKS_STARTUP.scripts) cfg.JDHOOKS_STARTUP.scripts = {};
 
-                                    if (dirItem.name.split('.').pop().toUpperCase() === "JS") {
+                                    vivaldi.jdhooks._hooks = {};
 
-                                        Elem = document.createElement('script');
-                                        Elem.src = 'hooks/' + dirItem.name;
-                                        pendingscripts[Elem.src] = true;
+                                    for (var i in dirItems) {
+                                        var dirItem = dirItems[i];
+                                        var Elem;
 
-                                        Elem.onload = function(e) {
-                                            delete pendingscripts[this.src];
-                                            checkFinished();
-                                        };
+                                        var fileExt = dirItem.name.split('.').pop().toUpperCase();
 
-                                    } else if (dirItem.name.split('.').pop().toUpperCase() === "CSS") {
+                                        if ((fileExt !== "JS") && (fileExt !== "CSS"))
+                                            continue;
 
-                                        Elem = document.createElement('link');
-                                        Elem.href = 'hooks/' + dirItem.name;
-                                        Elem.rel = "stylesheet";
+                                        var shouldBeLoaded = undefined === cfg.JDHOOKS_STARTUP.scripts[dirItem.name] ? cfg.JDHOOKS_STARTUP.defaultLoad : cfg.JDHOOKS_STARTUP.scripts[dirItem.name];
+                                        if (dirItem.name === 'jdhooks-startup-settings.js') shouldBeLoaded = true;
 
-                                    } else
-                                        continue;
+                                        vivaldi.jdhooks._hooks[dirItem.name] = shouldBeLoaded;
 
-                                    document.head.appendChild(Elem);
-                                }
-                                checkFinished();
+                                        if (!shouldBeLoaded)
+                                            continue;
+
+                                        if (fileExt === "JS") {
+
+                                            Elem = document.createElement('script');
+                                            Elem.src = 'hooks/' + dirItem.name;
+                                            pendingscripts[Elem.src] = true;
+
+                                            Elem.onload = function(e) {
+                                                delete pendingscripts[this.src];
+                                                checkFinished();
+                                            };
+                                        }
+
+                                        if (fileExt === "CSS") {
+
+                                            Elem = document.createElement('link');
+                                            Elem.href = 'hooks/' + dirItem.name;
+                                            Elem.rel = "stylesheet";
+
+                                        }
+
+                                        document.head.appendChild(Elem);
+                                    }
+                                    checkFinished();
+                                }); //storage get
                             });
                         }
 
