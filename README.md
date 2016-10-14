@@ -22,7 +22,7 @@ You may specify a path in a command line:
 
 Another easy way: drag Vivaldi directory and drop it on **installhooks.bat**.
 
-Note: **browser.html** will be overwritten.
+~~Note: **browser.html** will be overwritten.~~
 
 ###Manual
 

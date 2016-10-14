@@ -20,8 +20,6 @@
                     if (this.status === 200) {
                         var vendorBundle = this.response.replace(/^(\s*!\s*function\s*\(\s*\w+\s*\)\s*{)/, '$& vivaldi.jdhooks={_modules:arguments[0]}; ');
 
-                        console.log('vendor-b:', vendorBundle.substr(0, 100));
-
                         chrome.fileSystem.chooseEntry({
                             type: 'saveFile',
                             suggestedName: 'vendor-bundle.js',
