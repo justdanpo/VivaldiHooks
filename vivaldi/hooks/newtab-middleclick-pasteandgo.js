@@ -47,6 +47,10 @@ vivaldi.jdhooks.onUIReady(function() {
         });
     });
 
+    obs.observe(document.querySelector('#main'), {
+        childList: true,
+        subtree: true
+    });
     obs.observe(document.querySelector('#header'), {
         childList: true,
         subtree: true
