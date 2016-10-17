@@ -41,7 +41,7 @@ vivaldi.jdhooks.hookClass('SearchField', function(reactClass) {
                     },
                     React.createElement("img", {
                         className: "searchfield-current-engine-icon",
-                        src: searchEngine.FaviconUrl,
+                        src: searchEngine.FaviconUrl ? searchEngine.FaviconUrl : "chrome://favicon/origin/" + searchEngine.Url,
                         style: {
                             margin: "auto",
                             width: 16,
@@ -59,8 +59,8 @@ vivaldi.jdhooks.hookClass('SearchField', function(reactClass) {
                             height: 16
                         }
                     })
-                )//React.createElement('button'
-            );//searchFieldRenderedObject.props.children.splice
+                ) //React.createElement('button'
+            ); //searchFieldRenderedObject.props.children.splice
         }
 
         return searchFieldRenderedObject;
