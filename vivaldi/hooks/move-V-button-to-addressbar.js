@@ -33,9 +33,11 @@
         var moveButton = function(itm) {
 
             newButton = itm.cloneNode(true);
+            newButton.style.top = 0;
+            newButton.style.left = 0;
             newButton.style.position = 'relative';
             newButton.style.height = 'auto';
-            newButton.className += ' button-toolbar';
+            newButton.className = 'vivaldi-addressbar button-toolbar';
             newButton.onmousedown = function(event) {
 
                 vivaldi.jdhooks.require('_ShowMenu')(
@@ -46,6 +48,14 @@
                 )(event);
 
             };
+
+            var vivaldiv = newButton.querySelector('span.vivaldi-v');
+            if (vivaldiv)
+                vivaldiv.style.display = 'none';
+
+            var appicon = newButton.querySelector('span.application-icon');
+            if (appicon)
+                appicon.style.display = 'block';
 
             toolbar.appendChild(newButton);
             itm.style.display = 'none';
