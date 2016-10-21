@@ -12,19 +12,20 @@
 
             var React = vivaldi.jdhooks.require('react_React');
 
-            hookData.retValue.props.children.push(
-                React.createElement("div", {
-                        className: "setting-single",
-                        style: {
-                            paddingLeft: "24px"
-                        }
-                    },
-                    React.createElement("label", null, React.createElement("input", {
-                        type: "checkbox",
-                        checked: this.state.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS,
-                        onChange: this.saveVivaldiSettingFromEvent.bind(this, "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS", "checked")
-                    }), React.createElement("span", null, vivaldi.jdhooks.require('_getLocalizedMessage')("Open in Background Tab"))))
-            );
+            if (hookData.retValue)
+                hookData.retValue.props.children.push(
+                    React.createElement("div", {
+                            className: "setting-single",
+                            style: {
+                                paddingLeft: "24px"
+                            }
+                        },
+                        React.createElement("label", null, React.createElement("input", {
+                            type: "checkbox",
+                            checked: this.state.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS,
+                            onChange: this.saveVivaldiSettingFromEvent.bind(this, "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS", "checked")
+                        }), React.createElement("span", null, vivaldi.jdhooks.require('_getLocalizedMessage')("Open in Background Tab"))))
+                );
 
             return hookData.retValue;
         });

@@ -16,43 +16,44 @@
 
         vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
 
-            var React = vivaldi.jdhooks.require('react_React');
+            if (hookData.retValue) {
+                var React = vivaldi.jdhooks.require('react_React');
 
-            hookData.retValue.props.children.push(
-                React.createElement("h3", null, "GO button"));
+                hookData.retValue.props.children.push(
+                    React.createElement("h3", null, "GO button"));
 
-            hookData.retValue.props.children.push(
-                React.createElement("div", {
-                        className: "setting-single"
-                    },
-                    React.createElement(
-                        "label",
-                        null,
-                        React.createElement("input", {
-                            type: "checkbox",
-                            checked: this.state.ADDRESS_BAR_URL_GO_ENABLED,
-                            onChange: this.saveVivaldiSettingFromEvent.bind(this, "ADDRESS_BAR_URL_GO_ENABLED", "checked")
-                        }),
-                        React.createElement("span", null, "UrlField")
-                    )
-                ));
+                hookData.retValue.props.children.push(
+                    React.createElement("div", {
+                            className: "setting-single"
+                        },
+                        React.createElement(
+                            "label",
+                            null,
+                            React.createElement("input", {
+                                type: "checkbox",
+                                checked: this.state.ADDRESS_BAR_URL_GO_ENABLED,
+                                onChange: this.saveVivaldiSettingFromEvent.bind(this, "ADDRESS_BAR_URL_GO_ENABLED", "checked")
+                            }),
+                            React.createElement("span", null, "UrlField")
+                        )
+                    ));
 
-            hookData.retValue.props.children.push(
-                React.createElement("div", {
-                        className: "setting-single"
-                    },
-                    React.createElement(
-                        "label",
-                        null,
-                        React.createElement("input", {
-                            type: "checkbox",
-                            checked: this.state.ADDRESS_BAR_SEARCH_GO_ENABLED,
-                            onChange: this.saveVivaldiSettingFromEvent.bind(this, "ADDRESS_BAR_SEARCH_GO_ENABLED", "checked")
-                        }),
-                        React.createElement("span", null, "SearchField")
-                    )
-                ));
-
+                hookData.retValue.props.children.push(
+                    React.createElement("div", {
+                            className: "setting-single"
+                        },
+                        React.createElement(
+                            "label",
+                            null,
+                            React.createElement("input", {
+                                type: "checkbox",
+                                checked: this.state.ADDRESS_BAR_SEARCH_GO_ENABLED,
+                                onChange: this.saveVivaldiSettingFromEvent.bind(this, "ADDRESS_BAR_SEARCH_GO_ENABLED", "checked")
+                            }),
+                            React.createElement("span", null, "SearchField")
+                        )
+                    ));
+            }
             return hookData.retValue;
         });
 

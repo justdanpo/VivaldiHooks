@@ -4,6 +4,9 @@
 //settings
 vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
 
+    var newScripts = {};
+    var jdhooksStartupSettings;
+
     //settings init
     vivaldi.jdhooks.hookMember(reactClass, 'componentWillMount', function(hookData) {
 
@@ -11,12 +14,12 @@ vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
 
         this.updateHookSettings = function() {
             settings.set({
-                JDHOOKS_STARTUP: this.props.JDHOOKS_STARTUP
+                JDHOOKS_STARTUP: jdhooksStartupSettings
             });
         };
 
         this.toggleDefaultLoad = function() {
-            this.props.JDHOOKS_STARTUP.defaultLoad = !this.state.jdhooks_defaultLoad;
+            jdhooksStartupSettings.defaultLoad = !this.state.jdhooks_defaultLoad;
             this.updateHookSettings();
             this.setState({
                 jdhooks_defaultLoad: !this.state.jdhooks_defaultLoad
@@ -24,45 +27,44 @@ vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
         };
 
         this.toggleScriptState = function(script) {
-            this.props.JDHOOKS_STARTUP.scripts[script] = !this.state['jdhooks_' + script];
+            jdhooksStartupSettings.scripts[script] = !this.state['jdhooks_' + script];
             this.updateHookSettings();
             var state = {};
             state['jdhooks_' + script] = !this.state['jdhooks_' + script];
             this.setState(state);
         };
 
+        if (!jdhooksStartupSettings)
         //read cfg, fill props & state
-        settings.get('JDHOOKS_STARTUP', function(e) {
+            settings.get('JDHOOKS_STARTUP', function(e) {
             if (undefined === e) e = {};
             if (undefined === e.defaultLoad) e.defaultLoad = true;
             if (undefined === e.scripts) e.scripts = {};
 
-            this.props.JDHOOKS_STARTUP = e;
+            jdhooksStartupSettings = e;
             var updated = false;
 
             //remove deleted scripts from settings
-            for (script in this.props.JDHOOKS_STARTUP.scripts) {
+            for (script in jdhooksStartupSettings.scripts) {
                 if (!(script in vivaldi.jdhooks._hooks)) {
                     updated = true;
-                    delete this.props.JDHOOKS_STARTUP.scripts[script];
+                    delete jdhooksStartupSettings.scripts[script];
                 }
             }
 
             var state = {
-                jdhooks_defaultLoad: this.props.JDHOOKS_STARTUP.defaultLoad
+                jdhooks_defaultLoad: jdhooksStartupSettings.defaultLoad
             };
-
-            this.props.JDHOOKS_NEWSCRIPTS = {};
 
             //states
             for (script in vivaldi.jdhooks._hooks) {
-                if (!(script in this.props.JDHOOKS_STARTUP.scripts)) {
-                    this.props.JDHOOKS_STARTUP.scripts[script] = this.props.JDHOOKS_STARTUP.defaultLoad;
-                    this.props.JDHOOKS_NEWSCRIPTS[script] = true;
+                if (!(script in jdhooksStartupSettings.scripts)) {
+                    jdhooksStartupSettings.scripts[script] = jdhooksStartupSettings.defaultLoad;
+                    newScripts[script] = true;
                     updated = true;
                 }
 
-                state['jdhooks_' + script] = this.props.JDHOOKS_STARTUP.scripts[script];
+                state['jdhooks_' + script] = jdhooksStartupSettings.scripts[script];
             };
 
             this.setState(state);
@@ -77,7 +79,7 @@ vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
     vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
 
         //check if settings are loaded
-        if (undefined !== this.state.jdhooks_defaultLoad) {
+        if (hookData.retValue && (undefined !== this.state.jdhooks_defaultLoad)) {
 
             var React = vivaldi.jdhooks.require('react_React');
 
@@ -85,7 +87,7 @@ vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
 
             for (script in vivaldi.jdhooks._hooks) {
 
-                var newLabel = !this.props.JDHOOKS_NEWSCRIPTS[script] ? null : React.createElement("span", {
+                var newLabel = !newScripts[script] ? null : React.createElement("span", {
                     style: {
                         color: "red",
                         textShadow: "rgb(255, 255, 255) 0px 0px 0.2em, rgb(0,0, 0) 0px 0px 0.2em"
