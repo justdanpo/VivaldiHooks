@@ -170,9 +170,9 @@
                 "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
                 "_updatePage": ['.tabToPage', '.updatePage', '.merge(JSON.parse('],
                 "_bytes": ['hexToBytes:', 'bytesToHex:'],
-                "_execScriptWrapper": ['typeof execScript', 'execScript(', 'eval.call('],
-                "_readability_js": ['Copyright (c) 2010 Arc90 Inc'],
-                "_purify_js": ['.DOMPurify', './dist/purify.'],
+                "_execScriptWrapper": ['typeof execScript', 'execScript(', 'eval.call('],//browser-bundle.js
+                "_readability_js": ['Copyright (c) 2010 Arc90 Inc'],//browser-bundle.js
+                "_purify_js": ['.DOMPurify', './dist/purify.'],//browser-bundle.js
 
                 "vivaldi": ["bookmarksPrivate:"],
                 "vivaldiWrapper": ["window.vivaldi?"], //doesn't work for beautified code
@@ -263,7 +263,9 @@
                 "react_AutoFocusUtils": ["focusDOMComponent:"],
                 "react_BeforeInputEventPlugin": ["compositionUpdate:"],
                 "react_CallbackQueue": ["enqueue:", "._callbacks", ".addPoolingTo("],
+                "react_ChangeEventPlugin": ['extractEvents:', '.topSelectionChange', 'onChangeCapture:'],
                 "react_createMicrosoftUnsafeLocalFunction": ["MSApp.execUnsafeLocalFunction"],
+                "react_CSSCore": ["addClass:", "removeClass:", "hasClass:"],
                 "react_CSSProperty": ["borderTopWidth:"],
                 "react_CSSPropertyOperations": ['createMarkupForStyles:'],
                 "react_DefaultEventPluginOrder": ["ResponderEventPlugin:"],
@@ -272,12 +274,14 @@
                 "react_DOMNamespaces": ["mathml:", "http://www.w3.org/1998/Math/MathML"],
                 "react_DOMProperty": ["ROOT_ATTRIBUTE_NAME:"],
                 "react_DOMPropertyOperations": ['createMarkupForCustomAttribute:'],
+                "react_emptyFunction": [".thatReturnsThis", ".thatReturnsArgument"],
                 "react_EnterLeaveEventPlugin": ["mouseEnter:"],
                 "react_EventConstants": ["PropagationPhases:"],
                 "react_EventPluginHub": ["enqueueEvents:"],
                 "react_EventPluginRegistry": ["getPluginModuleForEvent:"],
                 "react_EventPluginUtils": ["executeDirectDispatch:"],
                 "react_EventPropagators": ["accumulateDirectDispatches:"],
+                "react_ExecutionEnvironment": ["canUseDOM:", "canUseEventListeners:"],
                 "react_FallbackCompositionState": ["getData:", "return this._fallbackText"],
                 "react_findDOMNode": [".nodeType", ".render", ".getNodeFromInstance(", "Object.keys("],
                 "react_getEventKey": ["19:", "MozPrintableKey:"],
@@ -294,6 +298,7 @@
                 "react_ReactComponent": [".isReactComponent", ".enqueueForceUpdate("],
                 "react_ReactComponentEnvironment": [".processChildrenUpdates", "replaceNodeWithMarkup:"],
                 "react_ReactCompositeComponent": ["performInitialMountWithErrorHandling:"],
+                "react_ReactDefaultBatchingStrategy": ["this.reinitializeTransaction()", "isBatchingUpdates:", "batchedUpdates:"],
                 "react_ReactDOM": ["findDOMNode:"],
                 "react_ReactDOMComponentFlags": ["hasCachedChildNodes:"],
                 "react_ReactDOMComponentTree": ["getClosestInstanceFromNode:", '" react-text: "'],
@@ -307,7 +312,7 @@
                 "react_ReactElement": [".createFactory", ".REACT_ELEMENT_TYPE"],
                 "react_ReactEmptyComponent": ["injectEmptyComponentFactory:"],
                 "react_ReactErrorUtils": ["rethrowCaughtError:"],
-                "react_ReactEventEmitterMixin": ["handleTopLevel:"],
+                "react_ReactEventEmitterMixin": ["handleTopLevel:", ".extractEvents("],
                 "react_ReactEventListener": ["_handleTopLevel:", "WINDOW_HANDLE:"],
                 "react_ReactFeatureFlags": ["logTopLevelRenders:"],
                 "react_ReactHostComponent": ["createInstanceForText:"],
@@ -318,7 +323,7 @@
                 "react_ReactMarkupChecksum": ["canReuseMarkup:"],
                 "react_ReactMount": ['_mountImageIntoNode:'],
                 "react_ReactMultiChild": ["createChild:"],
-                "react_ReactMultiChildUpdateTypes": ["INSERT_MARKUP:", "MOVE_EXISTING:"],
+                "react_ReactMultiChildUpdateTypes": ["INSERT_MARKUP:", "MOVE_EXISTING:", "null,"],
                 "react_ReactNodeTypes": ["EMPTY:", "COMPOSITE:"],
                 "react_ReactOwner": ["removeComponentAsRefFrom:"],
                 "react_ReactPropTypes": ["objectOf:"],
@@ -330,7 +335,7 @@
                 "react_renderSubtreeIntoContainer": [".renderSubtreeIntoContainer"],
                 "react_SelectEventPlugin": ["focusOffset:"],
                 "react_setInnerHTML": ["/<(!--|link|noscript|meta|script|style"],
-                "react_SimpleEventPlugin": ["play:"],
+                "react_SimpleEventPlugin": ["playing:"],
                 "react_SVGDOMPropertyConfig": ["requiredExtensions:"],
                 "react_SyntheticAnimationEvent": ["animationName:"],
                 "react_SyntheticClipboardEvent": ["clipboardData:"],
@@ -340,10 +345,6 @@
                 "react_SyntheticWheelEvent": ["deltaZ:"],
                 "react_Transaction": ["reinitializeTransaction:"],
                 "react_ViewportMetrics": ["currentScrollLeft:"],
-                "react_CSSCore": ["addClass:", "removeClass:", "hasClass:"],
-                "react_ReactDefaultBatchingStrategy": ["this.reinitializeTransaction()", "isBatchingUpdates:", "batchedUpdates:"],
-                "react_ExecutionEnvironment": ["canUseDOM:", "canUseEventListeners:"],
-                "react_emptyFunction": [".thatReturnsThis", ".thatReturnsArgument"],
             };
 
             vivaldi.jdhooks._moduleMap = {};
