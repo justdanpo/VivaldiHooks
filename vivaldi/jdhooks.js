@@ -81,6 +81,7 @@
                 "StorageMock": ['StorageMock', 'getBytesInUse:'],
                 "TabsMock": ['captureVisibleTab'],
                 "WindowsMock": ['getLastFocused', 'this.WINDOW_ID_CURRENT'],
+                "progress_indicator": ['.createElement("progress"', 'bar:', 'circular:'],
 
                 "nm_immutable": ["Expected Array or iterable object of [k, v] entries"], //node_modules\immutable\dist\immutable.js
                 "nm_buffer": ["The buffer module from node.js"],
@@ -168,6 +169,10 @@
                 "_clone": ['typeof Symbol.iterator', '"function"', '"symbol"', '"function"', '"object"', '.constructor()', '.hasOwnProperty('],
                 "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
                 "_updatePage": ['.tabToPage', '.updatePage', '.merge(JSON.parse('],
+                "_bytes": ['hexToBytes:', 'bytesToHex:'],
+                "_execScriptWrapper": ['typeof execScript', 'execScript(', 'eval.call('],
+                "_readability_js": ['Copyright (c) 2010 Arc90 Inc'],
+                "_purify_js": ['.DOMPurify', './dist/purify.'],
 
                 "vivaldi": ["bookmarksPrivate:"],
                 "vivaldiWrapper": ["window.vivaldi?"], //doesn't work for beautified code
@@ -335,6 +340,10 @@
                 "react_SyntheticWheelEvent": ["deltaZ:"],
                 "react_Transaction": ["reinitializeTransaction:"],
                 "react_ViewportMetrics": ["currentScrollLeft:"],
+                "react_CSSCore": ["addClass:", "removeClass:", "hasClass:"],
+                "react_ReactDefaultBatchingStrategy": ["this.reinitializeTransaction()", "isBatchingUpdates:", "batchedUpdates:"],
+                "react_ExecutionEnvironment": ["canUseDOM:", "canUseEventListeners:"],
+                "react_emptyFunction": [".thatReturnsThis", ".thatReturnsArgument"],
             };
 
             vivaldi.jdhooks._moduleMap = {};
