@@ -34,24 +34,7 @@ vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
             this.setState(state);
         };
 
-        if (!jdhooksStartupSettings)
-        //read cfg, fill props & state
-            settings.get('JDHOOKS_STARTUP', function(e) {
-            if (undefined === e) e = {};
-            if (undefined === e.defaultLoad) e.defaultLoad = true;
-            if (undefined === e.scripts) e.scripts = {};
-
-            jdhooksStartupSettings = e;
-            var updated = false;
-
-            //remove deleted scripts from settings
-            for (script in jdhooksStartupSettings.scripts) {
-                if (!(script in vivaldi.jdhooks._hooks)) {
-                    updated = true;
-                    delete jdhooksStartupSettings.scripts[script];
-                }
-            }
-
+        function updateState(obj) {
             var state = {
                 jdhooks_defaultLoad: jdhooksStartupSettings.defaultLoad
             };
@@ -67,12 +50,35 @@ vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
                 state['jdhooks_' + script] = jdhooksStartupSettings.scripts[script];
             };
 
-            this.setState(state);
+            obj.setState(state);
+        }
 
-            if (updated)
-                this.updateHookSettings();
+        if (!jdhooksStartupSettings) {
+            //read cfg, fill props & state
+            settings.get('JDHOOKS_STARTUP', function(e) {
+                if (undefined === e) e = {};
+                if (undefined === e.defaultLoad) e.defaultLoad = true;
+                if (undefined === e.scripts) e.scripts = {};
 
-        }.bind(this));
+                jdhooksStartupSettings = e;
+                var updated = false;
+
+                //remove deleted scripts from settings
+                for (script in jdhooksStartupSettings.scripts) {
+                    if (!(script in vivaldi.jdhooks._hooks)) {
+                        updated = true;
+                        delete jdhooksStartupSettings.scripts[script];
+                    }
+                }
+
+                updateState(this);
+
+                if (updated)
+                    this.updateHookSettings();
+
+            }.bind(this));
+        } else
+            updateState(this);
     });
 
 
