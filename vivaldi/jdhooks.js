@@ -20,6 +20,15 @@
                     if (this.status === 200) {
                         var vendorBundle = this.response.replace(/^(\s*!\s*function\s*\(\s*\w+\s*\)\s*{)/, '$& vivaldi.jdhooks={_modules:arguments[0]}; ');
 
+                        function errorWriting() {
+                            chrome.tabs.getSelected(function(tab) {
+                                if (tab.id >= 0)
+                                    chrome.tabs.executeScript(tab.id, {
+                                        code: "alert('VivaldiHooks: Error writing vendor-bundle.js')"
+                                    });
+                            })
+                        }
+
                         chrome.fileSystem.chooseEntry({
                             type: 'saveFile',
                             suggestedName: 'vendor-bundle.js',
@@ -28,12 +37,16 @@
                             }]
                         }, function(saveEntry) {
 
-                            if (chrome.runtime.lastError) return;
+                            if (chrome.runtime.lastError)
+                                return errorWriting();
 
                             saveEntry.createWriter(function(fileWriter) {
                                 fileWriter.onwriteend = function(e) {
                                     fileWriter.onwriteend = null;
                                     fileWriter.truncate(e.total);
+                                };
+                                fileWriter.onerror = function(e) {
+                                    errorWriting()
                                 };
                                 var blob = new Blob([vendorBundle], {
                                     'type': 'text/plain'
