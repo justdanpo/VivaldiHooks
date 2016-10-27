@@ -91,7 +91,15 @@ vivaldi.jdhooks.hookClass('StartupSetting', function(reactClass) {
 
             var subitems = [];
 
-            for (script in vivaldi.jdhooks._hooks) {
+            var scriptNames = Object.keys(vivaldi.jdhooks._hooks);
+            scriptNames.sort(function(first, second) {
+                return first.localeCompare(second, {
+                    sensitivity: "accent"
+                });
+            });
+
+            for (scriptNum in scriptNames) {
+                var script = scriptNames[scriptNum];
 
                 var newLabel = !newScripts[script] ? null : React.createElement("span", {
                     style: {
