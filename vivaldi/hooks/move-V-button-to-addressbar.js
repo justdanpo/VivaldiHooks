@@ -51,14 +51,10 @@
 
             var vivaldiv = newButton.querySelector('span.vivaldi-v');
             if (vivaldiv)
-                vivaldiv.style.display = 'none';
-
-            var appicon = newButton.querySelector('span.application-icon');
-            if (appicon)
-                appicon.style.display = 'block';
+                vivaldiv.parentNode.removeChild(vivaldiv);
 
             toolbar.appendChild(newButton);
-            itm.style.display = 'none';
+            itm.style.left = '-100px';
 
             var style = document.createElement('style');
             style.setAttribute('description', 'added by move-V-button-to-extensions.js');
