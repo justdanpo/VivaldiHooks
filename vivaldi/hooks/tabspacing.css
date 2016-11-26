@@ -33,13 +33,6 @@
     padding-top: 0; /*2px;*/
 }
 
-#browser.native.tabs-bottom #header,
-#browser.native.tabs-left #header,
-#browser.native.tabs-right #header {
-    min-height: 0;
-    height: 0;
-}
-
 #browser.native #tabs-container.top {
     padding-top: 0 !important
 }

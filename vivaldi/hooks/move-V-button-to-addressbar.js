@@ -58,7 +58,9 @@
 
             var style = document.createElement('style');
             style.setAttribute('description', 'added by move-V-button-to-extensions.js');
-            style.textContent = "#browser #tabs-container.top{ padding-left: 0px }";
+            style.textContent =
+                "#browser #tabs-container.top{ padding-left: 0px }" +
+                "#browser.native:not(.tabs-top) #header { display: none }";
             document.head.appendChild(style);
         };
 
