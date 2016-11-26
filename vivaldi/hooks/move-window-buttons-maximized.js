@@ -16,7 +16,7 @@ vivaldi.jdhooks.onUIReady(function() {
         var style = document.createElement('style');
         style.setAttribute('description', 'added by move-window-buttons-maximized.js');
         style.textContent =
-            "#browser:not(.horizontal-menu):not(.tabs-top).maximized #header { top:-100px; position:absolute } " +
+            "#browser:not(.native):not(.horizontal-menu):not(.tabs-top).maximized #header { top:-100px; position:absolute } " +
 
             "#browser.horizontal-menu .MaximizedWindowButtons, " +
             "#browser.tabs-top .MaximizedWindowButtons, " +
