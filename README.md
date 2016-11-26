@@ -58,10 +58,6 @@ If Vivaldi will prompt you to save **vendor-bundle.js**, save it into the same d
 
 ![qc-close-tab.png](screenshots/qc-close-tab.png)
 
-### [search-selected.js](vivaldi/hooks/search-selected.js)
-
-![search-selected.png](screenshots/search-selected.png)
-
 ### [speeddial-shortcuts.js](vivaldi/hooks/speeddial-shortcuts.js)
 
 ![speeddial-shortcuts.png](screenshots/speeddial-shortcuts.png)
@@ -81,3 +77,7 @@ If Vivaldi will prompt you to save **vendor-bundle.js**, save it into the same d
 ### [jdhooks-startup-settings.js](vivaldi/hooks/jdhooks-startup-settings.js)
 
 ![jdhooks-startup-settings.png](screenshots/jdhooks-startup-settings.png)
+
+### [speeddial-items-geometry.js](vivaldi/hooks/speeddial-items-geometry.js)
+
+![speeddial-items-geometry.png](screenshots/speeddial-items-geometry.png)

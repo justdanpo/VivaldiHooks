@@ -74,7 +74,6 @@
                 "punycode": ['"Overflow: input needs wider integers to process",'],
                 "url": [".prototype.parseHost"],
                 "classnames": ["http://jedwatson.github.io/classnames"],
-                "quantize": ["quantize.js"], //not used anymore
                 "dexie": ['"Dexie specification of currently installed DB version is missing"'],
                 "chroma": ['"Logarithmic scales are only possible for values > 0"'],
                 "MailKeyboardShortcuts": ["this._mailReply)", "this._mailForward)"],
@@ -95,6 +94,7 @@
                 "TabsMock": ['captureVisibleTab'],
                 "WindowsMock": ['getLastFocused', 'this.WINDOW_ID_CURRENT'],
                 "progress_indicator": ['.createElement("progress"', 'bar:', 'circular:'],
+                "css-layout": ['computeLayout:', 'fillNodes:'],
 
                 "nm_immutable": ["Expected Array or iterable object of [k, v] entries"], //node_modules\immutable\dist\immutable.js
                 "nm_buffer": ["The buffer module from node.js"],
@@ -178,14 +178,18 @@
                 "_SettingsMigration_5": ["A9AF7AAEA7E", "AD6C08C471A"],
                 "_SettingsMigration_6": [".TABCOLOR_BEHIND_TABS", "TABCOLOR_BEHIND_TABS:", "on", "Promise"],
                 "_SettingsMigration_7": ['.getSync("THEMES_SYSTEM")', ".THEMES_USER", "THEMES_USER:", ".cloneDeep"],
+                "_SettingsAppearance": ['"Use Native Window"'],
+                "_SettingsStartPage": ['"Speed Dial Layout"'],
+                "_SettingsTabOptions": ['"Use Unread Indicators"'],
+                "_SettingsTabPosition": ['"Show Tab Bar"', '"Tab Bar Position"'],
                 "_treeSort": ['treeSort:', 'getDefaultComparator:'],
                 "_clone": ['typeof Symbol.iterator', '"function"', '"symbol"', '"function"', '"object"', '.constructor()', '.hasOwnProperty('],
                 "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
                 "_updatePage": ['.tabToPage', '.updatePage', 'JSON.parse(', '"favIconUrl"'],
                 "_bytes": ['hexToBytes:', 'bytesToHex:'],
-                "_execScriptWrapper": ['typeof execScript', 'execScript(', 'eval.call('],//browser-bundle.js
-                "_readability_js": ['Copyright (c) 2010 Arc90 Inc'],//browser-bundle.js
-                "_purify_js": ['.DOMPurify', './dist/purify.'],//browser-bundle.js
+                "_execScriptWrapper": ['typeof execScript', 'execScript(', 'eval.call('], //browser-bundle.js
+                "_readability_js": ['Copyright (c) 2010 Arc90 Inc'], //browser-bundle.js
+                "_purify_js": ['.DOMPurify', './dist/purify.'], //browser-bundle.js
 
                 "vivaldi": ["bookmarksPrivate:"],
                 "vivaldiWrapper": ["window.vivaldi?"], //doesn't work for beautified code
@@ -221,7 +225,7 @@
                 "_svg_menu_notes": ['2v12h10V2H3zm9 11H4V4h8v9z'],
                 "_svg_menu_settings": ['M12.55 8v.592l1.325 1.014c.088.084.177.253.088.338l-1.236'],
                 "_svg_menu_vivaldi": ['M10.428 5.038c-.42-.85.027-1.804.943-2.008.747-.167 1.518.386 1.617'],
-                "_svg_notes_add_attachment": ['8H0v2h8v8h2v-8h8V8h-8V0H8v8z'],
+                "_svg_notes_add_attachment": ['.436.28.97.7.97h5.95c.98 0 1.75-1.043 1.75-2.06 0-1.02-.77-1.82-1.75'],
                 "_svg_notes_happynote": ['id="eye"'],
                 "_svg_notes_tree_note": ['2h10v12h-10v-12zm1 2h8v9h-8v-9zm1'],
                 "_svg_notes_tree_note_has_url": ['M13 8v-6h-10v12h7v2l2.5-2'],
@@ -258,7 +262,7 @@
                 "_svg_speeddial_update_thumbnail": ['M13 4c-4.95 0-9 4.05-9 9s4.05 9 9 9c4.163'],
                 "_svg_startpage_newfolder": ['id="smallplus"'],
                 "_svg_tabstrip_btn_newtab": ["M7 9h-4v-2h4v-4h2v4h4v2h-4v4h-2v-4zm-7-9v16h16v-16h-16z"],
-                "_svg_tabstrip_btn_trashcan": ['className="trashicon-content"'],
+                "_svg_tabstrip_btn_trashcan": ['"trashicon-content"'],
                 "_svg_toggleimages_noimages": ['M16 2H0v12h16V2zM4.89'],
                 "_svg_vivaldi_horizontal_menu": ['id="horizontal-menu-button'],
                 "_svg_vivaldi_title": ['id="vivrect1"'],
