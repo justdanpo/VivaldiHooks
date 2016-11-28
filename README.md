@@ -9,6 +9,8 @@ It's something close to [VivaldiPatches](https://github.com/justdanpo/VivaldiPat
 - hook scripts are almost Vivaldi-version independent -> there is no need to port mods to every new Vivaldi version
 - there is no need to interact with minified code; this means more complex mods may be done easier; also javascript mods look much more readable than patches
 
+But some of mods cannot be implemented as hooks, so I don't bury VivaldiPatches.
+
 ##Installation
 ###Automatic (Windows only)
 Just run **installhooks.bat**. It will find installation path automatically if Vivaldi is set as your default browser.
@@ -26,15 +28,30 @@ Another easy way: drag Vivaldi directory and drop it on **installhooks.bat**.
 
 ###Manual
 
-Copy **vivaldi** folder into **Vivaldi\Application\{version}\resources**
+First of all, find Vivaldi installation folder (**{instdir}**):
 
-Or if you want to keep mods you've installed into **browser.html**, copy **vivaldi\hooks** folder and **vivaldi\jdhooks.js** into **Vivaldi\Application\{version}\resources\vivaldi**, open **Vivaldi\Application{version}\resources\vivaldi\browser.html** in a text editor, add line
+- Windows: `Vivaldi\Application\{version}\resources`
+- Linux: `/opt/vivaldi/resources` or `/opt/vivaldi-snapshot/resources`
+- MacOS: `/Applications/Vivaldi.app/Contents/Versions/{version}/Vivaldi Framework.framework/Resources`
+
+Copy **vivaldi** folder into **{instdir}**
+
+Or if you want to keep mods you've installed into **browser.html**, copy **vivaldi\hooks** folder and **vivaldi\jdhooks.js** into **{instdir}\vivaldi**, open **{instdir}\vivaldi\browser.html** in a text editor, add line
 
     <script src="jdhooks.js"></script>
 
 right before a line with **bundle.js**.
 
-If Vivaldi will prompt you to save **vendor-bundle.js**, save it into the same directory.    
+If Vivaldi prompts you to save **vendor-bundle.js**, save it into the same directory.
+Note: browser may not have access rights to write there.
+
+You may need to chmod new/updated files.
+
+##Deinstallation
+
+If some hooks cause Vivaldi to crash, you can remove just hook files.
+
+The easiest way to "uninstall"/disable VivaldiHooks is to delete **{instdir}\vivaldi\jdhooks.js**.
 
 ##Screenshots
 
