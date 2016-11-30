@@ -148,8 +148,8 @@
             });
 
 
-            vivaldi.jdhooks.hookMember(this.refs.component, 'createFlexBoxLayout', function(hookData, speedDialFolder, dialWidth, columns) {
-
+            //was: function(hookData, speedDialFolder, dialWidth, columns) {
+            vivaldi.jdhooks.hookMember(this.refs.component, 'createFlexBoxLayout', function(hookData, speedDialFolder, dialRowWidth) {
                 hookData.abort();
 
                 var curFolderChildren = speedDialFolder ? speedDialFolder.children : [];
@@ -157,7 +157,7 @@
                 var layout = {
                     style: {
                         flexDirection: "row",
-                        width: (myDialWidth + 2 * myDialMargin) * columns,
+                        width: (myDialWidth + 2 * myDialMargin) * this.getSpeedDialColumns(), //todo: replace with dialRowWidth
                         flexWrap: "wrap"
                     },
                     children: curFolderChildren.map(function(e) {
