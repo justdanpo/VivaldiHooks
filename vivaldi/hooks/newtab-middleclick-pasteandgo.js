@@ -8,7 +8,7 @@ vivaldi.jdhooks.onUIReady(function() {
 
         if (!newtabbutton) return;
 
-        newtabbutton.addEventListener('click', function(e) {
+        newtabbutton.addEventListener('mouseup', function(e) {
 
             if (e.button === 1) {
 
@@ -29,6 +29,15 @@ vivaldi.jdhooks.onUIReady(function() {
                     addTypedSearchHistory: !1,
                     enableSearch: !0
                 });
+
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        });
+
+        newtabbutton.addEventListener('click', function(e) {
+
+            if (e.button === 1) {
 
                 e.stopPropagation();
                 e.preventDefault();
