@@ -17,9 +17,20 @@ vivaldi.jdhooks.onUIReady(function() {
         }
     })
 
-    zoomControl.addEventListener('click', function(event) {
-        if (event.button === 1)
+    zoomControl.addEventListener('mouseup', function(event) {
+        if (event.button === 1) {
             uaActions.zoomReset();
+
+            event.stopPropagation();
+            event.preventDefault();
+        }
     });
 
+    zoomControl.addEventListener('click', function(event) {
+        if (event.button === 1) {
+
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    });
 });
