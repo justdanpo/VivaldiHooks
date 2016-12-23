@@ -16,15 +16,12 @@
                 hookData.retValue.props.children.push(
                     React.createElement("div", {
                             className: "setting-single",
-                            style: {
-                                paddingLeft: "24px"
-                            }
                         },
                         React.createElement("label", null, React.createElement("input", {
                             type: "checkbox",
                             checked: this.state.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS,
                             onChange: this.saveVivaldiSettingFromEvent.bind(this, "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS", "checked")
-                        }), React.createElement("span", null, vivaldi.jdhooks.require('_getLocalizedMessage')("Open in Background Tab"))))
+                        }), React.createElement("span", null, "Open downloads in new tab instead of panel")))
                 );
 
             return hookData.retValue;
