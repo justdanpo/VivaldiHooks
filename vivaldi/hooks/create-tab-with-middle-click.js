@@ -4,6 +4,8 @@
 vivaldi.jdhooks.onUIReady(function() {
 
     function setup(tabstrip) {
+        if (!tabstrip) return;
+
         var tabspacer = document.createElement('div');
         tabspacer.className = "tab-spacer";
         tabspacer.style.cssText = 'top: 0px; left: 0px; height: 100%; width: 100%; position: absolute; -webkit-app-region: no-drag;';
