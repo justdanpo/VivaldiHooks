@@ -188,6 +188,7 @@
                 "_execScriptWrapper": ['typeof execScript', 'execScript(', 'eval.call('], //browser-bundle.js
                 "_readability_js": ['Copyright (c) 2010 Arc90 Inc'], //browser-bundle.js
                 "_purify_js": ['.DOMPurify', './dist/purify.'], //browser-bundle.js
+                "_requestIdleCallback": ['return window.requestIdleCallback('],
 
                 "vivaldi": ["bookmarksPrivate:"],
                 "vivaldiWrapper": ["window.vivaldi?"], //doesn't work for beautified code
@@ -264,6 +265,7 @@
                 "_svg_toggleimages_noimages": ['M16 2H0v12h16V2zM4.89'],
                 "_svg_vivaldi_horizontal_menu": ['id="horizontal-menu-button'],
                 "_svg_vivaldi_title": ['id="vivrect1"'],
+                "_svg_vivaldi_v": ['M14.726 7.446c-.537-1.023.035-2.164 1.2-2.41.948-.2'],
                 "_svg_window_close": ['0h2v1H6V2zm1-1h2v1H7V1zM3'],
                 "_svg_window_close_mac": ['window-close-glyph dpi-standard'],
                 "_svg_window_close_win10": ['M10.2.5l-.7-.7L5 4.3.5-.2l-.7.7L4.3'],
@@ -574,8 +576,8 @@
             });
 
             //wait for UI
-            hookModule('_SpeedDialChangeListener', function(moduleInfo) {
-                hookMember(moduleInfo.exports, 'start', null, function(hookData) {
+            hookModule('_requestIdleCallback', function(moduleInfo) {
+                vivaldi.jdhooks.hookMember(moduleInfo, 'exports', function(hookData, cat) {
                     document.dispatchEvent(new Event('jdhooks.uiready'))
                 });
             });

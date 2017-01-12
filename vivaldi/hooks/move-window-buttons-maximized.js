@@ -1,39 +1,74 @@
 //Move Minimize/Zoom/Close buttons to addressbar when Vivaldi is maximized and tab position is NOT "Top"
 
-vivaldi.jdhooks.onUIReady(function() {
+(function() {
 
-    var buttons = document.querySelector('#titlebar > .window-buttongroup');
-    if (buttons) {
-        var newButtons = buttons.cloneNode(true);
-        newButtons.style.position = 'relative';
-        newButtons.style.order = 255;
-        newButtons.style.height = 'auto';
-        newButtons.className += ' MaximizedWindowButtons';
+    var style = document.createElement('style');
+    style.setAttribute('description', 'added by move-window-buttons-maximized.js');
+    style.textContent =
+        "#browser:not(.native):not(.horizontal-menu):not(.tabs-top).maximized #header { top:-100px; position:absolute } " +
 
-        var toolbar = document.querySelector('#main > .toolbar');
-        toolbar.appendChild(newButtons);
+        "#browser.horizontal-menu .MaximizedWindowButtons, " +
+        "#browser.tabs-top .MaximizedWindowButtons, " +
+        "#browser:not(.maximized) .MaximizedWindowButtons," +
+        "#browser.native .MaximizedWindowButtons { display: none } ";
+    document.head.appendChild(style);
 
-        var style = document.createElement('style');
-        style.setAttribute('description', 'added by move-window-buttons-maximized.js');
-        style.textContent =
-            "#browser:not(.native):not(.horizontal-menu):not(.tabs-top).maximized #header { top:-100px; position:absolute } " +
 
-            "#browser.horizontal-menu .MaximizedWindowButtons, " +
-            "#browser.tabs-top .MaximizedWindowButtons, " +
-            "#browser:not(.maximized) .MaximizedWindowButtons { display: none } " +
+    function hookRender(reactClass) {
+        var iconClose, iconMinimize, iconZoom;
 
-            "#browser .MaximizedWindowButtons button { height: auto }";
-        document.head.appendChild(style);
-
-        newButtons.querySelector('.window-close').onclick = function() {
-            buttons.querySelector('.window-close').click();
+        switch (window.navigator.appVersion.indexOf("Windows NT 10") > 0 ? "win10" : vivaldi.jdhooks.require('_GetPlatform')()) {
+            case "linux":
+            case "win":
+                iconClose = vivaldi.jdhooks.require('_svg_window_close');
+                iconMinimize = vivaldi.jdhooks.require('_svg_window_minimize');
+                iconZoom = vivaldi.jdhooks.require('_svg_window_zoom');
+                break;
+            case "win10":
+                iconClose = vivaldi.jdhooks.require('_svg_window_close_win10');
+                iconMinimize = vivaldi.jdhooks.require('_svg_window_minimize_win10');
+                iconZoom = vivaldi.jdhooks.require('_svg_window_zoom_win10');
+                break;
+            case "mac":
+                iconClose = vivaldi.jdhooks.require('_svg_window_close_mac');
+                iconMinimize = vivaldi.jdhooks.require('_svg_window_minimize_mac');
+                iconZoom = vivaldi.jdhooks.require('_svg_window_zoom_mac');
         }
-        newButtons.querySelector('.window-minimize').onclick = function() {
-            buttons.querySelector('.window-minimize').click();
+
+        function createButton(className, image) {
+            return vivaldi.jdhooks.require('react_React').createElement("button", {
+                tabIndex: "-1",
+                className: "button-toolbar MaximizedWindowButtons " + className,
+                style: {
+                    order: 255
+                },
+                onClick: function() {
+                    document.querySelector('#titlebar > .window-buttongroup .' + className).click()
+                },
+                dangerouslySetInnerHTML: {
+                    __html: image
+                }
+            })
         }
-        newButtons.querySelector('.window-maximize').onclick = function() {
-            buttons.querySelector('.window-maximize').click();
-        }
+
+        vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
+            hookData.retValue.props.children.push(
+                createButton('window-minimize', iconMinimize),
+                createButton('window-maximize', iconZoom),
+                createButton('window-close', iconClose)
+            );
+            return hookData.retValue;
+        });
     }
 
-});
+
+    vivaldi.jdhooks.hookClass('UrlBar', function(reactClass) {
+        hookRender(reactClass)
+    });
+
+    vivaldi.jdhooks.hookClass('MailBar', function(reactClass) {
+        hookRender(reactClass)
+    });
+
+
+})();
