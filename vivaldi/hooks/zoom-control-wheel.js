@@ -8,7 +8,7 @@ vivaldi.jdhooks.onUIReady(function() {
     var range = zoomControl.querySelector('input');
 
     zoomControl.addEventListener('mousewheel', function(event) {
-        if (!range.disabled) {
+        if (!range.disabled && !zoomControl.querySelector('input[type="range"]')) {
             if (event.deltaY > 0)
                 uaActions.zoomOut();
 
@@ -28,7 +28,6 @@ vivaldi.jdhooks.onUIReady(function() {
 
     zoomControl.addEventListener('click', function(event) {
         if (event.button === 1) {
-
             event.stopPropagation();
             event.preventDefault();
         }
