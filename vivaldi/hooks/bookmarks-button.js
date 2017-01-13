@@ -29,7 +29,8 @@
                 return defaultComparator(first, second);
             };
 
-            var data = clone(vivaldi.jdhooks.require('_BookmarkStore').getBookmarksData());
+            var store = vivaldi.jdhooks.require('_BookmarkStore');
+            var data = clone(store.getTopNodes ? store.getTopNodes() : store.getBookmarksData());
 
             if (bookmarkSorting.sortOrder != treeSort.NO_SORTING)
                 treeSort.treeSort(data, comparator);
