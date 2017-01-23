@@ -188,7 +188,7 @@
                 "_execScriptWrapper": ['typeof execScript', 'execScript(', 'eval.call('], //browser-bundle.js
                 "_readability_js": ['Copyright (c) 2010 Arc90 Inc'], //browser-bundle.js
                 "_purify_js": ['.DOMPurify', './dist/purify.'], //browser-bundle.js
-                "_requestIdleCallback": ['return window.requestIdleCallback('],
+                "_requestIdleCallback": ['return window.requestIdleCallback'],
 
                 "vivaldi": ["bookmarksPrivate:"],
                 "vivaldiWrapper": ["window.vivaldi?"], //doesn't work for beautified code
