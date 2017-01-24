@@ -97,8 +97,6 @@
         var myDialWidth = 240;
         var myDialMargin = 20;
 
-        var settings = vivaldi.jdhooks.require('_VivaldiSettings');
-
         function updateDialWidth(width) {
             if (width) myDialWidth = parseInt(width);
             else myDialWidth = 240;
@@ -109,21 +107,22 @@
             else myDialMargin = 20;
         }
 
-        settings.get('JDHOOKS_DIALWIDTH', updateDialWidth);
-        settings.get('JDHOOKS_DIALMARGIN', updateDialMargin);
-
-        settings.addListener("JDHOOKS_DIALWIDTH", function(oldvalue, newvalue, keyname) {
-            updateDialWidth(newvalue);
-        });
-
-        settings.addListener("JDHOOKS_DIALMARGIN", function(oldvalue, newvalue, keyname) {
-            updateDialMargin(newvalue);
-        });
-
-
         vivaldi.jdhooks.hookMember(moduleInfo.exports.prototype, 'componentDidMount', function(hookData) {
             if (!this.refs.component.createFlexBoxLayout)
                 return;
+
+            var settings = vivaldi.jdhooks.require('_VivaldiSettings');
+
+            updateDialWidth(settings.getSync('JDHOOKS_DIALWIDTH'));
+            updateDialMargin(settings.getSync('JDHOOKS_DIALMARGIN'));
+
+            settings.addListener("JDHOOKS_DIALWIDTH", function(oldvalue, newvalue, keyname) {
+                updateDialWidth(newvalue);
+            });
+
+            settings.addListener("JDHOOKS_DIALMARGIN", function(oldvalue, newvalue, keyname) {
+                updateDialMargin(newvalue);
+            });
 
             var cssLayout = vivaldi.jdhooks.require('css-layout');
 
