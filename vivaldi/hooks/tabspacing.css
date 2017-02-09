@@ -33,6 +33,11 @@
     padding-top: 0; /*2px;*/
 }
 
+#browser.native:not(.horizontal-menu) #titlebar > .vivaldi {
+    padding-top: 0;
+    height:34px;
+}
+
 #browser.native #tabs-container.top {
     padding-top: 0 !important
 }
