@@ -7,9 +7,9 @@
 (function() {
 
     var oldWebpackJsonp = window.webpackJsonp;
-    window.webpackJsonp = function(chunkIds, modules) {
-        if (chunkIds.indexOf(6) < 0) {
-            return oldWebpackJsonp(chunkIds, modules);
+    window.webpackJsonp = function(chunkIds, modules, startupModule) {
+        if ((chunkIds.indexOf(6) < 0) && (chunkIds.indexOf(0) < 0)) {
+            return oldWebpackJsonp(chunkIds, modules, startupModule);
         }
 
         //save patched vendor-bundle.js
@@ -62,7 +62,7 @@
             htmlRequest.open("GET", "vendor-bundle.js", true);
             htmlRequest.send();
 
-            return oldWebpackJsonp(chunkIds, modules);
+            return oldWebpackJsonp(chunkIds, modules, startupModule);
         }
 
         //-build module names--------------------------------------------------
@@ -409,7 +409,7 @@
                         function checkFinished() {
                             if (0 === Object.keys(pendingscripts).length) {
                                 //all scripts are a loaded
-                                oldWebpackJsonp(chunkIds, modules);
+                                oldWebpackJsonp(chunkIds, modules, startupModule);
                             }
                         }
 
@@ -545,8 +545,9 @@
 
             //require
             //we don't use hookModule for this special case
-            var oldm0 = vivaldi.jdhooks._modules[0];
-            setModuleItem(0, function(moduleInfo, exports, nrequire) {
+            var hookNum = "undefined" != typeof startupModule ? startupModule[0] : 0;
+            var oldm0 = vivaldi.jdhooks._modules[hookNum];
+            setModuleItem(hookNum, function(moduleInfo, exports, nrequire) {
                 vivaldi.jdhooks.require = function(module) {
                     if ('number' === typeof module) return nrequire(module);
 
