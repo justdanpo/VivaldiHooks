@@ -37,7 +37,9 @@
             this.refs.hiddenBookmarksBar.state.renderedArray = data.filter(function(o) {
                 return !o.trash
             });
-            vivaldi.jdhooks.require('_ShowMenu')(this.refs.hiddenBookmarksBar.getExtenderButtonItems(), null, "bottom", this.refs.bookmarksButton)(e);
+            vivaldi.jdhooks.require('_ShowMenu')(
+                this.refs.hiddenBookmarksBar.getExtenderButtonItems ? this.refs.hiddenBookmarksBar.getExtenderButtonItems() : this.refs.hiddenBookmarksBar.getExtenderMenuItems(), //todo: remove getExtenderButtonItems() later
+                null, "bottom", this.refs.bookmarksButton)(e);
         }
 
 
