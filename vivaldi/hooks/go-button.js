@@ -3,6 +3,16 @@
 
 (function() {
 
+    vivaldi.jdhooks.hookModule('VivaldiSettingsWrapper', function(moduleInfo) {
+        vivaldi.jdhooks.hookMember(moduleInfo, 'exports', function(hookData, fn, settingsKeys) {
+            if (fn) {
+                if (fn.displayName === 'AddressBar' || fn.displayName === 'UrlBar') {
+                    settingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
+                }
+            }
+        });
+    });
+
     //default settings
     vivaldi.jdhooks.hookModule('_SettingsData_Common', function(moduleInfo) {
         moduleInfo.exports['ADDRESS_BAR_URL_GO_ENABLED'] = true;
@@ -12,12 +22,21 @@
     //settings
     vivaldi.jdhooks.hookClass('AddressBar', function(reactClass) {
 
-        reactClass.vivaldiSettingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
+        var settingSaveCallback = function(settingKey, eventProperty, event) {
+            vivaldi.jdhooks.require('_VivaldiSettings').set({
+                [settingKey]: event.target[eventProperty]
+            });
+        };
+
+        if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
+            reactClass.vivaldiSettingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
 
         vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
 
             if (hookData.retValue) {
                 var React = vivaldi.jdhooks.require('react_React');
+
+                var settingKeys = this.state && this.state.hasOwnProperty('ADDRESS_BAR_URL_GO_ENABLED') ? this.state : this.props.vivaldiSettings; //todo: remove in the future
 
                 hookData.retValue.props.children.push(
                     React.createElement("h3", null, "GO button"));
@@ -31,8 +50,8 @@
                             null,
                             React.createElement("input", {
                                 type: "checkbox",
-                                checked: this.state.ADDRESS_BAR_URL_GO_ENABLED,
-                                onChange: this.saveVivaldiSettingFromEvent.bind(this, "ADDRESS_BAR_URL_GO_ENABLED", "checked")
+                                checked: settingKeys.ADDRESS_BAR_URL_GO_ENABLED,
+                                onChange: settingSaveCallback.bind(this, "ADDRESS_BAR_URL_GO_ENABLED", "checked")
                             }),
                             React.createElement("span", null, "UrlField")
                         )
@@ -47,8 +66,8 @@
                             null,
                             React.createElement("input", {
                                 type: "checkbox",
-                                checked: this.state.ADDRESS_BAR_SEARCH_GO_ENABLED,
-                                onChange: this.saveVivaldiSettingFromEvent.bind(this, "ADDRESS_BAR_SEARCH_GO_ENABLED", "checked")
+                                checked: settingKeys.ADDRESS_BAR_SEARCH_GO_ENABLED,
+                                onChange: settingSaveCallback.bind(this, "ADDRESS_BAR_SEARCH_GO_ENABLED", "checked")
                             }),
                             React.createElement("span", null, "SearchField")
                         )
@@ -61,7 +80,8 @@
 
     vivaldi.jdhooks.hookClass('UrlBar', function(reactClass) {
 
-        reactClass.vivaldiSettingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
+        if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
+            reactClass.vivaldiSettingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
 
         vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
 

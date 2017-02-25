@@ -3,15 +3,36 @@
 
 (function() {
 
+    vivaldi.jdhooks.hookModule('VivaldiSettingsWrapper', function(moduleInfo) {
+        vivaldi.jdhooks.hookMember(moduleInfo, 'exports', function(hookData, fn, settingsKeys) {
+            if (fn) {
+                if (fn.displayName === 'DownloadSettings' || fn.displayName === 'DownloadDialog') {
+                    settingsKeys.push("SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
+                } else
+                if (fn.displayName === 'WebPageContent') {
+                    settingsKeys.push("AUTOMATICALLY_DOWNLOAD_FILES", "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
+                }
+            }
+        });
+    });
+
     //settings
     vivaldi.jdhooks.hookClass('DownloadSettings', function(reactClass) {
 
-        reactClass.vivaldiSettingsKeys.push("SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
+        var settingSaveCallback = function(settingKey, eventProperty, event) {
+            vivaldi.jdhooks.require('_VivaldiSettings').set({
+                [settingKey]: event.target[eventProperty]
+            });
+        };
+
+        if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
+            reactClass.vivaldiSettingsKeys.push("SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
 
         vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
 
-            var React = vivaldi.jdhooks.require('react_React');
+            var settingKeys = this.state.hasOwnProperty('SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS') ? this.state : this.props.vivaldiSettings; //todo: remove in the future
 
+            var React = vivaldi.jdhooks.require('react_React');
             if (hookData.retValue)
                 hookData.retValue.props.children.push(
                     React.createElement("div", {
@@ -19,8 +40,8 @@
                         },
                         React.createElement("label", null, React.createElement("input", {
                             type: "checkbox",
-                            checked: this.state.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS,
-                            onChange: this.saveVivaldiSettingFromEvent.bind(this, "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS", "checked")
+                            checked: settingKeys.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS,
+                            onChange: settingSaveCallback.bind(this, "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS", "checked")
                         }), React.createElement("span", null, "Open downloads in new tab instead of panel")))
                 );
 
@@ -44,8 +65,8 @@
 
     vivaldi.jdhooks.hookClass('WebPageContent', function(reactClass) {
 
-        reactClass.vivaldiSettingsKeys.push("AUTOMATICALLY_DOWNLOAD_FILES", "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
-
+        if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
+            reactClass.vivaldiSettingsKeys.push("AUTOMATICALLY_DOWNLOAD_FILES", "SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
         vivaldi.jdhooks.hookMember(reactClass, 'handleOnPermissionRequest', function(hookData, event) {
             if (event.permission === "download") {
                 if (this.state.AUTOMATICALLY_DOWNLOAD_FILES &&
@@ -63,7 +84,8 @@
 
     vivaldi.jdhooks.hookClass('DownloadDialog', function(reactClass) {
 
-        reactClass.vivaldiSettingsKeys.push("SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
+        if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
+            reactClass.vivaldiSettingsKeys.push("SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS");
 
         reactClass.showDownloads = function() {
             this.setState({

@@ -19,15 +19,33 @@
         return false;
     }
 
+    vivaldi.jdhooks.hookModule('VivaldiSettingsWrapper', function(moduleInfo) {
+        vivaldi.jdhooks.hookMember(moduleInfo, 'exports', function(hookData, fn, settingsKeys) {
+            if (fn) {
+                if (fn.displayName === 'Appearance') {
+                    settingsKeys.push("JDHOOKS_DIALWIDTH", "JDHOOKS_DIALMARGIN");
+                }
+            }
+        });
+    });
 
     vivaldi.jdhooks.hookClass('Appearance', function(reactClass) {
         if (undefined !== reactClass.setBackgroundImage) {
 
-            reactClass.vivaldiSettingsKeys.push("JDHOOKS_DIALWIDTH", "JDHOOKS_DIALMARGIN");
+            var settingSaveCallback = function(settingKey, eventProperty, event) {
+                vivaldi.jdhooks.require('_VivaldiSettings').set({
+                    [settingKey]: event.target[eventProperty]
+                });
+            };
+
+            if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
+                reactClass.vivaldiSettingsKeys.push("JDHOOKS_DIALWIDTH", "JDHOOKS_DIALMARGIN");
 
             var React = vivaldi.jdhooks.require('react_React');
 
             vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
+
+                var settingKeys = this.state && this.state.hasOwnProperty('JDHOOKS_DIALWIDTH') ? this.state : this.props.vivaldiSettings; //todo: remove in the future
 
                 var maxColumns = findElement(hookData.retValue, function(o) {
                     if (!o.props) return false;
@@ -44,8 +62,8 @@
                         );
                     }
 
-                    if (!this.state.JDHOOKS_DIALWIDTH) this.state.JDHOOKS_DIALWIDTH = 240;
-                    if (!this.state.JDHOOKS_DIALMARGIN) this.state.JDHOOKS_DIALMARGIN = 20;
+                    if (!settingKeys.JDHOOKS_DIALWIDTH) settingKeys.JDHOOKS_DIALWIDTH = 240;
+                    if (!settingKeys.JDHOOKS_DIALMARGIN) settingKeys.JDHOOKS_DIALMARGIN = 20;
 
                     hookData.retValue.props.children.push(
 
@@ -63,10 +81,10 @@
                                         title: "Dial Width",
                                         min: 100,
                                         max: 300,
-                                        value: this.state.JDHOOKS_DIALWIDTH,
-                                        onChange: this.saveVivaldiSettingFromEvent.bind(this, "JDHOOKS_DIALWIDTH", "value"),
+                                        value: settingKeys.JDHOOKS_DIALWIDTH,
+                                        onChange: settingSaveCallback.bind(this, "JDHOOKS_DIALWIDTH", "value"),
                                     }),
-                                    React.createElement("span", {}, 'width ' + this.state.JDHOOKS_DIALWIDTH)
+                                    React.createElement("span", {}, 'width ' + settingKeys.JDHOOKS_DIALWIDTH)
                                 )
                             ),
 
@@ -79,10 +97,10 @@
                                         title: "Distance",
                                         min: 10,
                                         max: 100,
-                                        value: this.state.JDHOOKS_DIALMARGIN,
-                                        onChange: this.saveVivaldiSettingFromEvent.bind(this, "JDHOOKS_DIALMARGIN", "value"),
+                                        value: settingKeys.JDHOOKS_DIALMARGIN,
+                                        onChange: settingSaveCallback.bind(this, "JDHOOKS_DIALMARGIN", "value"),
                                     }),
-                                    React.createElement("span", {}, 'spacing ' + this.state.JDHOOKS_DIALMARGIN)
+                                    React.createElement("span", {}, 'spacing ' + settingKeys.JDHOOKS_DIALMARGIN)
                                 ))));
                 }
                 return hookData.retValue;
