@@ -3,15 +3,17 @@
 
 vivaldi.jdhooks.onUIReady(function() {
 
-    document.querySelector('.inner').addEventListener('mousedown', function(event) {
+    var node = document.querySelector('.inner');
+    if (node)
+        node.addEventListener('mousedown', function(event) {
 
-        if (event.ctrlKey && event.button === 1 && event.srcElement.nodeName === "WEBVIEW") {
+            if (event.ctrlKey && event.button === 1 && event.srcElement.nodeName === "WEBVIEW") {
 
-            vivaldi.jdhooks.require('_UIActions').zoomReset();
+                vivaldi.jdhooks.require('_UIActions').zoomReset();
 
-            event.preventDefault();
-        }
+                event.preventDefault();
+            }
 
-    });
+        });
 
 });

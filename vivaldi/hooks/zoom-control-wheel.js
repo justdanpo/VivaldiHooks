@@ -5,6 +5,9 @@ vivaldi.jdhooks.onUIReady(function() {
     var uaActions = vivaldi.jdhooks.require('_UIActions');
 
     var zoomControl = document.querySelector('.zoom-control');
+    if (!zoomControl)
+        return;
+
     var range = zoomControl.querySelector('input');
 
     zoomControl.addEventListener('mousewheel', function(event) {
