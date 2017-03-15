@@ -88,6 +88,8 @@
             var React = vivaldi.jdhooks.require('react_React');
             var ReactDOM = vivaldi.jdhooks.require('react_ReactDOM');
 
+            var settingKeys = this.state && this.state.hasOwnProperty('ADDRESS_BAR_URL_GO_ENABLED') ? this.state : this.props.vivaldiSettings; //todo: remove in the future
+
             var findRef = function(ref) {
                 for (var i = 0; i < hookData.retValue.props.children.length; i++) {
                     if (hookData.retValue.props.children[i].ref === ref)
@@ -107,7 +109,7 @@
                     }))
             };
 
-            if (this.state.ADDRESS_BAR_URL_GO_ENABLED) {
+            if (settingKeys.ADDRESS_BAR_URL_GO_ENABLED) {
                 var itm = findRef("addressfield");
                 if (itm !== false) {
                     hookData.retValue.props.children.splice(itm + 1, 0,
@@ -132,7 +134,7 @@
                 }
             }
 
-            if (this.state.SEARCH_FIELD_ENABLED && this.state.ADDRESS_BAR_SEARCH_GO_ENABLED) {
+            if (settingKeys.SEARCH_FIELD_ENABLED && settingKeys.ADDRESS_BAR_SEARCH_GO_ENABLED) {
                 var itm = findRef("search");
                 if (itm !== false) {
                     hookData.retValue.props.children.splice(itm + 1, 0,
