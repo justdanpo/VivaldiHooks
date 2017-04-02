@@ -179,6 +179,21 @@
             "css-layout": ['computeLayout:', 'fillNodes:'],
             "WebPageContent": ['WebPageContent.jsx'],
             "WebPageCollection": ['WebPageCollection.jsx'],
+            "BlockedContentNotificator": ['BlockedContentNotificator.jsx'],
+            "LocationPermissionDialog": ['locationPermissionDialog.jsx'],
+            "LocationPermissionNotificator": ['locationPermissionNotificator.jsx'],
+            "MediaPermissionDialog": ['mediaPermissionDialog.jsx'],
+            "MediaPermissionNotificator": ['mediaPermissionNotificator.jsx'],
+            "NotificationPermissionDialog": ['notificationPermissionDialog.jsx'],
+            "NotificationPermissionNotificator": ['notificationPermissionNotificator.jsx'],
+            "OmniDropdown": ['omnidropdown.jsx'],
+            "PopupBlockerDialog": ['popupblockerDialog.jsx'],
+            "PopupBlockerNotificator": ['popupblockerNotificator.jsx'],
+            "SearchField": ['searchfield.jsx'],
+            "SiteInfoButton": ['SiteInfoButton.jsx'],
+            "TypedHistory": ['typedhistory.jsx'],
+            "UrlBar": ['urlbar.jsx'],
+            "UrlField": ['urlfield.jsx'],
 
             "nm_immutable": ["Expected Array or iterable object of [k, v] entries"], //node_modules\immutable\dist\immutable.js
             "nm_buffer": ["The buffer module from node.js"],
@@ -273,6 +288,7 @@
             "_readability_js": ['Copyright (c) 2010 Arc90 Inc'], //browser-bundle.js
             "_purify_js": ['.DOMPurify', './dist/purify.'], //browser-bundle.js
             "_requestIdleCallback": ['return window.requestIdleCallback'],
+            "_UrlValidation": ['ensureURLProtocol', 'isValidURL', 'hasUnknownProtocol', 'removeProtocol'],
 
             "vivaldi": ["bookmarksPrivate:"],
             "vivaldiWrapper": ["window.vivaldi?"], //doesn't work for beautified code
@@ -463,7 +479,7 @@
                         return -1 === fntxt.indexOf(i)
                     }).length) {
 
-                    if ("undefined" !== typeof vivaldi.jdhooks._moduleMap[moduleName])
+                    if (("undefined" !== typeof vivaldi.jdhooks._moduleMap[moduleName]) && (vivaldi.jdhooks._moduleMap[moduleName] != modIndex))
                         console.log('jdhooks: repeated module name "' + moduleName + '"');
 
                     vivaldi.jdhooks._moduleMap[moduleName] = modIndex;
