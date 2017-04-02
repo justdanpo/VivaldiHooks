@@ -23,10 +23,13 @@
 
     //hookClass(className, function(class))
     var hookClassList = {};
+    vivaldi.jdhooks._unusedClassHooks = {};//stats
 
     var hookClass = vivaldi.jdhooks.hookClass = function(className, cb) {
         if ("undefined" === typeof hookClassList[className]) hookClassList[className] = [];
         hookClassList[className].push(cb);
+
+        vivaldi.jdhooks._unusedClassHooks[className] = true;
     };
 
     //hookMember(object, memberName, function(hookData,oldarglist), function(hookData,oldarglist))
@@ -535,6 +538,9 @@
                 hookModule('react_ReactClass', function(moduleInfo) {
                     hookMember(moduleInfo.exports, 'createClass', function(hookData, reactClass) {
                         if ("undefined" !== typeof hookClassList[reactClass.displayName]) {
+
+                            if (vivaldi.jdhooks._unusedClassHooks[reactClass.displayName]) delete vivaldi.jdhooks._unusedClassHooks[reactClass.displayName];
+
                             for (var i in hookClassList[reactClass.displayName]) {
                                 hookClassList[reactClass.displayName][i](reactClass);
                             }
