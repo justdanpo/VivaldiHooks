@@ -28,13 +28,7 @@ if($vivpath -eq $null) {
     $dstdir = split-path ((ls -path $vivpath -r localeSettings-bundle.js | sort -property CreationTime -descending | select -first 1).FullName)
     write-host "Destination directory: $dstdir"
 
-    write-host "Patching vendor-bundle.js"
     $encoding = (New-Object System.Text.UTF8Encoding($False))
-    $vbfname = (join-path $dstdir "vendor-bundle.js")
-    $vb = [IO.File]::ReadAllLines( $vbfname, $encoding )
-    $vb = $vb -replace "^(\s*!\s*function\s*\(\s*\w+\s*\)\s*{)\s*function", "`$1 vivaldi.jdhooks={_modules:arguments[0]}; function"
-    [System.IO.File]::WriteAllLines( $vbfname, $vb, $encoding)
-
     write-host "Updating browser.html"
     $html = gc (join-path $dstdir "browser.html") -encoding UTF8
     $outhtml = @()

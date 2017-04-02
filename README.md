@@ -42,9 +42,6 @@ Or if you want to keep mods you've installed into **browser.html**, copy **vival
 
 right before a line with **bundle.js**.
 
-If Vivaldi prompts you to save **vendor-bundle.js**, save it into the same directory.
-Note: browser may not have access rights to write there.
-
 You may need to chmod new/updated files.
 
 ##Deinstallation
