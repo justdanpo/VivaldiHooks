@@ -58,9 +58,23 @@
         });
     }
 
-    vivaldi.jdhooks.hookClass('UrlBar', function(reactClass) {
-        hookRender(reactClass)
+
+    vivaldi.jdhooks.hookModule('VivaldiSettingsWrapper', function(moduleInfo) {
+        vivaldi.jdhooks.hookMember(moduleInfo, 'exports', function(hookData, fn, settingsKeys) {
+            //UrlBar
+            if ((settingsKeys.indexOf("URLFIELD_TYPED_HISTORY_ENABLED") > -1) && (settingsKeys.indexOf("ADDRESS_BAR_SUGGEST_NICKNAME_ENABLED") > -1)) {
+                hookRender(fn.prototype);
+            }
+        })
     });
+
+    //todo: remove this in the future
+    vivaldi.jdhooks.hookModule('UrlBar', function(moduleInfo) {
+        if (moduleInfo.exports.prototype.getDisplayURL) {
+            hookRender(moduleInfo.exports.prototype);
+        }
+    });
+
 
     vivaldi.jdhooks.hookClass('MailBar', function(reactClass) {
         hookRender(reactClass)
