@@ -66,13 +66,6 @@
                         }
 
                         , React.createElement('div', {
-                            className: 'button-toolbar',
-                            dangerouslySetInnerHTML: {
-                                __html: vivaldi.jdhooks.require('_svg_panel_bookmarks')
-                            }
-                        })
-
-                        , React.createElement('div', {
                                 style: {
                                     width: 0,
                                     zIndex: -1
@@ -82,6 +75,13 @@
                                 ref: "hiddenBookmarksBar",
                             })
                         )
+
+                        , React.createElement('div', {
+                            className: 'button-toolbar',
+                            dangerouslySetInnerHTML: {
+                                __html: vivaldi.jdhooks.require('_svg_panel_bookmarks')
+                            }
+                        })
                     )
 
                 );
