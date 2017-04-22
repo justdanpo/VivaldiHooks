@@ -264,7 +264,7 @@
             "_trydecodeURI": ["return decodeURI(e)"],
             "_trydecodeURIComponent": ["return decodeURIComponent(e)"],
             "_getLocalizedMessage": [".i18n.getMessage"],
-            "_decodeDisplayURL": [".removeTrailingSlashWhenNoPath(", ".getDisplayUrl(", "%2525"],
+            "_decodeDisplayURL": [".removeTrailingSlashWhenNoPath(", ".getDisplayUrl(", "replace(/%20/"],
             "_ShowMenu": [".showMenu.onUrlHighlighted.addListener("],
             "_humanizedate": ['"about a minute ago"', '"in about an hour"'],
             "_ShowUI": ['document.getElementById("app")', 'show hidden application window because of missing current window'],
