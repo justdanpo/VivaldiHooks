@@ -38,14 +38,11 @@
                 });
             };
 
-            if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
-                reactClass.vivaldiSettingsKeys.push("JDHOOKS_DIALWIDTH", "JDHOOKS_DIALMARGIN");
-
             var React = vivaldi.jdhooks.require('react_React');
 
             vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
 
-                var settingKeys = this.state && this.state.hasOwnProperty('JDHOOKS_DIALWIDTH') ? this.state : this.props.vivaldiSettings; //todo: remove in the future
+                var settingKeys = this.props.vivaldiSettings;
 
                 var maxColumns = findElement(hookData.retValue, function(o) {
                     if (!o.props) return false;

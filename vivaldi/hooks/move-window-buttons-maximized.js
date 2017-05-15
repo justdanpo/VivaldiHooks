@@ -71,13 +71,6 @@
         })
     });
 
-    //todo: remove this in the future
-    vivaldi.jdhooks.hookModule('UrlBar', function(moduleInfo) {
-        if (moduleInfo.exports.prototype.getDisplayURL) {
-            hookRender(moduleInfo.exports.prototype);
-        }
-    });
-
 
     vivaldi.jdhooks.hookClass('MailBar', function(reactClass) {
         hookRender(reactClass)

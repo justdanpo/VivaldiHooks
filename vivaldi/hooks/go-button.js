@@ -18,15 +18,12 @@
             });
         };
 
-        if (reactClass.hasOwnProperty('vivaldiSettingsKeys')) //todo: remove in the future
-            reactClass.vivaldiSettingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
-
         vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
 
             if (hookData.retValue) {
                 var React = vivaldi.jdhooks.require('react_React');
 
-                var settingKeys = this.state && this.state.hasOwnProperty('ADDRESS_BAR_URL_GO_ENABLED') ? this.state : this.props.vivaldiSettings; //todo: remove in the future
+                var settingKeys = this.props.vivaldiSettings;
 
                 hookData.retValue.props.children.push(
                     React.createElement("h3", null, "GO button"));
@@ -74,7 +71,7 @@
         var React = vivaldi.jdhooks.require('react_React');
         var ReactDOM = vivaldi.jdhooks.require('react_ReactDOM');
 
-        var settingKeys = this.state && this.state.hasOwnProperty('ADDRESS_BAR_URL_GO_ENABLED') ? this.state : this.props.vivaldiSettings; //todo: remove in the future
+        var settingKeys = this.props.vivaldiSettings;
 
         var findRef = function(ref) {
             for (var i = 0; i < hookData.retValue.props.children.length; i++) {
@@ -128,17 +125,11 @@
                         className: "button-toolbar buttonSearchGo",
                         ref: "webpageview_nav_s_go",
                         onMouseUp: function(evt) {
-                            if (this.state.hasOwnProperty('searchText')) { //todo: remove in the future
-                                this.onSearch(this.state.searchText, this.state.currentSearchEngine.Url, {
+                            this.onSearch(
+                                this.refs.search.refs.component.refs.instance.state.editText,
+                                this.refs.search.refs.component.refs.instance.state.currentSearchEngine, {
                                     inCurrent: !(evt && evt.button === 1)
                                 })
-                            } else {
-                                this.onSearch(
-                                    this.refs.search.refs.component.refs.instance.state.editText,
-                                    this.refs.search.refs.component.refs.instance.state.currentSearchEngine, {
-                                        inCurrent: !(evt && evt.button === 1)
-                                    })
-                            }
                         }.bind(this),
                         style: {
                             outline: "none",
@@ -165,19 +156,5 @@
             }
         })
     });
-
-    //todo: remove this in the future
-    vivaldi.jdhooks.hookClass('UrlBar', function(reactClass) {
-        if (reactClass.hasOwnProperty('vivaldiSettingsKeys'))
-            reactClass.vivaldiSettingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
-    });
-
-    //todo: remove this in the future
-    vivaldi.jdhooks.hookModule('UrlBar', function(moduleInfo) {
-        if (moduleInfo.exports.prototype.getDisplayURL) {
-            vivaldi.jdhooks.hookMember(moduleInfo.exports.prototype, 'render', null, newRender);
-        }
-    });
-
 
 })();
