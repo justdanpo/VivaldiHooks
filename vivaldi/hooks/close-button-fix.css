@@ -1,8 +1,0 @@
-/* author: ? */
-
-.fullscreen#browser.win .window-buttongroup, .maximized#browser.win .window-buttongroup {
-  right: 0;
-}
-fullscreen#browser.win:not(.win10) .window-buttongroup .window-close, maximized#browser.win:not(.win10) .window-buttongroup .window-close {
-  border-right: 4px solid var(--colorBg);
-}
