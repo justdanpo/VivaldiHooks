@@ -4,14 +4,14 @@
 (function() {
 
     //category name
-    vivaldi.jdhooks.hookModule('categoryConstantToString', function(moduleInfo) {
+    vivaldi.jdhooks.hookModule('categoryConstantToString', function(moduleInfo, exportsInfo) {
 
         var actionList = vivaldi.jdhooks.require('_ActionList_DataTemplate');
 
         if ('undefined' === typeof actionList.CATEGORY_COMMAND_HOOK) {
             actionList.CATEGORY_COMMAND_HOOK = 'CATEGORY_COMMAND_HOOK';
 
-            vivaldi.jdhooks.hookMember(moduleInfo, 'exports', function(hookData, cat) {
+            vivaldi.jdhooks.hookMember(exportsInfo.parent, exportsInfo.name, function(hookData, cat) {
                 if (cat === actionList.CATEGORY_COMMAND_HOOK) {
                     hookData.abort();
                     return "Hooks";
@@ -21,10 +21,10 @@
     });
 
     //default settings
-    vivaldi.jdhooks.hookModule('_SettingsData_Common', function(moduleInfo) {
+    vivaldi.jdhooks.hookModule('_SettingsData_Common', function(moduleInfo, exportsInfo) {
         for (var i = 1; i < 10; i++) {
-            moduleInfo.exports['COMMAND_OPEN_SPEEDDIAL_' + i] = {
-                shortcut: [""],
+            exportsInfo.exports['COMMAND_OPEN_SPEEDDIAL_' + i] = {
+                shortcut: [],
                 showInQC: true
             };
         }
@@ -42,8 +42,8 @@
         }
     };
 
-    vivaldi.jdhooks.hookModule('_CommandManager', function(moduleInfo) {
-        var commands = moduleInfo.exports.getCommands();
+    vivaldi.jdhooks.hookModule('_CommandManager', function(moduleInfo, exportsInfo) {
+        var commands = exportsInfo.exports.getCommands();
 
         for (var i = 1; i < 10; i++) {
             (function(x) {

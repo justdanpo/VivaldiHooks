@@ -4,24 +4,26 @@
 (function() {
 
     //default settings
-    vivaldi.jdhooks.hookModule('_SettingsData_Common', function(moduleInfo) {
-        moduleInfo.exports['ADDRESS_BAR_URL_GO_ENABLED'] = true;
-        moduleInfo.exports['ADDRESS_BAR_SEARCH_GO_ENABLED'] = true;
+    vivaldi.jdhooks.hookModule("_SettingsData_Common", function(moduleInfo, exportsInfo) {
+        exportsInfo.exports["ADDRESS_BAR_URL_GO_ENABLED"] = true;
+        exportsInfo.exports["ADDRESS_BAR_SEARCH_GO_ENABLED"] = true;
     });
 
     //settings
-    vivaldi.jdhooks.hookClass('AddressBar', function(reactClass) {
+    vivaldi.jdhooks.hookSettingsWrapper("AddressBar", function(fn, settingsKeys) {//settings
+    
+	settingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
 
         var settingSaveCallback = function(settingKey, eventProperty, event) {
-            vivaldi.jdhooks.require('_VivaldiSettings').set({
+            vivaldi.jdhooks.require("_VivaldiSettings").set({
                 [settingKey]: event.target[eventProperty]
             });
         };
 
-        vivaldi.jdhooks.hookMember(reactClass, 'render', null, function(hookData) {
+        vivaldi.jdhooks.hookMember(fn.prototype, "render", null, function(hookData) {
 
             if (hookData.retValue) {
-                var React = vivaldi.jdhooks.require('react_React');
+                var React = vivaldi.jdhooks.require("react_React");
 
                 var settingKeys = this.props.vivaldiSettings;
 
@@ -68,8 +70,8 @@
 
     function newRender(hookData) {
 
-        var React = vivaldi.jdhooks.require('react_React');
-        var ReactDOM = vivaldi.jdhooks.require('react_ReactDOM');
+        var React = vivaldi.jdhooks.require("react_React");
+        var ReactDOM = vivaldi.jdhooks.require("react_ReactDOM");
 
         var settingKeys = this.props.vivaldiSettings;
 
@@ -143,18 +145,10 @@
     }
 
 
-    vivaldi.jdhooks.hookModule('VivaldiSettingsWrapper', function(moduleInfo) {
-        vivaldi.jdhooks.hookMember(moduleInfo, 'exports', function(hookData, fn, settingsKeys) {
-
-            if (
-                (fn.displayName === 'AddressBar') ||
-                ((settingsKeys.indexOf("URLFIELD_TYPED_HISTORY_ENABLED") > -1) && (settingsKeys.indexOf("ADDRESS_BAR_SUGGEST_NICKNAME_ENABLED") > -1)) //UrlBar
-            ) {
-                settingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
-
-                vivaldi.jdhooks.hookMember(fn.prototype, 'render', null, newRender);
-            }
-        })
+    vivaldi.jdhooks.hookSettingsWrapper("UrlBar", function(fn, settingsKeys) {
+    	settingsKeys.push("ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED");
+    	vivaldi.jdhooks.hookMember(fn.prototype, "render", null, newRender);
     });
+
 
 })();

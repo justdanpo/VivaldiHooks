@@ -3,13 +3,13 @@
 
 vivaldi.jdhooks.onUIReady(function() {
 
-    var node = document.querySelector('.inner');
+    var node = document.querySelector(".inner");
     if (node)
-        node.addEventListener('mousedown', function(event) {
+        node.addEventListener("mousedown", function(event) {
 
             if (event.ctrlKey && event.button === 1 && event.srcElement.nodeName === "WEBVIEW") {
 
-                vivaldi.jdhooks.require('_UIActions').zoomReset();
+                vivaldi.jdhooks.require("_UIActions").zoomReset();
 
                 event.preventDefault();
             }
