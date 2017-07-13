@@ -27,9 +27,17 @@ vivaldi.jdhooks.hookModule("VivaldiDropdown", function(moduleInfo, exportsInfo) 
                     //this == VivaldiDropdown
 
                     if (undefined == clickOutside._jdhooks_se_icon_currentSearchItemId) {
-                        clickOutside._jdhooks_se_icon_currentSearchItemId = vs.getSync("CURRENT_SEARCH_ENGINE"); //todo: remove after 1.11final
-                        if (undefined == clickOutside._jdhooks_se_icon_currentSearchItemId) {
-                            clickOutside._jdhooks_se_icon_currentSearchItemId = vs.getSync("SEARCH_ENGINE_COLLECTION").current;
+                        var secollection = vs.getSync("SEARCH_ENGINE_COLLECTION");
+                        if (secollection) {
+                            clickOutside._jdhooks_se_icon_currentSearchItemId = secollection.current;
+                            if (undefined == clickOutside._jdhooks_se_icon_currentSearchItemId)
+                                clickOutside._jdhooks_se_icon_currentSearchItemId = secollection.default;
+                        }
+
+                        if (undefined == clickOutside._jdhooks_se_icon_currentSearchItemId) { //todo: remove after 1.11final
+                            clickOutside._jdhooks_se_icon_currentSearchItemId = vs.getSync("CURRENT_SEARCH_ENGINE");
+                            if (undefined == clickOutside._jdhooks_se_icon_currentSearchItemId)
+                                clickOutside._jdhooks_se_icon_currentSearchItemId = vs.getSync("DEFAULT_SEARCH_ENGINE");
                         }
                     }
 
