@@ -25,7 +25,7 @@ if($vivpath -eq $null) {
   write-warning "Can't find Vivaldi installation path"
 } else {
   Try {
-    $dstdir = split-path ((ls -path $vivpath -r localeSettings-bundle.js | sort -property CreationTime -descending | select -first 1).FullName)
+    $dstdir = split-path ((ls -path $vivpath -r background-bundle.js | sort -property CreationTime -descending | select -first 1).FullName)
     write-host "Destination directory: $dstdir"
 
     $encoding = (New-Object System.Text.UTF8Encoding($False))
