@@ -35,3 +35,12 @@
 .tab-header > .favicon > svg {
     height: 17px;
 }
+
+.toolbar-tabbar {
+    float: right;
+}
+
+.button-toolbar.newtab {
+    left: 0 !important;
+    top: 0 !important;
+}

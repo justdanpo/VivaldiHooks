@@ -113,7 +113,7 @@
 
                         vivaldi.jdhooks._hooks = {}
 
-                        for (let i in dirItems) {
+                        for (const i in dirItems) {
                             let dirItem = dirItems[i]
 
                             let fileExt = dirItem.name.split('.').pop().toUpperCase()
@@ -161,86 +161,23 @@
     //---------------------------------------------------------------------
 
     function makeSignatures() {
-        const jsxNames = {
-            "ActionLog": "ActionLog.jsx",
-            "Appearance": "Appearance.jsx",
-            "AudioIcon": "AudioIcon.jsx",
-            "BlockedContentNotificator": "BlockedContentNotificator.jsx",
-            "BookmarkEditor": "BookmarkEditor.jsx",
-            "BookmarksFoldersFlatList": "bookmarksfoldersflatlist.jsx",
-            "BookmarksPanel": "BookmarksPanel.jsx",
-            "BookmarkTree": "BookmarkTree.jsx",
-            "ConfirmationDlg": "ConfirmationDlg.jsx",
-            "Countdown": "Countdown.jsx",
-            "CreateBookmark": "createbookmark.jsx",
-            "DevTools": "devTools.jsx",
-            "DownloadPanel": "DownloadPanel.jsx",
-            "DownloadPanelHeader": "DownloadPanelHeader.jsx",
-            "EditSearchEngine": "EditSearchEngine.jsx",
-            "Favicon": "Favicon.jsx",
-            "FindInPage": "find-in-page.jsx",
-            "FloatingLabel": "FloatingLabel.jsx",
-            "FocusTrap": "FocusTrap.jsx",
-            "FolderIcon": "FolderIcon.jsx",
-            "HistorySearch": "HistorySearch.jsx",
-            "HistoryStoreSubscription": "HistoryStoreSubscription.jsx",
-            "ImportBookmarks": "importBookmarks.jsx",
-            "InsertPrefsCache": "InsertPrefsCache.jsx",
-            "MasterDetail": "MasterDetail.jsx",
-            "Modal": "Modal.jsx",
-            "MouseGestures": "MouseGestures.jsx",
-            "NotesPanel": "notesPanel.jsx",
-            "NotesTree": "notesTree.jsx",
-            "PageloadProgress": "PageloadProgress.jsx",
-            "QuickCommandSearch": "QuickCommandSearch.jsx",
-            "RadioGroup": "RadioGroup.jsx",
-            "ReaderModeControls": "ReaderModeControls.jsx",
-            "RSSFeedDropdown": "RSSFeedDropdown.jsx",
-            "SearchEngines": "SearchEngines.jsx",
-            "SearchEngineSelect": "SearchEngineSelect.jsx",
-            "SearchField": "searchfield.jsx",
-            "SettingsSearchCategory": "SettingsSearchCategory.jsx",
-            "SetVivaldiDefaultSettings": "SetVivaldiDefaultSettings.jsx",
-            "SiteInfoButton": "SiteInfoButton.jsx",
-            "SlideBar": "SlideBar.jsx",
-            "SortingSelector": "SortingSelector.jsx",
-            "StatusInfo": "StatusInfo.jsx",
-            "Sync": "Sync.jsx",
-            "SyncConfigure": "SyncConfigure.jsx",
-            "SyncedTabs": "SyncedTabs.jsx",
-            "SyncPromptDecryptionPassword": "SyncPromptDecryptionPassword.jsx",
-            "SyncPromptEncryptionPassword": "SyncPromptEncryptionPassword.jsx",
-            "TabBar": "TabBar.jsx",
-            "TabStrip": "TabStrip.jsx",
-            "Thumbnail": "Thumbnail.jsx",
-            "TitleBar": "titlebar.jsx",
-            "Tooltip": "Tooltip.jsx",
-            "TopMenu": "TopMenu.jsx",
-            "Trash": "Trash.jsx",
-            "TreeItem": "TreeItem.jsx",
-            "TypedHistory": "typedhistory.jsx",
-            "UIZoomIndicator": "UIZoomIndicator.jsx",
-            "UrlBar": "urlbar.jsx",
-            "UrlField": "urlfield.jsx",
-            "VivaldiCommunityLinks": "VivaldiCommunityLinks.jsx",
-            "VivaldiSettingsWrapper": "InsertVivaldiSettings.jsx",
-            "VivaldiTreeList": "VivaldiTreeList.jsx",
-            "WebPageCollection": "WebPageCollection.jsx",
-            "WebPageContent": "WebPageContent.jsx",
-            "WindowBackgroundImage": "WindowBackgroundImage.jsx",
-            "WindowIcon": "WindowIcon.jsx",
-            "WindowPanel": "WindowPanel.jsx",
-            "WindowTree": "WindowTree.jsx",
-            "ZoomIndicator": "ZoomIndicator.jsx",
+        let jsxNames = {
+            // "ActionLog": "ActionLog.jsx",
+            // "Appearance": "Appearance.jsx",
+            // "BlockedContentNotificator": "BlockedContentNotificator.jsx",
+            // "HistorySearch": "HistorySearch.jsx",
+            // "TitleBar": "titlebar.jsx",
+            // "TopMenu": "TopMenu.jsx",
         }
 
-        const moduleSignatures = {
-            "_BookmarkBarActions": ["setBookmarkBarFolder:"],
+        let moduleSignatures = {
+            "_BookmarkBarActions": ["Error removing bookmark tree:"],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
             "_KeyCodes": ["KEY_CANCEL:"],
             "_PageZoom": ["onUIZoomChanged.addListener"],
             "_ShowUI": ['document.getElementById("app")', "JS init startup"],
-            "_UIActions": ["showConfirmOpenBookmarkDialog:"],
+            "_UIActions": ["_maybeShowSettingsInWindow"],
+            "_VivaldiSettings": ["_vivaldiSettingsListener"],
             "_WindowActions": [".windowPrivate.onMaximized"],
 
             // "_svg_addressbar_btn_backward": ["M17.6 20.4l-1.6 1.6-9-9 9-9 1.6 1.6-7.2 7.4 7.2 7.4z"],
@@ -308,7 +245,7 @@
             "_svg_window_close_win10": ["M10.2.5l-.7-.7L5 4.3.5-.2l-.7.7L4.3"],
             "_svg_window_minimize": ["M1 7h8v2H1z"],
             "_svg_window_minimize_mac": ["window-minimize-glyph dpi-standard"],
-            "_svg_window_minimize_win10": ["M0 0h10v1H0z"],
+            "_svg_window_minimize_win10": ["M0 5H10V6H0V5Z"],
             "_svg_window_zoom": ["7h10v1H0V8zm0-6h1v6H0V2zm9"],
             "_svg_window_zoom_mac": ["window-zoom-glyph dpi-standard"],
             "_svg_window_zoom_win10": ["0H2v2H0v8h8V8h2V0H3zm4"],
@@ -338,6 +275,9 @@
             const fntxt = vivaldi.jdhooks._modules[modIndex].toString()
             const fntxtPrepared = fntxt.replace(slashre, "/").toLowerCase()
 
+            const re = /components\/([\w\/]+?)\.jsx\"/gi
+            const matchJsxRe = fntxtPrepared.match(re)
+            if (matchJsxRe && matchJsxRe.length == 1) { AddAndCheck(modIndex, re.exec(fntxtPrepared)[1].replace(/\//g, "_")) }
 
             for (const jsxModuleName in jsxNames) {
                 if (-1 !== fntxtPrepared.indexOf(jsxNames[jsxModuleName].toLowerCase())) {
@@ -399,7 +339,7 @@
 
         //wait for UI
         hookModule("_BookmarkBarActions", (moduleInfo, exportsInfo) =>
-            vivaldi.jdhooks.hookMember(exportsInfo.exports, "loadPromise",
+            vivaldi.jdhooks.hookMember(exportsInfo.exports.__proto__, "loadPromise",
                 (hookData, cat) => document.dispatchEvent(new Event(jdhooks_ui_ready_event)))
         )
     }
@@ -412,7 +352,7 @@
         if (null == match) return
         let startupModule = Number(match[1])
 
-        for (let propertyName in nrequire) {
+        for (const propertyName in nrequire) {
             if (nrequire[propertyName] && nrequire[propertyName][jdhooks_module_index] && nrequire[propertyName][jdhooks_module_index].name) {
                 let modules_list = nrequire[propertyName]
 
