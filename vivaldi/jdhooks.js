@@ -11,7 +11,7 @@
 
     const fastProcessModules = true
 
-    vivaldi.jdhooks = {}
+    vivaldi.jdhooks = { _hooks: {}, _moduleMap: {}, _moduleNames: {} }
 
     //---------------------------------------------------------------------
     //API
@@ -128,8 +128,6 @@
                         if (undefined === cfg.JDHOOKS_STARTUP.defaultLoad) cfg.JDHOOKS_STARTUP.defaultLoad = true
                         if (undefined === cfg.JDHOOKS_STARTUP.scripts) cfg.JDHOOKS_STARTUP.scripts = {}
 
-                        vivaldi.jdhooks._hooks = {}
-
                         for (const i in dirItems) {
                             let dirItem = dirItems[i]
 
@@ -185,21 +183,23 @@
             // "HistorySearch": "HistorySearch.jsx",
             // "TitleBar": "titlebar.jsx",
             // "TopMenu": "TopMenu.jsx",
-            "Settings": "Settings.jsx",
+            "Settings": "/Settings.jsx",
         }
 
         let moduleSignatures = {
-            "React": ["createFactory", "__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED", "ReactCurrentDispatcher"],
+            "React": ["react.production."],
+            "ReactDOM": ["react-dom.production."],
+            "Scheduler": ["scheduler.production."],
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
             "_KeyCodes": ["KEY_CANCEL:"],
             "_PageZoom": ["onUIZoomChanged.addListener"],
+            "_SettingsPaths": ["vivaldi.downloads.update_default_download_when_saving_as"],
             "_ShowUI": ['document.getElementById("app")', "JS init startup"],
             "_UIActions": ["_maybeShowSettingsInWindow"],
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiSettings": ["_vivaldiSettingsListener"],
             "_WindowActions": [".windowPrivate.onMaximized"],
-
             // "_svg_addressbar_btn_backward": ["M17.6 20.4l-1.6 1.6-9-9 9-9 1.6 1.6-7.2 7.4 7.2 7.4z"],
             // "_svg_addressbar_btn_fastbackward": ["M19 6l-7 5.6v-5.6h-2v12h2v-5.6l7 5.6z"],
             // "_svg_addressbar_btn_fastforward": ["M10 6l7 5.6v-5.6h2v12h-2v-5.6l-7 5.6z"],
@@ -277,7 +277,6 @@
             // "_svg_vivaldi_v": ["M14.726 7.446c-.537-1.023.035-2.164 1.2-2.41.948-.2"],
         }
 
-        vivaldi.jdhooks._moduleMap = {}
         const slashre = new RegExp("\\\\\\\\", 'g')
 
         for (const modIndex in vivaldi.jdhooks._modules) {
@@ -287,13 +286,13 @@
                 if (("undefined" !== typeof vivaldi.jdhooks._moduleMap[moduleName]) && (vivaldi.jdhooks._moduleMap[moduleName] != modIndex))
                     console.log(`jdhooks: repeated module name "${moduleName}"`)
 
-                //if (vivaldi.jdhooks._moduleNames[modIndex]) {
-                //    console.log(`multiple names for module ${modIndex}: ${moduleName}, ${vivaldi.jdhooks._moduleNames[modIndex]}...`)
-                //    return true
-                //}
+                if (vivaldi.jdhooks._moduleNames[modIndex]) {
+                    console.log(`multiple names for module ${modIndex}: ${moduleName}, ${vivaldi.jdhooks._moduleNames[modIndex]}...`)
+                    return true
+                }
 
                 vivaldi.jdhooks._moduleMap[moduleName] = modIndex
-                //vivaldi.jdhooks._moduleNames[modIndex] = moduleName
+                vivaldi.jdhooks._moduleNames[modIndex] = moduleName
                 return true
             }
 
