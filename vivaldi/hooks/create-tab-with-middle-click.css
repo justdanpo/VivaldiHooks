@@ -1,0 +1,6 @@
+/* Create tab with middle click on a free tabbar space */
+/* Создание вкладки кликом колесом по свободной области панели вкладок */
+
+#tabs-container>.resize {
+    -webkit-app-region: no-drag;
+}

@@ -3,6 +3,7 @@
 //vivaldi.jdhooks.hookModule(moduleName, function(moduleInfo, exportsInfo))
 //vivaldi.jdhooks.hookSettingsWrapper(moduleName, function(constructor, settingsArray))
 //vivaldi.jdhooks.onUIReady(function())
+//vivaldi.jdhooks.addStyle(style)
 
 (function () {
     const jdhooks_module_index = 'jdhooks_module'
@@ -15,6 +16,13 @@
     //---------------------------------------------------------------------
     //API
 
+    //addStyle(style)
+    vivaldi.jdhooks.addStyle = (style) => {
+        let s = document.createElement("style")
+        s.innerHTML = style
+        document.head.appendChild(s)
+    }
+
     //hookModule(moduleName, function(moduleInfo))
     const hookModule = vivaldi.jdhooks.hookModule = (moduleName, newfn) => {
         const moduleIndex = vivaldi.jdhooks._moduleMap[moduleName]
@@ -22,24 +30,33 @@
         vivaldi.jdhooks._modules[moduleIndex] = (moduleInfo, exports, nrequire) => {
             oldfn(moduleInfo, exports, nrequire)
 
-            if (moduleInfo.exports.hasOwnProperty("a"))
-                newfn(moduleInfo, {
+            if (moduleInfo.exports.hasOwnProperty("a")) {
+                let exportsInfo = {
                     exports: moduleInfo.exports.a,
                     parent: moduleInfo.exports,
                     name: "a"
-                })
-            else if (moduleInfo.exports.hasOwnProperty("default"))
-                newfn(moduleInfo, {
+                }
+                newfn(moduleInfo, exportsInfo)
+                moduleInfo.exports.a = exportsInfo.exports
+            }
+            else if (moduleInfo.exports.hasOwnProperty("default")) {
+                let exportsInfo = {
                     exports: moduleInfo.exports.default,
                     parent: moduleInfo.exports,
                     name: "default"
-                })
-            else
-                newfn(moduleInfo, {
+                }
+                newfn(moduleInfo, exportsInfo)
+                moduleInfo.exports.default = exportsInfo.exports
+            }
+            else {
+                let exportsInfo = {
                     exports: moduleInfo.exports,
                     parent: moduleInfo,
                     name: "exports"
-                })
+                }
+                newfn(moduleInfo, exportsInfo)
+                moduleInfo.exports = exportsInfo.exports
+            }
         }
     }
 
@@ -168,15 +185,18 @@
             // "HistorySearch": "HistorySearch.jsx",
             // "TitleBar": "titlebar.jsx",
             // "TopMenu": "TopMenu.jsx",
+            "Settings": "Settings.jsx",
         }
 
         let moduleSignatures = {
+            "React": ["createFactory", "__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED", "ReactCurrentDispatcher"],
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
             "_KeyCodes": ["KEY_CANCEL:"],
             "_PageZoom": ["onUIZoomChanged.addListener"],
             "_ShowUI": ['document.getElementById("app")', "JS init startup"],
             "_UIActions": ["_maybeShowSettingsInWindow"],
+            "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiSettings": ["_vivaldiSettingsListener"],
             "_WindowActions": [".windowPrivate.onMaximized"],
 
@@ -265,7 +285,12 @@
 
             function AddAndCheck(modIndex, moduleName) {
                 if (("undefined" !== typeof vivaldi.jdhooks._moduleMap[moduleName]) && (vivaldi.jdhooks._moduleMap[moduleName] != modIndex))
-                    console.log('jdhooks: repeated module name "' + moduleName + '"')
+                    console.log(`jdhooks: repeated module name "${moduleName}"`)
+
+                //if (vivaldi.jdhooks._moduleNames[modIndex]) {
+                //    console.log(`multiple names for module ${modIndex}: ${moduleName}, ${vivaldi.jdhooks._moduleNames[modIndex]}...`)
+                //    return true
+                //}
 
                 vivaldi.jdhooks._moduleMap[moduleName] = modIndex
                 //vivaldi.jdhooks._moduleNames[modIndex] = moduleName
