@@ -13,16 +13,48 @@ vivaldi.jdhooks.addStyle(`
     align-self: baseline;  
 }
 
-.MaximizedWindowButtonsSpecifySize {
-    width: 34px !important;
-    height: 34px !important;
-}
-
 #vivaldi-button-moved {
     order: -1;
 }
-#vivaldi-button-moved path {
-    fill: currentColor;
+
+
+
+/* copypasted from common.css, "#header #titlebar .window-buttongroup" replaced with ".MaximizedWindowButtons" */
+
+#browser.win.win10 .MaximizedWindowButtons button.window-close {
+  background-color: transparent;
+  fill: var(--colorImageForeground, inherit);
+}
+
+#browser.win.win10 .MaximizedWindowButtons {
+  overflow: hidden;
+  line-height: initial;
+}
+#browser.win.win10 .MaximizedWindowButtons button.window-minimize svg {
+  margin: auto;
+}
+
+.tabs-right#browser.win.win10 .MaximizedWindowButtons button.window-close,
+.tabs-left#browser.win.win10 .MaximizedWindowButtons button.window-close,
+.tabs-bottom#browser.win.win10 .MaximizedWindowButtons button.window-close {
+  fill: var(--colorFg, var(--colorImageForeground));
+}
+.color-behind-tabs-off.tabs-right#browser.win.win10 .MaximizedWindowButtons button.window-close,
+.color-behind-tabs-off.tabs-left#browser.win.win10 .MaximizedWindowButtons button.window-close,
+.color-behind-tabs-off.tabs-bottom#browser.win.win10 .MaximizedWindowButtons button.window-close {
+  fill: var(--colorAccentFg, var(--colorImageForeground));
+}
+#browser.win.win10 .MaximizedWindowButtons button.window-close:hover {
+  fill: #fff;
+  background-color: #e3423e;
+}
+#browser.win.win10 .MaximizedWindowButtons button:hover {
+  fill: var(--colorImageForeground, inherit);
+}
+
+.tabs-right#browser.win.win10 .tabs-bottom#browser.win.win10 .tabs-left#browser.win.win10,
+#browser.win.win10 .MaximizedWindowButtons button {
+  height: 25px;
 }
 `)
 
@@ -98,18 +130,20 @@ vivaldi.jdhooks.hookModule("urlfield_urlbar", function (moduleInfo, exportsInfo)
                 }
 
                 ret.props.children.push(
-                    React.createElement("div", { className: "button-toolbar MaximizedWindowButtons MaximizedWindowButtonsSpecifySize", id: "vivaldi-button-moved" },
-                        React.createElement("button", {
-                            tabIndex: "-1",
-                            className: "vivaldi MaximizedWindowButtonsSpecifySize",
-                            id: "vivaldi-button-moved-button",
-                            ref: "movedVButton",
-                            dangerouslySetInnerHTML: {
-                                __html: vivaldi.jdhooks.require("_svg_menu_vivaldi")
-                            },
-                            onClick: this.vivaldiButtonClick.bind(this)
-                        }))
-                )
+                    React.createElement("div", {
+                        className: "toolbar toolbar-mainbar",
+                        id: "vivaldi-button-moved"
+                    },
+                        React.createElement("div", { className: "button-toolbar" },
+                            React.createElement("button", {
+                                tabIndex: "-1",
+                                ref: "movedVButton",
+                                dangerouslySetInnerHTML: {
+                                    __html: vivaldi.jdhooks.require("_svg_menu_vivaldi")
+                                },
+                                onClick: this.vivaldiButtonClick.bind(this)
+                            }))
+                    ))
 
                 ret.props.children.push(
                     React.createElement("div", { className: "MaximizedWindowButtons window-buttongroup" },

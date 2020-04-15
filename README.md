@@ -80,14 +80,6 @@ The easiest way to "uninstall"/disable VivaldiHooks is to delete **{instdir}\viv
 
 ![zoom-buttons.png](screenshots/zoom-buttons.png)
 
-### [searchfield-current-engine-icon.js](vivaldi/hooks/searchfield-current-engine-icon.js)
-
-![searchfield-current-engine-icon.png](screenshots/searchfield-current-engine-icon.png)
-
-### [devtools.js](vivaldi/hooks/devtools.js)
-
-![devtools.png](screenshots/devtools.png)
-
 ### [jdhooks-startup-settings.js](vivaldi/hooks/jdhooks-startup-settings.js)
 
 ![jdhooks-startup-settings.png](screenshots/jdhooks-startup-settings.png)
