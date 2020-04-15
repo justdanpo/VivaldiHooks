@@ -1,5 +1,0 @@
-﻿/* Moves Panel Toggle button to the right when Panel Position is set to "Right Side" */
-
-#main.right + div .paneltogglefooter {
-  order:100
-}

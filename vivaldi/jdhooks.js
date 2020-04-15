@@ -2,6 +2,7 @@
 //vivaldi.jdhooks.hookMember(object, memberName, function(hookData, {oldarglist}), function(hookData, {oldarglist}))
 //vivaldi.jdhooks.hookModule(moduleName, function(moduleInfo, exportsInfo))
 //vivaldi.jdhooks.hookSettingsWrapper(moduleName, function(constructor, settingsArray))
+//vivaldi.jdhooks.hookForwardRef(typeToDereference, overrideClassCb)    returns newType or null
 //vivaldi.jdhooks.onUIReady(function())
 //vivaldi.jdhooks.addStyle(style)
 
@@ -19,7 +20,7 @@
     //addStyle(style)
     vivaldi.jdhooks.addStyle = (style) => {
         let s = document.createElement("style")
-        s.innerHTML = style
+        s.innerText = style
         document.head.appendChild(s)
     }
 
@@ -37,7 +38,7 @@
                     name: "a"
                 }
                 newfn(moduleInfo, exportsInfo)
-                moduleInfo.exports.a = exportsInfo.exports
+                moduleInfo.exports = { ...moduleInfo.exports, ...{ a: exportsInfo.exports } }
             }
             else if (moduleInfo.exports.hasOwnProperty("default")) {
                 let exportsInfo = {
@@ -46,7 +47,7 @@
                     name: "default"
                 }
                 newfn(moduleInfo, exportsInfo)
-                moduleInfo.exports.default = exportsInfo.exports
+                moduleInfo.exports = { ...moduleInfo.exports, ...{ default: exportsInfo.exports } }
             }
             else {
                 let exportsInfo = {
@@ -98,6 +99,33 @@
         const moduleIndex = vivaldi.jdhooks._moduleMap[moduleName]
         hookSettingsWrapperList[moduleIndex] = hookSettingsWrapperList[moduleIndex] || []
         hookSettingsWrapperList[moduleIndex].push(cb)
+    }
+
+    //vivaldi.jdhooks.hookForwardRef(typeToDereference, overrideClassCb)
+    const hookForwardRef = vivaldi.jdhooks.hookForwardRef = (typeToDereference, overrideClassCb) => {
+        if (typeToDereference.$$typeof !== Symbol.for("react.forward_ref")) return null
+
+        function newRender(...e) {
+            let retValue = typeToDereference.render(...e)
+
+            if (retValue.$$typeof == Symbol.for("react.element")) {
+                class hookRefClass extends retValue.type {
+                    constructor(...e) { super(...e) }
+                    render() {
+                        let renderedRef = super.render()
+                        let updatedType = hookForwardRef(renderedRef.type, overrideClassCb)
+                        renderedRef.type = (null !== updatedType) ? updatedType : overrideClassCb(renderedRef.type)
+                        return renderedRef
+                    }
+                }
+                retValue.type = hookRefClass
+            } else {
+                console.log("hookForwardRef: unexpected type", retValue)
+            }
+            return retValue
+        }
+
+        return { ...typeToDereference, ...{ render: newRender } };
     }
 
     //onUIReady(function)
@@ -182,24 +210,31 @@
             // "BlockedContentNotificator": "BlockedContentNotificator.jsx",
             // "HistorySearch": "HistorySearch.jsx",
             // "TitleBar": "titlebar.jsx",
-            // "TopMenu": "TopMenu.jsx",
+            // "TopMenu": "TopMenu.jsx",            
+            "common_insertwindowstate": "common/InsertWindowState.jsx",
+            "main_main": "main/main.jsx",
             "Settings": "/Settings.jsx",
+            "titlebar_titlebar": "titlebar/titlebar.jsx",
+            "toolbars_toolbar": "toolbars/Toolbar.jsx",
         }
 
         let moduleSignatures = {
-            "React": ["react.production."],
-            "ReactDOM": ["react-dom.production."],
-            "Scheduler": ["scheduler.production."],
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
+            "_CommandManager": ['emitChange("shortcut")'],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
             "_KeyCodes": ["KEY_CANCEL:"],
             "_PageZoom": ["onUIZoomChanged.addListener"],
             "_SettingsPaths": ["vivaldi.downloads.update_default_download_when_saving_as"],
+            "_ShowMenu": ["menubarMenu.onAction.addListener", "containerGroupFolders"],
             "_ShowUI": ['document.getElementById("app")', "JS init startup"],
             "_UIActions": ["_maybeShowSettingsInWindow"],
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiSettings": ["_vivaldiSettingsListener"],
             "_WindowActions": [".windowPrivate.onMaximized"],
+            "process": ["process.binding is not supported"],
+            "React": ["react.production."],
+            "ReactDOM": ["react-dom.production."],
+            "Scheduler": ["scheduler.production."],
             // "_svg_addressbar_btn_backward": ["M17.6 20.4l-1.6 1.6-9-9 9-9 1.6 1.6-7.2 7.4 7.2 7.4z"],
             // "_svg_addressbar_btn_fastbackward": ["M19 6l-7 5.6v-5.6h-2v12h2v-5.6l7 5.6z"],
             // "_svg_addressbar_btn_fastforward": ["M10 6l7 5.6v-5.6h2v12h-2v-5.6l-7 5.6z"],
@@ -222,7 +257,7 @@
             // "_svg_menu_mail": ["3v10h14V3H1zm7"],
             // "_svg_menu_notes": ["2v12h10V2H3zm9 11H4V4h8v9z"],
             // "_svg_menu_settings": ["M12.55 8v.592l1.325 1.014c.088.084.177.253.088.338l-1.236"],
-            // "_svg_menu_vivaldi": ["M10.428 5.038c-.42-.85.027-1.804.943-2.008.747-.167 1.518.386 1.617"],
+            "_svg_menu_vivaldi": ["M10.9604 4.44569C10.4629 3.42529 10.9928 2.28123 12.0753 2.03561C12.9563 1.83607 13.8679 2.4994 13.9847 3.41546C14.0358 3.81793 13.958 4.18653 13.763 4"],
             "_svg_notes_add_attachment": [".436.28.97.7.97h5.95c.98 0 1.75-1.043 1.75-2.06 0-1.02-.77-1.82-1.75"],
             // "_svg_notes_happynote": ['id="eye"'],
             // "_svg_pageactionchooser": ["M5.3 9.8L.8 6.5l4.6-3.3L6.6 5 4.2 6.4l2.3 1.7-1.2 1.6M10.7"],
@@ -260,6 +295,7 @@
             // "_svg_tabstrip_btn_newtab": ["M7 9h-4v-2h4v-4h2v4h4v2h-4v4h-2v-4zm-7-9v16h16v-16h-16z"],
             "_svg_tabstrip_btn_trashcan": ['"trashicon-content"'],
             // "_svg_toggleimages_noimages": ["M16 2H0v12h16V2zM4.89"],
+            "_svg_vivaldi_title": ["M11 20c3.94 0 6.14 0 7.57-1.43S20 14.94 20 11s0-6.14-1.43-7.57S14.94 2 11 2 4.86 2 3.43 3.43 2 7.06 2 11s0 6.14 1.43 7.57S7.06 20 11 20"],
             "_svg_window_close": ["0h2v1H6V2zm1-1h2v1H7V1zM3"],
             "_svg_window_close_mac": ["window-close-glyph dpi-standard"],
             "_svg_window_close_win10": ["M10.2.5l-.7-.7L5 4.3.5-.2l-.7.7L4.3"],
@@ -273,7 +309,6 @@
             // "_svg_notes_tree_note": ["2h10v12h-10v-12zm1 2h8v9h-8v-9zm1"],
             // "_svg_notes_tree_note_has_url": ["M13 8v-6h-10v12h7v2l2.5-2"],
             // "_svg_vivaldi_horizontal_menu": ['id="horizontal-menu-button'],
-            // "_svg_vivaldi_title": ['id="vivrect1"'],
             // "_svg_vivaldi_v": ["M14.726 7.446c-.537-1.023.035-2.164 1.2-2.41.948-.2"],
         }
 
