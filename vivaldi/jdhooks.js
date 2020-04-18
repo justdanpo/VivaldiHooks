@@ -1,6 +1,7 @@
 //var result = vivaldi.jdhooks.require(moduleName)
+//vivaldi.jdhooks.hookClass(className, function(class))
 //vivaldi.jdhooks.hookMember(object, memberName, function(hookData, {oldarglist}), function(hookData, {oldarglist}))
-//vivaldi.jdhooks.hookModule(moduleName, function(moduleInfo, exportsInfo))
+//vivaldi.jdhooks.hookModule(moduleName, function(moduleInfo, exports))
 //vivaldi.jdhooks.hookSettingsWrapper(moduleName, function(constructor, settingsArray))
 //vivaldi.jdhooks.hookForwardRef(typeToDereference, overrideClassCb)    returns newType or null
 //vivaldi.jdhooks.onUIReady(function())
@@ -12,15 +13,16 @@
 
     const fastProcessModules = true
 
-    vivaldi.jdhooks = { _hooks: {}, _moduleMap: {}, _moduleNames: {} }
+    let jdhooks = vivaldi.jdhooks = { _hooks: {}, _moduleMap: {}, _moduleNames: {} }
 
     //---------------------------------------------------------------------
     //API
 
     //addStyle(style)
-    vivaldi.jdhooks.addStyle = (style) => {
+    vivaldi.jdhooks.addStyle = (style, description) => {
         let s = document.createElement("style")
-        s.innerText = style
+        s.innerHTML = style
+        if (description) s.setAttribute("description", description)
         document.head.appendChild(s)
     }
 
@@ -32,33 +34,26 @@
             oldfn(moduleInfo, exports, nrequire)
 
             if (moduleInfo.exports.hasOwnProperty("a")) {
-                let exportsInfo = {
-                    exports: moduleInfo.exports.a,
-                    parent: moduleInfo.exports,
-                    name: "a"
-                }
-                newfn(moduleInfo, exportsInfo)
-                moduleInfo.exports = { ...moduleInfo.exports, ...{ a: exportsInfo.exports } }
+                moduleInfo.exports = { ...moduleInfo.exports, ...{ a: newfn(moduleInfo, moduleInfo.exports.a) } }
             }
             else if (moduleInfo.exports.hasOwnProperty("default")) {
-                let exportsInfo = {
-                    exports: moduleInfo.exports.default,
-                    parent: moduleInfo.exports,
-                    name: "default"
-                }
-                newfn(moduleInfo, exportsInfo)
-                moduleInfo.exports = { ...moduleInfo.exports, ...{ default: exportsInfo.exports } }
+                moduleInfo.exports = { ...moduleInfo.exports, ...{ default: newfn(moduleInfo, moduleInfo.exports.default) } }
             }
             else {
-                let exportsInfo = {
-                    exports: moduleInfo.exports,
-                    parent: moduleInfo,
-                    name: "exports"
-                }
-                newfn(moduleInfo, exportsInfo)
-                moduleInfo.exports = exportsInfo.exports
+                moduleInfo.exports = newfn(moduleInfo, moduleInfo.exports)
             }
         }
+    }
+
+    //hookClass(className, function(class))
+    let hookClassList = {}
+    vivaldi.jdhooks._unusedClassHooks = {} //stats
+
+    const hookClass = vivaldi.jdhooks.hookClass = (className, cb) => {
+        hookClassList[className] = hookClassList[className] || []
+        hookClassList[className].push(cb)
+
+        vivaldi.jdhooks._unusedClassHooks[className] = true
     }
 
     //hookMember(object, memberName, function(hookData,oldarglist), function(hookData,oldarglist))
@@ -66,30 +61,33 @@
         if (!obj.hasOwnProperty(memberName))
             throw "jdhooks.hookMember: wrong member name " + memberName
 
-        const oldMember = obj[memberName]
-        obj[memberName] = function () {
+        return {
+            ...obj, ...{
+                [memberName]: () => {
 
-            let abortHook = false
-            let hookData = {
-                arguments: arguments,
-                abort: () => { abortHook = true }
+                    let abortHook = false
+                    let hookData = {
+                        arguments: arguments,
+                        abort: () => { abortHook = true }
+                    }
+
+                    let args = [].slice.call(hookData.arguments, 0);
+                    [].unshift.call(args, hookData)
+
+                    if (cbBefore)
+                        hookData.retValue = cbBefore.apply(this, args)
+
+                    if (abortHook)
+                        return hookData.retValue
+
+                    hookData.retValue = obj[memberName].apply(this, hookData.arguments)
+
+                    if (cbAfter)
+                        hookData.retValue = cbAfter.apply(this, args)
+
+                    return hookData.retValue
+                }
             }
-
-            let args = [].slice.call(hookData.arguments, 0);
-            [].unshift.call(args, hookData)
-
-            if (cbBefore)
-                hookData.retValue = cbBefore.apply(this, args)
-
-            if (abortHook)
-                return hookData.retValue
-
-            hookData.retValue = oldMember.apply(this, hookData.arguments)
-
-            if (cbAfter)
-                hookData.retValue = cbAfter.apply(this, args)
-
-            return hookData.retValue
         }
     }
 
@@ -105,24 +103,36 @@
     const hookForwardRef = vivaldi.jdhooks.hookForwardRef = (typeToDereference, overrideClassCb) => {
         if (typeToDereference.$$typeof !== Symbol.for("react.forward_ref")) return null
 
+        let typeCacheForwardRef = new WeakMap()
         function newRender(...e) {
-            let retValue = typeToDereference.render(...e)
+            let refRendered = typeToDereference.render(...e)
 
-            if (retValue.$$typeof == Symbol.for("react.element")) {
-                class hookRefClass extends retValue.type {
-                    constructor(...e) { super(...e) }
-                    render() {
-                        let renderedRef = super.render()
-                        let updatedType = hookForwardRef(renderedRef.type, overrideClassCb)
-                        renderedRef.type = (null !== updatedType) ? updatedType : overrideClassCb(renderedRef.type)
-                        return renderedRef
+            if (refRendered.$$typeof == Symbol.for("react.element")) {
+                let refRenderedNewType = typeCacheForwardRef.get(refRendered.type)
+                if (!refRenderedNewType) {
+                    class hookRefClass extends refRendered.type {
+                        typeCache = new WeakMap()
+                        constructor(...e) { super(...e) }
+                        render(...e) {
+                            let renderedRefInner = super.render(...e)
+                            let newType = this.typeCache.get(renderedRefInner.type)
+                            if (!newType) {
+                                let updatedType = hookForwardRef(renderedRefInner.type, overrideClassCb)
+                                newType = updatedType ? updatedType : overrideClassCb(renderedRefInner.type)
+                                this.typeCache.set(renderedRefInner.type, newType)
+                            }
+                            renderedRefInner.type = newType
+                            return renderedRefInner
+                        }
                     }
+                    refRenderedNewType = hookRefClass
+                    typeCacheForwardRef.set(refRendered.type, refRenderedNewType)
                 }
-                retValue.type = hookRefClass
+                refRendered.type = refRenderedNewType
             } else {
-                console.log("hookForwardRef: unexpected type", retValue)
+                console.log("hookForwardRef: unexpected type", refRendered)
             }
-            return retValue
+            return refRendered
         }
 
         return { ...typeToDereference, ...{ render: newRender } };
@@ -202,6 +212,7 @@
     }
 
     //---------------------------------------------------------------------
+    let classNameCache = {}
 
     function makeSignatures() {
         let jsxNames = {
@@ -211,20 +222,25 @@
             // "HistorySearch": "HistorySearch.jsx",
             // "TitleBar": "titlebar.jsx",
             // "TopMenu": "TopMenu.jsx",            
-            "common_insertwindowstate": "common/InsertWindowState.jsx",
+            "common_InsertWindowState": "common/InsertWindowState.jsx",
             "main_main": "main/main.jsx",
             "Settings": "/Settings.jsx",
             "titlebar_titlebar": "titlebar/titlebar.jsx",
-            "toolbars_toolbar": "toolbars/Toolbar.jsx",
+            "toolbars_Toolbar": "toolbars/Toolbar.jsx",
         }
 
         let moduleSignatures = {
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
+            "_BookmarkStore": ["validateAsBookmarkBarFolder"],
             "_CommandManager": ['emitChange("shortcut")'],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
             "_KeyCodes": ["KEY_CANCEL:"],
+            "_OnClickOutside": ["Component lacks a handleClickOutside(event) function for processing outside click events."],
             "_PageZoom": ["onUIZoomChanged.addListener"],
+            "_RazerChroma": ["Error setting Razer Chroma color"],
+            "_SettingsGet": ["Unknown prefs property:"],
             "_SettingsPaths": ["vivaldi.downloads.update_default_download_when_saving_as"],
+            "_SettingsSet": ["Not known how to make event handler for pref "],
             "_ShowMenu": ["menubarMenu.onAction.addListener", "containerGroupFolders"],
             "_ShowUI": ['document.getElementById("app")', "JS init startup"],
             "_UIActions": ["_maybeShowSettingsInWindow"],
@@ -261,7 +277,7 @@
             "_svg_notes_add_attachment": [".436.28.97.7.97h5.95c.98 0 1.75-1.043 1.75-2.06 0-1.02-.77-1.82-1.75"],
             // "_svg_notes_happynote": ['id="eye"'],
             // "_svg_pageactionchooser": ["M5.3 9.8L.8 6.5l4.6-3.3L6.6 5 4.2 6.4l2.3 1.7-1.2 1.6M10.7"],
-            // "_svg_panel_bookmarks": ["v-11h8v11l-4"],
+            "_svg_panel_bookmarks": ["M16.2929 20.2929L13 17L9.70711 20.2929C9.07714 20.9229 8 20.4767 8 19.5858V6C8 5.44772 8.44772 5 9 5H17C17.5523 5 18 5.44772 18 6V19.5858C18 20"],
             // "_svg_panel_contacts": ["M15.6 19h5.4v-2.2c0-1.5-3-2.8-4.7-2.8-.7"],
             // "_svg_panel_downloads": ["M15 6h-4v5h-4l6 6 6-6h-4v-5zm-9"],
             "_svg_panel_downloads_btn_resume": ["M16 13l-6 5V8l6 5z"],
@@ -312,34 +328,41 @@
             // "_svg_vivaldi_v": ["M14.726 7.446c-.537-1.023.035-2.164 1.2-2.41.948-.2"],
         }
 
-        const slashre = new RegExp("\\\\\\\\", 'g')
+        function replaceAll(str, match, to) { return str.split(match).join(to) }
 
-        for (const modIndex in vivaldi.jdhooks._modules) {
+        for (const modIndex in jdhooks._modules) {
             let found = false
 
             function AddAndCheck(modIndex, moduleName) {
-                if (("undefined" !== typeof vivaldi.jdhooks._moduleMap[moduleName]) && (vivaldi.jdhooks._moduleMap[moduleName] != modIndex))
+                if (("undefined" !== typeof jdhooks._moduleMap[moduleName]) && (jdhooks._moduleMap[moduleName] != modIndex))
                     console.log(`jdhooks: repeated module name "${moduleName}"`)
 
-                if (vivaldi.jdhooks._moduleNames[modIndex]) {
-                    console.log(`multiple names for module ${modIndex}: ${moduleName}, ${vivaldi.jdhooks._moduleNames[modIndex]}...`)
+                if (jdhooks._moduleNames[modIndex]) {
+                    console.log(`multiple names for module ${modIndex}: ${moduleName}, ${jdhooks._moduleNames[modIndex]}...`)
                     return true
                 }
 
-                vivaldi.jdhooks._moduleMap[moduleName] = modIndex
-                vivaldi.jdhooks._moduleNames[modIndex] = moduleName
+                jdhooks._moduleMap[moduleName] = modIndex
+                jdhooks._moduleNames[modIndex] = moduleName
                 return true
             }
 
-            const fntxt = vivaldi.jdhooks._modules[modIndex].toString()
-            const fntxtPrepared = fntxt.replace(slashre, "/").toLowerCase()
+            const fntxt = jdhooks._modules[modIndex].toString()
+            const fntxtPrepared = replaceAll(fntxt, "\\\\", "/")
 
-            const re = /components\/([\w\/]+?)\.jsx\"/gi
-            const matchJsxRe = fntxtPrepared.match(re)
-            if (matchJsxRe && matchJsxRe.length == 1) { AddAndCheck(modIndex, re.exec(fntxtPrepared)[1].replace(/\//g, "_")) }
+            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\w\/]+?)\.jsx\"([\s\S]*?)\bclass\b[^\w]*?(\w+)/gim))
+                .filter(x => x[2].indexOf(".jsx") === -1)
+                .map(x => [replaceAll(x[1], "/", "_"), x[3]])
+
+            if (matches.length == 1) { AddAndCheck(modIndex, matches[0][0]) }
+
+            for ([classReadableName, className] of matches) if (className != "extends") {
+                if (classNameCache[modIndex + className]) console.log("jdhooks: duplicated class table item", modIndex + className, classNameCache[modIndex + className], classReadableName)
+                classNameCache[className + "_" + modIndex] = classReadableName
+            }
 
             for (const jsxModuleName in jsxNames) {
-                if (-1 !== fntxtPrepared.indexOf(jsxNames[jsxModuleName].toLowerCase())) {
+                if (-1 !== fntxtPrepared.indexOf(jsxNames[jsxModuleName])) {
                     found = AddAndCheck(modIndex, jsxModuleName)
                     if (fastProcessModules) delete jsxNames[jsxModuleName]
                     break
@@ -360,7 +383,7 @@
 
         function checkUnknown(obj) {
             for (const moduleName in obj)
-                if (!vivaldi.jdhooks._moduleMap[moduleName]) {
+                if (!jdhooks._moduleMap[moduleName]) {
                     console.log("jdhooks: unknown module", moduleName)
                 }
         }
@@ -375,32 +398,78 @@
         modules_list["newStartup"] = modules_list[startupModule]
         modules_list[startupModule] = function () { }
 
-        vivaldi.jdhooks._modules = modules_list
+        jdhooks._modules = modules_list
         makeSignatures()
+
+        //TODO: remove? added for debug purposes
+        jdhooks.hookModule("common_InsertWindowState", (moduleInfo, exports) => {
+            return (e) => {
+                let ret = exports(e)
+                class common_insertwindowstate extends ret {
+                    constructor(...e) { super(...e) }
+                }
+                return common_insertwindowstate
+            }
+        })
+
+        function overrideRequire(require, moduleIndex) {
+            req = (mod) => {
+                let imported = require(mod)
+                if (0 !== mod) return imported
+
+                let cached = {}
+                return {
+                    ...imported,
+                    ...{
+                        createElement: (type, ...e) => {
+                            if (type.prototype) {
+                                let cachedIdx = type.name + "_" + moduleIndex
+                                let className = classNameCache[cachedIdx]
+                                if (className) {
+                                    //console.log(className)                                    
+                                    let hooks = hookClassList[className]
+                                    if (hooks) {
+                                        let newtype = cached[className]
+                                        if (!newtype) {
+                                            newtype = type
+                                            for (cb of hooks) { newtype = cb(newtype) }
+
+                                            cached[className] = newtype
+                                        }
+                                        type = newtype
+                                    }
+                                }
+                            }
+                            return imported.createElement(type, ...e)
+                        }
+                    }
+                }
+            }
+            for (k in require) req[k] = require[k]
+            return req
+        }
 
         let callStack = []
         for (const moduleIndex in modules_list) {
-            (function (moduleIndex, oldfn) {
-                modules_list[moduleIndex] = function (moduleInfo, exports, require) {
-                    callStack.push(moduleInfo.i)
-                    oldfn(moduleInfo, exports, require)
-                    callStack.pop()
-                }
-            })(moduleIndex, modules_list[moduleIndex])
+            let oldfn = modules_list[moduleIndex]
+            modules_list[moduleIndex] = (moduleInfo, exports, require) => {
+                callStack.push(moduleInfo.i)
+                oldfn(moduleInfo, exports, overrideRequire(require, moduleIndex))
+                callStack.pop()
+            }
         }
 
-        vivaldi.jdhooks.hookModule("VivaldiSettingsWrapper", (moduleInfo, exportsInfo) =>
-            vivaldi.jdhooks.hookMember(exportsInfo.parent, exportsInfo.name, (hookData, fn, settingsKeys) => {
-                const hookCallbacks = hookSettingsWrapperList[callStack[callStack.length - 1]] || []
-                hookCallbacks.forEach(cb => cb(fn, settingsKeys))
-            })
-        )
+        hookModule("common_InsertVivaldiSettings", (moduleInfo, exports) => (cls, settingsKeys) => {
+            const hookCallbacks = hookSettingsWrapperList[callStack[callStack.length - 1]] || []
+            hookCallbacks.forEach(cb => [cls, settingsKeys] = cb(cls, settingsKeys))
+            return exports(cls, settingsKeys)
+        })
 
         //wait for UI
-        hookModule("_BookmarkBarActions", (moduleInfo, exportsInfo) =>
-            vivaldi.jdhooks.hookMember(exportsInfo.exports.__proto__, "loadPromise",
-                (hookData, cat) => document.dispatchEvent(new Event(jdhooks_ui_ready_event)))
-        )
+        hookModule("_RazerChroma", (moduleInfo, exports) => {
+            return jdhooks.hookMember(exports, "init",
+                (hookData) => document.dispatchEvent(new Event(jdhooks_ui_ready_event)))
+        })
     }
 
     function jdhooks_module_step1(moduleInfo, exportsInfo, nrequire) {
@@ -415,12 +484,12 @@
             if (nrequire[propertyName] && nrequire[propertyName][jdhooks_module_index] && nrequire[propertyName][jdhooks_module_index].name) {
                 let modules_list = nrequire[propertyName]
 
-                vivaldi.jdhooks.require = function (module) {
+                jdhooks.require = function (module) {
                     let retValue = null
 
                     if ("number" === typeof module) retValue = nrequire(module)
                     else {
-                        if ("undefined" === typeof vivaldi.jdhooks._moduleMap[module])
+                        if ("undefined" === typeof jdhooks._moduleMap[module])
                             throw "jdhooks.require: unknown module " + module
 
                         retValue = nrequire(vivaldi.jdhooks._moduleMap[module])

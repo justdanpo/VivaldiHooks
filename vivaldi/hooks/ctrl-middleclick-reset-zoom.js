@@ -4,13 +4,13 @@
 vivaldi.jdhooks.onUIReady(function () {
     let keyCodes = vivaldi.jdhooks.require("_KeyCodes")
 
-    var node = document.querySelector(".inner")
+    var node = document.querySelector("#webview-container")
     if (node) {
         let ctrl = false
         window.vivaldi.tabsPrivate.onKeyboardChanged.addListener((pressed, keymask, keycode, some) => { if (keycode === keyCodes.KEY_CONTROL) ctrl = pressed })
 
         node.addEventListener("mouseup", event => {
-            if (ctrl && event.button === 1 && event.srcElement.nodeName === "WEBVIEW") {
+            if (ctrl && event.button === 1) {
                 vivaldi.jdhooks.require("_PageZoom").pageZoomReset()
                 event.preventDefault()
             }

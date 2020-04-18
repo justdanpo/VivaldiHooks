@@ -1,10 +1,11 @@
 //MiddleClick on New Tab button to Paste And Go
 //Клик средней кнопкой мыши по кнопке "[+]" открывает ссылку из буфера
 
-vivaldi.jdhooks.hookModule("tabs_newtab", function (moduleInfo, exportsInfo) {
-    let React = vivaldi.jdhooks.require("React")
+vivaldi.jdhooks.hookModule("tabs_NewTab", function (moduleInfo, exports) {
+    const React = vivaldi.jdhooks.require("React")
+    const UrlFieldActions = vivaldi.jdhooks.require('_UrlFieldActions')
 
-    class mynew extends exportsInfo.exports {
+    class mynew extends exports {
 
         render() {
             let r = super.render()
@@ -21,7 +22,7 @@ vivaldi.jdhooks.hookModule("tabs_newtab", function (moduleInfo, exportsInfo) {
                 document.execCommand("paste")
                 document.removeEventListener("paste", getClipboard)
 
-                vivaldi.jdhooks.require('_UrlFieldActions').go([txt], {
+                UrlFieldActions.go([txt], {
                     inCurrent: !1,
                     addTypedHistory: !0,
                     addTypedSearchHistory: !1,
@@ -34,5 +35,5 @@ vivaldi.jdhooks.hookModule("tabs_newtab", function (moduleInfo, exportsInfo) {
 
         constructor(props, ...e) { super(props, ...e) }
     }
-    exportsInfo.exports = mynew
+    return mynew
 })

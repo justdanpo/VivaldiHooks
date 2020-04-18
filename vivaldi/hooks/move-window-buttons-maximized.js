@@ -56,19 +56,19 @@ vivaldi.jdhooks.addStyle(`
 #browser.win.win10 .MaximizedWindowButtons button {
   height: 25px;
 }
-`)
+`, "move-window-buttons-maximized.js")
 
-vivaldi.jdhooks.hookModule("urlfield_urlbar", function (moduleInfo, exportsInfo) {
+vivaldi.jdhooks.hookModule("urlfield_UrlBar", function (moduleInfo, exports) {
     const React = vivaldi.jdhooks.require("React")
     const ShowMenu = vivaldi.jdhooks.require("_ShowMenu")
     const CommandManager = vivaldi.jdhooks.require("_CommandManager")
 
-    let newType = vivaldi.jdhooks.hookForwardRef(exportsInfo.exports, oldClass => {
+    let newType = vivaldi.jdhooks.hookForwardRef(exports, oldClass => {
         class newclass extends oldClass {
             constructor(...e) { super(...e) }
 
             vivaldiButtonClick(event) {
-                const rect = this.refs.movedVButton.getBoundingClientRect()
+                const rect = event.target.getBoundingClientRect()
                 const props = {
                     id: 0,
                     rect: {
@@ -137,7 +137,6 @@ vivaldi.jdhooks.hookModule("urlfield_urlbar", function (moduleInfo, exportsInfo)
                         React.createElement("div", { className: "button-toolbar" },
                             React.createElement("button", {
                                 tabIndex: "-1",
-                                ref: "movedVButton",
                                 dangerouslySetInnerHTML: {
                                     __html: vivaldi.jdhooks.require("_svg_menu_vivaldi")
                                 },
@@ -161,7 +160,8 @@ vivaldi.jdhooks.hookModule("urlfield_urlbar", function (moduleInfo, exportsInfo)
 
     if (null === newType) {
         console.error("move-window-buttons-minimized.js: cannot dereference type")
+        return exports
     } else {
-        exportsInfo.exports = newType
+        return newType
     }
 })

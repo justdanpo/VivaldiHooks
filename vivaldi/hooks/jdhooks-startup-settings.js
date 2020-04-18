@@ -1,7 +1,7 @@
 //Settings: select hooks to load
 //Настройки: выбор хуков для загрузки
 
-vivaldi.jdhooks.hookModule("Settings", (moduleInfo, exportsInfo) => {
+vivaldi.jdhooks.hookModule("Settings", (moduleInfo, exports) => {
     const React = vivaldi.jdhooks.require("React")
     const settings = vivaldi.jdhooks.require("_VivaldiSettings")
 
@@ -108,7 +108,7 @@ vivaldi.jdhooks.hookModule("Settings", (moduleInfo, exportsInfo) => {
         }
     }
 
-    class newSettingsClass extends exportsInfo.exports {
+    class newSettingsClass extends exports {
         constructor(...e) { super(...e) }
 
         render() {
@@ -129,5 +129,5 @@ vivaldi.jdhooks.hookModule("Settings", (moduleInfo, exportsInfo) => {
         }
     }
 
-    exportsInfo.exports = newSettingsClass
+    return newSettingsClass
 })

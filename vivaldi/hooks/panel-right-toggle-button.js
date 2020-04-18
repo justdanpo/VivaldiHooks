@@ -4,12 +4,12 @@ vivaldi.jdhooks.addStyle(`
 #main.right + div .paneltogglefooter {
   order:100
 }
-`)
+`, "panel-right-toggle-button.js")
 
-vivaldi.jdhooks.hookModule("toolbars_toolbar", function (moduleInfo, exportsInfo) {
+vivaldi.jdhooks.hookModule("toolbars_toolbar", function (moduleInfo, exports) {
     const React = vivaldi.jdhooks.require("React")
 
-    class mynew extends exportsInfo.exports {
+    class mynew extends exports {
         render() {
             let r = super.render()
 
@@ -23,5 +23,5 @@ vivaldi.jdhooks.hookModule("toolbars_toolbar", function (moduleInfo, exportsInfo
 
         constructor(...e) { super(...e) }
     }
-    exportsInfo.exports = mynew
+    return mynew
 })
