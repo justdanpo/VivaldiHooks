@@ -47,7 +47,7 @@
 
     //hookClass(className, function(class))
     let hookClassList = {}
-    vivaldi.jdhooks._unusedClassHooks = {} //stats
+    jdhooks._unusedClassHooks = {} //stats
 
     const hookClass = vivaldi.jdhooks.hookClass = (className, cb) => {
         hookClassList[className] = hookClassList[className] || []
@@ -212,7 +212,7 @@
     }
 
     //---------------------------------------------------------------------
-    let classNameCache = {}
+    let classNameCache = jdhooks._dbg_classNameCache = {}
 
     function makeSignatures() {
         let jsxNames = {
@@ -234,11 +234,15 @@
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
             "_BookmarkStore": ["validateAsBookmarkBarFolder"],
             "_CommandManager": ['emitChange("shortcut")'],
+            "_decodeDisplayURL": [".removeTrailingSlashWhenNoPath(", ".getDisplayUrl(", "decodeURI("],
             "_getLocalizedMessage": [".i18n.getMessage"],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
             "_KeyCodes": ["KEY_CANCEL:"],
+            "_MouseGesturesHandler": ["onMouseGestureDetection.addListener"],
+            "_NavigationInfo": ["getNavigationInfo", "NAVIGATION_SET_STATE"],
             "_OnClickOutside": ["Component lacks a handleClickOutside(event) function for processing outside click events."],
             "_PageZoom": ["onUIZoomChanged.addListener"],
+            "_ProgressInfo": ["getProgressInfo", "PAGE_SET_PROGRESS"],
             "_RazerChroma": ["Error setting Razer Chroma color"],
             "_SettingsGet": ["Unknown prefs property:"],
             "_SettingsPaths": ["vivaldi.downloads.update_default_download_when_saving_as"],
@@ -251,9 +255,11 @@
             "_WindowActions": [".windowPrivate.onMaximized"],
             "ObjectAssign": ["Object.assign cannot be called with null or undefined"],
             "process": ["process.binding is not supported"],
+            "punycode": ['"Overflow: input needs wider integers to process",'],
             "React": ["react.production."],
             "ReactDOM": ["react-dom.production."],
             "Scheduler": ["scheduler.production."],
+            "url": [".prototype.parseHost"],
             // "_svg_addressbar_btn_backward": ["M17.6 20.4l-1.6 1.6-9-9 9-9 1.6 1.6-7.2 7.4 7.2 7.4z"],
             // "_svg_addressbar_btn_fastbackward": ["M19 6l-7 5.6v-5.6h-2v12h2v-5.6l7 5.6z"],
             // "_svg_addressbar_btn_fastforward": ["M10 6l7 5.6v-5.6h2v12h-2v-5.6l-7 5.6z"],
@@ -353,7 +359,7 @@
             const fntxt = jdhooks._modules[modIndex].toString()
             const fntxtPrepared = replaceAll(fntxt, "\\\\", "/")
 
-            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\w\/]+?)\.jsx\"([\s\S]*?)\bclass\b\s*?([$\w]+)/gi))
+            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\-\w\/]+?)\.jsx\"([\s\S]*?)\bclass\b\s*?([$\w]+)/gi))
                 .filter(x => x[2].indexOf(".jsx") === -1)
                 .map(x => [replaceAll(x[1], "/", "_"), x[3]])
 
@@ -451,6 +457,7 @@
                                         let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
                                         if (className) {
                                             for (cb of hookClassList[className] || []) { type = cb(type) }
+                                            delete jdhooks._unusedClassHooks[className];
                                         }
                                         cached.set(origtype, type)
                                     }
