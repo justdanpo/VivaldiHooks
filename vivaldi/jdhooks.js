@@ -370,7 +370,7 @@
                 .filter(x => x[2].indexOf(".js") === -1)
                 .map(x => [replaceAll(x[1], "/", "_"), x[3]])
 
-            if (matches.length > 1) { AddAndCheck(modIndex, matches[matches.length - 1][0]) }
+            if (matches.length > 0) { AddAndCheck(modIndex, matches[matches.length - 1][0]) }
 
             for ([classReadableName, className] of matches) if (className != "extends") {
                 if (classNameCache[modIndex + className]) console.log("jdhooks: duplicated class table item", modIndex + className, classNameCache[modIndex + className], classReadableName)
