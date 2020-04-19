@@ -130,7 +130,7 @@
                 }
                 refRendered.type = refRenderedNewType
             } else {
-                console.log("hookForwardRef: unexpected type", refRendered)
+                console.log("jdhooks.hookForwardRef: unexpected type", refRendered)
             }
             return refRendered
         }
@@ -221,7 +221,7 @@
             // "BlockedContentNotificator": "BlockedContentNotificator.jsx",
             // "HistorySearch": "HistorySearch.jsx",
             // "TitleBar": "titlebar.jsx",
-            // "TopMenu": "TopMenu.jsx",            
+            // "TopMenu": "TopMenu.jsx",
             "common_InsertWindowState": "common/InsertWindowState.jsx",
             "main_main": "main/main.jsx",
             "Settings": "/Settings.jsx",
@@ -230,9 +230,11 @@
         }
 
         let moduleSignatures = {
+            "_ActionList_DataTemplate": ["CHROME_SET_SESSION:", "CHROME_TABS_API:"],
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
             "_BookmarkStore": ["validateAsBookmarkBarFolder"],
             "_CommandManager": ['emitChange("shortcut")'],
+            "_getLocalizedMessage": [".i18n.getMessage"],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
             "_KeyCodes": ["KEY_CANCEL:"],
             "_OnClickOutside": ["Component lacks a handleClickOutside(event) function for processing outside click events."],
@@ -247,6 +249,7 @@
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiSettings": ["_vivaldiSettingsListener"],
             "_WindowActions": [".windowPrivate.onMaximized"],
+            "ObjectAssign": ["Object.assign cannot be called with null or undefined"],
             "process": ["process.binding is not supported"],
             "React": ["react.production."],
             "ReactDOM": ["react-dom.production."],
@@ -338,7 +341,7 @@
                     console.log(`jdhooks: repeated module name "${moduleName}"`)
 
                 if (jdhooks._moduleNames[modIndex]) {
-                    console.log(`multiple names for module ${modIndex}: ${moduleName}, ${jdhooks._moduleNames[modIndex]}...`)
+                    console.log(`jdhooks: multiple names for module ${modIndex}: ${moduleName}, ${jdhooks._moduleNames[modIndex]}...`)
                     return true
                 }
 
@@ -350,7 +353,7 @@
             const fntxt = jdhooks._modules[modIndex].toString()
             const fntxtPrepared = replaceAll(fntxt, "\\\\", "/")
 
-            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\w\/]+?)\.jsx\"([\s\S]*?)\bclass\b[^\w]*?(\w+)/gim))
+            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\w\/]+?)\.jsx\"([\s\S]*?)\bclass\b\s*?([$\w]+)/gi))
                 .filter(x => x[2].indexOf(".jsx") === -1)
                 .map(x => [replaceAll(x[1], "/", "_"), x[3]])
 
@@ -412,35 +415,48 @@
             }
         })
 
+        //override "require" so we can store module indexes for classes extending PureComponent/Component
+        //which in turn allows to hook classes
         function overrideRequire(require, moduleIndex) {
             req = (mod) => {
                 let imported = require(mod)
-                if (0 !== mod) return imported
+                //TODO: check React wrappers?
+                if (0 !== mod) {
+                    return imported
+                } else {
 
-                let cached = {}
-                return {
-                    ...imported,
-                    ...{
-                        createElement: (type, ...e) => {
-                            if (type.prototype) {
-                                let cachedIdx = type.name + "_" + moduleIndex
-                                let className = classNameCache[cachedIdx]
-                                if (className) {
-                                    //console.log(className)                                    
-                                    let hooks = hookClassList[className]
-                                    if (hooks) {
-                                        let newtype = cached[className]
-                                        if (!newtype) {
-                                            newtype = type
-                                            for (cb of hooks) { newtype = cb(newtype) }
+                    let cached = new WeakMap()
 
-                                            cached[className] = newtype
+                    function PureComponent(props, context, updater) { imported.PureComponent.apply(this, arguments) }
+                    PureComponent.prototype = { ...imported.PureComponent.prototype, ...PureComponent.prototype, ...{ jdhooks_module_index: moduleIndex } }
+
+                    function Component(props, context, updater) { let ret = imported.Component.apply(this, arguments) }
+                    Component.prototype = { ...imported.Component.prototype, ...Component.prototype, ...{ jdhooks_module_index: moduleIndex } }
+
+                    return {
+                        ...imported,
+                        ...{
+                            Component: Component,
+                            PureComponent: PureComponent,
+
+                            createElement: (type, ...e) => {
+                                //TODO: check if type extends PureComponent or Component directly?
+                                if (type.prototype && type.prototype.jdhooks_module_index) {
+                                    let cachedType = cached.get(type)
+                                    if (cachedType) {
+                                        type = cachedType
+                                    }
+                                    else {
+                                        origtype = type
+                                        let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
+                                        if (className) {
+                                            for (cb of hookClassList[className] || []) { type = cb(type) }
                                         }
-                                        type = newtype
+                                        cached.set(origtype, type)
                                     }
                                 }
+                                return imported.createElement(type, ...e)
                             }
-                            return imported.createElement(type, ...e)
                         }
                     }
                 }
