@@ -78,7 +78,7 @@ vivaldi.jdhooks.hookModule("urlfield_UrlBar", function (moduleInfo, exports) {
                         height: parseInt(rect.height)
                     },
                     menu: { items: CommandManager.getVerticalMenu() }
-                };
+                }
                 ShowMenu.show(props.id, [props], "bottom")
             }
 
@@ -98,19 +98,19 @@ vivaldi.jdhooks.hookModule("urlfield_UrlBar", function (moduleInfo, exports) {
                 switch (platform) {
                     case "linux":
                     case "win":
-                        iconClose = vivaldi.jdhooks.require("_svg_window_close");
-                        iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize");
-                        iconZoom = vivaldi.jdhooks.require("_svg_window_zoom");
+                        iconClose = vivaldi.jdhooks.require("_svg_window_close")
+                        iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize")
+                        iconZoom = vivaldi.jdhooks.require("_svg_window_zoom")
                         break;
                     case "win10":
-                        iconClose = vivaldi.jdhooks.require("_svg_window_close_win10");
-                        iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize_win10");
-                        iconZoom = vivaldi.jdhooks.require("_svg_window_zoom_win10");
+                        iconClose = vivaldi.jdhooks.require("_svg_window_close_win10")
+                        iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize_win10")
+                        iconZoom = vivaldi.jdhooks.require("_svg_window_zoom_win10")
                         break;
                     case "mac":
-                        iconClose = vivaldi.jdhooks.require("_svg_window_close_mac");
-                        iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize_mac");
-                        iconZoom = vivaldi.jdhooks.require("_svg_window_zoom_mac");
+                        iconClose = vivaldi.jdhooks.require("_svg_window_close_mac")
+                        iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize_mac")
+                        iconZoom = vivaldi.jdhooks.require("_svg_window_zoom_mac")
                 }
 
                 function createButton(className, image) {

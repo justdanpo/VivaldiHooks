@@ -1,8 +1,8 @@
 //Unicode domains decoder
 
 vivaldi.jdhooks.hookModule("_decodeDisplayURL", function (moduleInfo, exports) {
-    const url = vivaldi.jdhooks.require("url");
-    const punycode = vivaldi.jdhooks.require("punycode");
+    const url = vivaldi.jdhooks.require("url")
+    const punycode = vivaldi.jdhooks.require("punycode")
 
     return inputUrl => {
         let pass1 = exports(inputUrl)
@@ -12,4 +12,4 @@ vivaldi.jdhooks.hookModule("_decodeDisplayURL", function (moduleInfo, exports) {
         parsed.host = punycode.toUnicode(parsed.host)
         return url.format(parsed)
     }
-});
+})

@@ -2,13 +2,13 @@
 
 vivaldi.jdhooks.onUIReady(function () {
 
-    var uaActions = vivaldi.jdhooks.require("_PageZoom");
+    const uaActions = vivaldi.jdhooks.require("_PageZoom")
 
-    var zoomControl = document.querySelector(".page-zoom-controls");
+    let zoomControl = document.querySelector(".page-zoom-controls")
     if (!zoomControl)
         return;
 
-    var range = zoomControl.querySelector("input");
+    let range = zoomControl.querySelector("input")
 
     zoomControl.addEventListener("mousewheel", function (event) {
         if (range && range.disabled) {
@@ -17,26 +17,26 @@ vivaldi.jdhooks.onUIReady(function () {
 
         } else {
             if (event.deltaY > 0)
-                uaActions.pageZoomOut();
+                uaActions.pageZoomOut()
 
             if (event.deltaY < 0)
-                uaActions.pageZoomIn();
+                uaActions.pageZoomIn()
         }
     })
 
     zoomControl.addEventListener("mouseup", function (event) {
         if (event.button === 1) {
-            uaActions.pageZoomReset();
+            uaActions.pageZoomReset()
 
-            event.stopPropagation();
-            event.preventDefault();
+            event.stopPropagation()
+            event.preventDefault()
         }
-    });
+    })
 
     zoomControl.addEventListener("click", function (event) {
         if (event.button === 1) {
-            event.stopPropagation();
-            event.preventDefault();
+            event.stopPropagation()
+            event.preventDefault()
         }
-    });
-});
+    })
+})

@@ -1,7 +1,7 @@
 //Settings: select hooks to load
 //Настройки: выбор хуков для загрузки
 
-vivaldi.jdhooks.hookModule("Settings", (moduleInfo, exports) => {
+vivaldi.jdhooks.hookModule("settings_Settings", (moduleInfo, exports) => {
     const React = vivaldi.jdhooks.require("React")
     const settings = vivaldi.jdhooks.require("_VivaldiSettings")
 
@@ -83,7 +83,7 @@ vivaldi.jdhooks.hookModule("Settings", (moduleInfo, exports) => {
                         React.createElement("h3", null, "Load hook files"),
                         this.state.scriptNames.map(script => {
 
-                            var newLabel = !newScripts[script] ? null : React.createElement("span", {
+                            const newLabel = !newScripts[script] ? null : React.createElement("span", {
                                 style: {
                                     color: "red",
                                     textShadow: "rgb(255, 255, 255) 0px 0px 0.2em, rgb(0,0, 0) 0px 0px 0.2em"

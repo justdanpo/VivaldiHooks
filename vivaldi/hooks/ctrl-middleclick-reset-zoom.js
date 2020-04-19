@@ -2,9 +2,9 @@
 //Ctrl+MiddleClick на содержимом страницы - сброс масштаба
 
 vivaldi.jdhooks.onUIReady(function () {
-    let keyCodes = vivaldi.jdhooks.require("_KeyCodes")
+    const keyCodes = vivaldi.jdhooks.require("_KeyCodes")
 
-    var node = document.querySelector("#webview-container")
+    let node = document.querySelector("#webview-container")
     if (node) {
         let ctrl = false
         window.vivaldi.tabsPrivate.onKeyboardChanged.addListener((pressed, keymask, keycode, some) => { if (keycode === keyCodes.KEY_CONTROL) ctrl = pressed })

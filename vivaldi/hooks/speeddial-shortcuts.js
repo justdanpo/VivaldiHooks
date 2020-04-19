@@ -20,7 +20,7 @@ vivaldi.jdhooks.hookModule('_CommandManager', function (moduleInfo, exports) {
         const SettingsPaths = vivaldi.jdhooks.require("_SettingsPaths")
         const SettingsGet = vivaldi.jdhooks.require('_SettingsGet')
 
-        var sdi = vivaldi.jdhooks.require('_BookmarkStore').getSpeeddialFolders()
+        const sdi = vivaldi.jdhooks.require('_BookmarkStore').getSpeeddialFolders()
 
         if (sdi && sdi[0] && sdi[0].children[i - 1]) {
             UrlFieldActions.go([sdi[0].children[i - 1].url], {

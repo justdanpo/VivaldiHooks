@@ -135,7 +135,7 @@
             return refRendered
         }
 
-        return { ...typeToDereference, ...{ render: newRender } };
+        return { ...typeToDereference, ...{ render: newRender } }
     }
 
     //onUIReady(function)
@@ -216,20 +216,25 @@
 
     function makeSignatures() {
         let jsxNames = {
-            // "ActionLog": "ActionLog.jsx",
-            // "Appearance": "Appearance.jsx",
-            // "BlockedContentNotificator": "BlockedContentNotificator.jsx",
-            // "HistorySearch": "HistorySearch.jsx",
-            // "TitleBar": "titlebar.jsx",
-            // "TopMenu": "TopMenu.jsx",
-            "common_InsertWindowState": "common/InsertWindowState.jsx",
-            "main_main": "main/main.jsx",
-            "Settings": "/Settings.jsx",
-            "titlebar_titlebar": "titlebar/titlebar.jsx",
-            "toolbars_Toolbar": "toolbars/Toolbar.jsx",
+            "NativeResizeObserver": "vivaldi/NativeResizeObserver.js",
+            "settings_keywordFound": "settings/keywordFound.js",
         }
 
         let moduleSignatures = {
+            "chroma.js": ["chroma.js"],
+            "classnames": ["jedwatson.github.io/classnames"],
+            "Object.Assign": ["Object.assign cannot be called with null or undefined"],
+            "process": ["process.binding is not supported"],
+            "punycode": ['"Overflow: input needs wider integers to process",'],
+            "react-motion": ["startAnimationIfNecessary", "lastIdealVelocity"],
+            "React": ["react.production."],
+            "ReactDOM": ["react-dom.production."],
+            "scheduler": ["scheduler.production."],
+            "url": [".prototype.parseHost"],
+            "yoga-layout": ["computeLayout:", "fillNodes:"],
+            //"rrule.js": ["rrule.js"],
+            //"react-mosaic": ["MosaicActionsPropType", "Palantir Technologies"],
+
             "_ActionList_DataTemplate": ["CHROME_SET_SESSION:", "CHROME_TABS_API:"],
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
             "_BookmarkStore": ["validateAsBookmarkBarFolder"],
@@ -241,6 +246,8 @@
             "_MouseGesturesHandler": ["onMouseGestureDetection.addListener"],
             "_NavigationInfo": ["getNavigationInfo", "NAVIGATION_SET_STATE"],
             "_OnClickOutside": ["Component lacks a handleClickOutside(event) function for processing outside click events."],
+            "_PageActions": ["ERROR while creating new tab. Original message"],
+            "_PageStore": ["section=Speed-dials&activeSpeedDialIndex=0"],
             "_PageZoom": ["onUIZoomChanged.addListener"],
             "_ProgressInfo": ["getProgressInfo", "PAGE_SET_PROGRESS"],
             "_RazerChroma": ["Error setting Razer Chroma color"],
@@ -253,13 +260,6 @@
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiSettings": ["_vivaldiSettingsListener"],
             "_WindowActions": [".windowPrivate.onMaximized"],
-            "ObjectAssign": ["Object.assign cannot be called with null or undefined"],
-            "process": ["process.binding is not supported"],
-            "punycode": ['"Overflow: input needs wider integers to process",'],
-            "React": ["react.production."],
-            "ReactDOM": ["react-dom.production."],
-            "Scheduler": ["scheduler.production."],
-            "url": [".prototype.parseHost"],
             // "_svg_addressbar_btn_backward": ["M17.6 20.4l-1.6 1.6-9-9 9-9 1.6 1.6-7.2 7.4 7.2 7.4z"],
             // "_svg_addressbar_btn_fastbackward": ["M19 6l-7 5.6v-5.6h-2v12h2v-5.6l7 5.6z"],
             // "_svg_addressbar_btn_fastforward": ["M10 6l7 5.6v-5.6h2v12h-2v-5.6l-7 5.6z"],
@@ -359,11 +359,18 @@
             const fntxt = jdhooks._modules[modIndex].toString()
             const fntxtPrepared = replaceAll(fntxt, "\\\\", "/")
 
-            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\-\w\/]+?)\.jsx\"([\s\S]*?)\bclass\b\s*?([$\w]+)/gi))
-                .filter(x => x[2].indexOf(".jsx") === -1)
+            if (!fastProcessModules) {
+                let match = /defineLocale\("(.*?)"/.exec(fntxtPrepared)
+                if (match) {
+                    AddAndCheck(modIndex, "locale_" + match[1])
+                }
+            }
+
+            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\-\w\/]+?)\.js[x]?\"([\s\S]*?)\bclass\b\s*?([$\w]+)/gi))
+                .filter(x => x[2].indexOf(".js") === -1)
                 .map(x => [replaceAll(x[1], "/", "_"), x[3]])
 
-            if (matches.length == 1) { AddAndCheck(modIndex, matches[0][0]) }
+            if (matches.length > 1) { AddAndCheck(modIndex, matches[matches.length - 1][0]) }
 
             for ([classReadableName, className] of matches) if (className != "extends") {
                 if (classNameCache[modIndex + className]) console.log("jdhooks: duplicated class table item", modIndex + className, classNameCache[modIndex + className], classReadableName)
@@ -410,17 +417,6 @@
         jdhooks._modules = modules_list
         makeSignatures()
 
-        //TODO: remove? added for debug purposes
-        jdhooks.hookModule("common_InsertWindowState", (moduleInfo, exports) => {
-            return (e) => {
-                let ret = exports(e)
-                class common_insertwindowstate extends ret {
-                    constructor(...e) { super(...e) }
-                }
-                return common_insertwindowstate
-            }
-        })
-
         //override "require" so we can store module indexes for classes extending PureComponent/Component
         //which in turn allows to hook classes
         function overrideRequire(require, moduleIndex) {
@@ -457,7 +453,7 @@
                                         let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
                                         if (className) {
                                             for (cb of hookClassList[className] || []) { type = cb(type) }
-                                            delete jdhooks._unusedClassHooks[className];
+                                            delete jdhooks._unusedClassHooks[className]
                                         }
                                         cached.set(origtype, type)
                                     }

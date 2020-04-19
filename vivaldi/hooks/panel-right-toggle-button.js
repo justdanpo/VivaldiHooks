@@ -6,7 +6,7 @@ vivaldi.jdhooks.addStyle(`
 }
 `, "panel-right-toggle-button.js")
 
-vivaldi.jdhooks.hookModule("toolbars_toolbar", function (moduleInfo, exports) {
+vivaldi.jdhooks.hookModule("toolbars_Toolbar", function (moduleInfo, exports) {
     const React = vivaldi.jdhooks.require("React")
 
     class mynew extends exports {

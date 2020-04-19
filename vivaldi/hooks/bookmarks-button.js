@@ -29,7 +29,7 @@ vivaldi.jdhooks.hookModule("toolbars_Toolbar", (moduleInfo, exports) => {
                         height: parseInt(rect.height)
                     },
                     menu: { items: menu[idx].items }
-                };
+                }
                 ShowMenu.show(props.id, [props], "bottom")
             }
         }
