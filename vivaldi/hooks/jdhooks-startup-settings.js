@@ -17,7 +17,7 @@ vivaldi.jdhooks.hookModule("settings_Settings", (moduleInfo, exports) => {
 
             let newState = {
                 ...{
-                    defaultLoad: false,
+                    defaultLoad: true,
                     scripts: {},
                     scriptNames: []
                 },

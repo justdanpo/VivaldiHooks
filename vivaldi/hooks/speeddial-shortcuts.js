@@ -7,7 +7,7 @@
 vivaldi.jdhooks.hookModule("_VivaldiSettings", function (moduleInfo, exports) {
     let oldGetDefault = exports.getDefault
     exports.getDefault = name => {
-        if (name.substr(0, 23) == "COMMAND_OPEN_SPEEDDIAL_") return ""
+        if (typeof name == "string" && name.substr(0, 23) == "COMMAND_OPEN_SPEEDDIAL_") return ""
         return oldGetDefault(name)
     }
     return exports

@@ -10,7 +10,7 @@ vivaldi.jdhooks.addStyle(`
 
 .MaximizedWindowButtons.window-buttongroup {
     position: relative !important;
-    align-self: baseline;  
+    align-self: baseline;
 }
 
 #vivaldi-button-moved {
@@ -131,7 +131,7 @@ vivaldi.jdhooks.hookModule("urlfield_UrlBar", function (moduleInfo, exports) {
 
                 ret.props.children.push(
                     React.createElement("div", {
-                        className: "toolbar toolbar-mainbar",
+                        className: "toolbar toolbar-mainbar MaximizedWindowButtons",
                         id: "vivaldi-button-moved"
                     },
                         React.createElement("div", { className: "button-toolbar" },

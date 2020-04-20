@@ -162,9 +162,7 @@
                 hooksItem.createReader().readEntries(dirItems => {
 
                     chrome.storage.local.get("JDHOOKS_STARTUP", function (cfg) {
-                        if (undefined === cfg.JDHOOKS_STARTUP) cfg.JDHOOKS_STARTUP = {}
-                        if (undefined === cfg.JDHOOKS_STARTUP.defaultLoad) cfg.JDHOOKS_STARTUP.defaultLoad = true
-                        if (undefined === cfg.JDHOOKS_STARTUP.scripts) cfg.JDHOOKS_STARTUP.scripts = {}
+                        cfg = {...{JDHOOKS_STARTUP:{defaultLoad: true, scripts: {}}}, ...cfg}
 
                         for (const i in dirItems) {
                             let dirItem = dirItems[i]
