@@ -1,5 +1,5 @@
-// //Bookmarks button before AddressBar
-// //Кнопка с выпадающими закладками перед строкой адреса
+//Bookmarks button before AddressBar
+//Кнопка с выпадающими закладками перед строкой адреса
 
 vivaldi.jdhooks.addStyle(`
 #browser.horizontal-menu .jdbookmarkbutton {

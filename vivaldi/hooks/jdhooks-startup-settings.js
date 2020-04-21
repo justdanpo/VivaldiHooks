@@ -1,6 +1,12 @@
 //Settings: select hooks to load
 //Настройки: выбор хуков для загрузки
 
+vivaldi.jdhooks.addStyle(`
+.hooks-startup-settings-description {
+    margin-left: 2ch;
+}
+`, "jdhooks-startup-settings.js")
+
 vivaldi.jdhooks.hookModule("settings_Settings", (moduleInfo, exports) => {
     const React = vivaldi.jdhooks.require("React")
     const settings = vivaldi.jdhooks.require("_VivaldiSettings")
@@ -81,27 +87,37 @@ vivaldi.jdhooks.hookModule("settings_Settings", (moduleInfo, exports) => {
                         className: "setting-group unlimited pad-top"
                     },
                         React.createElement("h3", null, "Load hook files"),
-                        this.state.scriptNames.map(script => {
+                        React.createElement("table", null,
+                            this.state.scriptNames.map(script => {
 
-                            const newLabel = !newScripts[script] ? null : React.createElement("span", {
-                                style: {
-                                    color: "red",
-                                    textShadow: "rgb(255, 255, 255) 0px 0px 0.2em, rgb(0,0, 0) 0px 0px 0.2em"
-                                }
-                            }, " (NEW!)")
+                                const newLabel = !newScripts[script] ? null : React.createElement("span", {
+                                    style: {
+                                        color: "red",
+                                        textShadow: "rgb(255, 255, 255) 0px 0px 0.2em, rgb(0,0, 0) 0px 0px 0.2em"
+                                    }
+                                }, " (NEW!)")
 
-                            return React.createElement("div", { className: "setting-single" },
-                                React.createElement("label", null,
-                                    React.createElement("input", {
-                                        type: "checkbox",
-                                        checked: this.state.scripts[script],
-                                        onChange: this.toggleScriptState.bind(this, script),
-                                        disabled: script == "jdhooks-startup-settings.js"
-                                    }),
-                                    React.createElement("span", null, script, newLabel)
+                                return React.createElement("tr", null,
+                                    React.createElement("td", null,
+                                        React.createElement("label", null,
+                                            React.createElement("input",
+                                                {
+                                                    type: "checkbox",
+                                                    checked: this.state.scripts[script],
+                                                    onChange: this.toggleScriptState.bind(this, script),
+                                                    disabled: script == "jdhooks-startup-settings.js"
+                                                }),
+                                            React.createElement("span", null,
+                                                script,
+                                                newLabel))
+                                    ),
+                                    React.createElement("td", null,
+                                        React.createElement("label", { className: "hooks-startup-settings-description" },
+                                            React.createElement("span", null, vivaldi.jdhooks._hookDescriptions[script])),
+                                    )
                                 )
-                            )
-                        })
+                            })
+                        )
                     )
                 )
             )

@@ -1,4 +1,4 @@
-//Unicode domains decoder
+//International Domain Names decoder
 
 vivaldi.jdhooks.hookModule("_decodeDisplayURL", function (moduleInfo, exports) {
     const url = vivaldi.jdhooks.require("url")

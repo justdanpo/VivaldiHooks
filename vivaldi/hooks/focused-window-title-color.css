@@ -1,4 +1,6 @@
-﻿#browser.hasfocus #header,
+﻿/* Highlight window with theme color when focused */
+
+#browser.hasfocus #header,
 #browser.hasfocus #tabs-container
 {
 	var(--colorBg);

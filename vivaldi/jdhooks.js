@@ -13,7 +13,7 @@
 
     const fastProcessModules = true
 
-    let jdhooks = vivaldi.jdhooks = { _hooks: {}, _moduleMap: {}, _moduleNames: {} }
+    let jdhooks = vivaldi.jdhooks = { _hooks: {}, _hookDescriptions: {}, _moduleMap: {}, _moduleNames: {} }
 
     //---------------------------------------------------------------------
     //API
@@ -154,6 +154,20 @@
                 }
             }
 
+            function getDescription(fileEntry) {
+                fileEntry.file(file => {
+                    let reader = new FileReader();
+                    reader.onloadend = function (e) {
+                        const parsed = /^[\x00-\x20]*?(\/\*\s*([\s\S\w]*?)\*\/)|(\/\/\s*(.*))/gm.exec(reader.result)
+                        if (parsed) {
+                            const desc = parsed[2] || parsed[4]
+                            vivaldi.jdhooks._hookDescriptions[fileEntry.name] = desc
+                        }
+                    }
+                    reader.readAsText(file)
+                }, () => { })
+            }
+
             let hooksItem = outerDirItems.find(_ => _.isDirectory && _.name == "hooks")
 
             if (!hooksItem) {
@@ -162,7 +176,7 @@
                 hooksItem.createReader().readEntries(dirItems => {
 
                     chrome.storage.local.get("JDHOOKS_STARTUP", function (cfg) {
-                        cfg = {...{JDHOOKS_STARTUP:{defaultLoad: true, scripts: {}}}, ...cfg}
+                        cfg = { ...{ JDHOOKS_STARTUP: { defaultLoad: true, scripts: {} } }, ...cfg }
 
                         for (const i in dirItems) {
                             let dirItem = dirItems[i]
@@ -174,6 +188,8 @@
 
                             let shouldBeLoaded = undefined === cfg.JDHOOKS_STARTUP.scripts[dirItem.name] ? cfg.JDHOOKS_STARTUP.defaultLoad : cfg.JDHOOKS_STARTUP.scripts[dirItem.name]
                             if (dirItem.name === "jdhooks-startup-settings.js") shouldBeLoaded = true
+
+                            getDescription(dirItem)
 
                             vivaldi.jdhooks._hooks[dirItem.name] = shouldBeLoaded
 

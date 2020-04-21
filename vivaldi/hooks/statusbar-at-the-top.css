@@ -1,4 +1,4 @@
-﻿/* move statusbar to the top */
+﻿/* Move statusbar to the top */
 
 #main { order: 1 }
 #footer .callout {bottom: inherit}
