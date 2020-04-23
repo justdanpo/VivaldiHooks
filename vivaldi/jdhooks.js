@@ -232,6 +232,7 @@
         let jsxNames = {
             "NativeResizeObserver": "vivaldi/NativeResizeObserver.js",
             "settings_keywordFound": "settings/keywordFound.js",
+            "tabs_NewTab": "tabs/NewTab.jsx",
         }
 
         let moduleSignatures = {
@@ -250,6 +251,7 @@
             //"react-mosaic": ["MosaicActionsPropType", "Palantir Technologies"],
 
             "_ActionList_DataTemplate": ["CHROME_SET_SESSION:", "CHROME_TABS_API:"],
+            "_ActionManager": ["commandChanged", "restoreCommandGestures", "executeActions"],
             "_BookmarkBarActions": ["Error removing bookmark tree:"],
             "_BookmarkStore": ["validateAsBookmarkBarFolder"],
             "_CommandManager": ['emitChange("shortcut")'],

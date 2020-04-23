@@ -6,8 +6,12 @@
 
 vivaldi.jdhooks.hookModule("_VivaldiSettings", function (moduleInfo, exports) {
     let oldGetDefault = exports.getDefault
+
+    //TODO: remove later
+    const devValue = exports.getAllPrefs ? "" : {showInQC: true}
+
     exports.getDefault = name => {
-        if (typeof name == "string" && name.substr(0, 23) == "COMMAND_OPEN_SPEEDDIAL_") return ""
+        if (typeof name == "string" && name.substr(0, 23) == "COMMAND_OPEN_SPEEDDIAL_") return devValue
         return oldGetDefault(name)
     }
     return exports
