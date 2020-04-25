@@ -231,8 +231,6 @@
     function makeSignatures() {
         let jsxNames = {
             "NativeResizeObserver": "vivaldi/NativeResizeObserver.js",
-            "settings_keywordFound": "settings/keywordFound.js",
-            "tabs_NewTab": "tabs/NewTab.jsx",
         }
 
         let moduleSignatures = {
@@ -245,6 +243,7 @@
             "React": ["react.production."],
             "ReactDOM": ["react-dom.production."],
             "scheduler": ["scheduler.production."],
+            "setProgressState": ["setProgressState", '"PAGE_SET_PROGRESS"'],
             "url": [".prototype.parseHost"],
             "yoga-layout": ["computeLayout:", "fillNodes:"],
             //"rrule.js": ["rrule.js"],
@@ -355,26 +354,27 @@
 
         function replaceAll(str, match, to) { return str.split(match).join(to) }
 
-        for (const modIndex in jdhooks._modules) {
-            let found = false
+        function AddAndCheck(modIndex, moduleName) {
+            if (("undefined" !== typeof jdhooks._moduleMap[moduleName]) && (jdhooks._moduleMap[moduleName] != modIndex))
+                console.log(`jdhooks: repeated module name "${moduleName}"`)
 
-            function AddAndCheck(modIndex, moduleName) {
-                if (("undefined" !== typeof jdhooks._moduleMap[moduleName]) && (jdhooks._moduleMap[moduleName] != modIndex))
-                    console.log(`jdhooks: repeated module name "${moduleName}"`)
-
-                if (jdhooks._moduleNames[modIndex]) {
-                    console.log(`jdhooks: multiple names for module ${modIndex}: ${moduleName}, ${jdhooks._moduleNames[modIndex]}...`)
-                    return true
-                }
-
-                jdhooks._moduleMap[moduleName] = modIndex
-                jdhooks._moduleNames[modIndex] = moduleName
+            if (jdhooks._moduleNames[modIndex]) {
+                console.log(`jdhooks: multiple names for module ${modIndex}: ${moduleName}, ${jdhooks._moduleNames[modIndex]}...`)
                 return true
             }
 
-            const fntxt = jdhooks._modules[modIndex].toString()
-            const fntxtPrepared = replaceAll(fntxt, "\\\\", "/")
+            jdhooks._moduleMap[moduleName] = modIndex
+            jdhooks._moduleNames[modIndex] = moduleName
+            return true
+        }
 
+        for (const modIndex in jdhooks._modules) {
+            let found = false
+
+            const fntxt = jdhooks._modules[modIndex].toString()
+            const fntxtPrepared = replaceAll(replaceAll(replaceAll(fntxt, "\\\\", "/"), '\r', ' '), '\n', ' ')
+
+            //localization modules
             if (!fastProcessModules) {
                 let match = /defineLocale\("(.*?)"/.exec(fntxtPrepared)
                 if (match) {
@@ -382,15 +382,35 @@
                 }
             }
 
-            let matches = Array.from(fntxtPrepared.matchAll(/components\/([\-\w\/]+?)\.js[x]?\"([\s\S]*?)\bclass\b\s*?([$\w]+)/gi))
-                .filter(x => x[2].indexOf(".js") === -1)
-                .map(x => [replaceAll(x[1], "/", "_"), x[3]])
+            let lastJsxFound = undefined
+            let jsxNameVars = [] //minified variable name -> displayable name
+            Array.from(fntxtPrepared.matchAll(/([\w\d$]+)\s*[=:]\s*"[^"]+components\/([\-\w\/]+?)\.js[x]?\"/g))
+                .forEach(([$, varName, Name]) => {
+                    Name = replaceAll(Name, "/", "_")
+                    lastJsxFound = Name
+                    jsxNameVars[varName] = Name
+                })
 
-            if (matches.length > 0) { AddAndCheck(modIndex, matches[matches.length - 1][0]) }
+            if (lastJsxFound) {
+                AddAndCheck(modIndex, lastJsxFound)
 
-            for ([classReadableName, className] of matches) if (className != "extends") {
-                if (classNameCache[modIndex + className]) console.log("jdhooks: duplicated class table item", modIndex + className, classNameCache[modIndex + className], classReadableName)
-                classNameCache[className + "_" + modIndex] = classReadableName
+                let clsMatches = Array.from(fntxtPrepared.matchAll(/\bclass\s+([$\w\d]+)?\s*extends[\s]+[\w\.]+Component/g))
+
+                for (i in clsMatches) {
+                    let className = clsMatches[i][1]
+
+                    let classBodyHere = fntxtPrepared.slice(clsMatches[i].index,
+                        clsMatches.hasOwnProperty[i + 1] ? clsMatches[i + 1].index : fntxtPrepared.length)
+
+                    //source file name from variable(jsxNameVars) or string
+                    let fileNameMatches = /__source:\s*\{\s*fileName:\s*(([\w\d$]+)|(\"[^"]+components\/([\-\w\/]+?)\.js[x]?\")),/.exec(classBodyHere)
+                    if (fileNameMatches) {
+                        let classReadableName = fileNameMatches[2] ? jsxNameVars[fileNameMatches[2]] : replaceAll(fileNameMatches[4], "/", "_")
+
+                        if (classNameCache[modIndex + className]) console.log("jdhooks: duplicated class table item", modIndex + className, classNameCache[modIndex + className], classReadableName)
+                        classNameCache[className + "_" + modIndex] = classReadableName
+                    }
+                }
             }
 
             for (const jsxModuleName in jsxNames) {
