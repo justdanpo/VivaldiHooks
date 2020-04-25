@@ -7,9 +7,10 @@ vivaldi.jdhooks.addStyle(`
 }
 `, "jdhooks-startup-settings.js")
 
-vivaldi.jdhooks.hookModule("settings_Settings", (moduleInfo, exports) => {
+vivaldi.jdhooks.hookClass("settings_startup_StartupSettingsSection", oldClass => {
     const React = vivaldi.jdhooks.require("React")
     const settings = vivaldi.jdhooks.require("_VivaldiSettings")
+    const settings_SettingsSearchCategoryChild = vivaldi.jdhooks.require("settings_SettingsSearchCategoryChild")
 
     let newScripts = []
 
@@ -70,7 +71,7 @@ vivaldi.jdhooks.hookModule("settings_Settings", (moduleInfo, exports) => {
         }
 
         render() {
-            return React.createElement("div", null,
+            return React.createElement(settings_SettingsSearchCategoryChild, { filter: this.props.filter },
                 React.createElement("h2", null, "Hooks"),
                 React.createElement("div", { className: "setting-group unlimited" },
                     React.createElement("div", { className: "setting-single" },
@@ -124,22 +125,13 @@ vivaldi.jdhooks.hookModule("settings_Settings", (moduleInfo, exports) => {
         }
     }
 
-    class newSettingsClass extends exports {
+    class newSettingsClass extends oldClass {
         constructor(...e) { super(...e) }
 
         render() {
             let r = super.render()
 
-            let newChild = React.createElement(Section, null)
-
-            let generalSettings = r.props.children[2].props.children[0]
-            if (generalSettings) {
-                if (Array.isArray(generalSettings.props.children)) {
-                    generalSettings.props.children.push(newChild)
-                } else {
-                    generalSettings.props.children = [generalSettings.props.children, newChild]
-                }
-            }
+            r.props.children.push(React.createElement(Section, this.props))
 
             return r
         }
