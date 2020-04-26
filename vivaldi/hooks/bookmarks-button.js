@@ -17,8 +17,7 @@ vivaldi.jdhooks.hookModule("toolbars_Toolbar", (moduleInfo, exports) => {
         constructor(...e) { super(...e) }
 
         bookmarksOnClick(event) {
-            //TODO: remove condition later
-            let menu = CommandManager.getVerticalMenu ? CommandManager.getVerticalMenu() : CommandManager.getNamedMenu("vivaldi", true)
+            let menu = CommandManager.getNamedMenu("vivaldi", true)
             let idx = menu.findIndex(i => i.labelEnglish == "Bookmarks")
             if (idx > -1) {
                 const rect = event.target.getBoundingClientRect()

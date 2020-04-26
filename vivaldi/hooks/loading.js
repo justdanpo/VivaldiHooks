@@ -1,18 +1,16 @@
 //Tabload progress indicator with no delay.
 
 {
-    const ProgressInfo = vivaldi.jdhooks.require("_ProgressInfo")
-    const url = vivaldi.jdhooks.require("url")
-    const NavigationInfo = vivaldi.jdhooks.require("_NavigationInfo")
-    const PageStore = vivaldi.jdhooks.require("_PageStore")
-
     function isinternalurl(u) {
-        const t = url.parse(u);
+        const t = vivaldi.jdhooks.require("url").parse(u);
         return ["vivaldi:", "chrome:", "chrome-extension:"]
             .some(proto => t.protocol && 0 === proto.indexOf(t.protocol))
     }
 
     vivaldi.jdhooks.hookClass("progress_PageloadProgress", cls => {
+        const NavigationInfo = vivaldi.jdhooks.require("_NavigationInfo")
+        const PageStore = vivaldi.jdhooks.require("_PageStore")
+
         class progress extends cls {
             constructor(...e) {
                 super(...e)
@@ -55,6 +53,8 @@
     })
 
     vivaldi.jdhooks.hookClass("tabs_Tab", oldClass => {
+        const ProgressInfo = vivaldi.jdhooks.require("_ProgressInfo")
+
         class loadingFavicon extends oldClass {
             constructor(...e) {
                 super(...e)
@@ -78,6 +78,8 @@
     })
 
     vivaldi.jdhooks.hookModule("setProgressState", (moduleInfo, exports) => {
+        const ProgressInfo = vivaldi.jdhooks.require("_ProgressInfo")
+
         class newClass extends exports {
             static setProgressState(pageId, progressState) {
                 const oldProgressInfo = ProgressInfo.getProgressInfo(pageId)
@@ -99,6 +101,8 @@
     })
 
     vivaldi.jdhooks.hookClass("webpage_WebPageContent", oldClass => {
+        const ProgressInfo = vivaldi.jdhooks.require("_ProgressInfo")
+
         class newClass extends oldClass {
             constructor(...e) {
                 super(...e)
@@ -130,4 +134,3 @@
         return newClass
     })
 }
-

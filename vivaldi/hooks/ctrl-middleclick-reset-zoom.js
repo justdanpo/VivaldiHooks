@@ -7,9 +7,7 @@ vivaldi.jdhooks.onUIReady(function () {
     let node = document.querySelector("#webview-container")
     if (node) {
         let ctrl = false
-        window.vivaldi.tabsPrivate.onKeyboardChanged.addListener((pressed, keymask, keycode, some) => {
-            //TODO: move "some" argument to the first place, remote the following condition
-            if (pressed !== true && pressed !== false) keycode = some
+        window.vivaldi.tabsPrivate.onKeyboardChanged.addListener((some, pressed, keymask, keycode) => {
             if (keycode === keyCodes.KEY_CONTROL) ctrl = pressed
         })
 

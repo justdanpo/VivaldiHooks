@@ -1,9 +1,7 @@
 //var result = vivaldi.jdhooks.require(moduleName)
-//vivaldi.jdhooks.hookClass(className, function(class))
-//vivaldi.jdhooks.hookMember(object, memberName, function(hookData, {oldarglist}), function(hookData, {oldarglist}))
-//vivaldi.jdhooks.hookModule(moduleName, function(moduleInfo, exports))
-//vivaldi.jdhooks.hookSettingsWrapper(moduleName, function(constructor, settingsArray))
-//vivaldi.jdhooks.hookForwardRef(typeToDereference, overrideClassCb)    returns newType or null
+//vivaldi.jdhooks.hookClass(className, class => newClass, ?{settings:[], pregs:[]})
+//vivaldi.jdhooks.hookMember(object, memberName, function cbBefore(hookData, {oldarglist}), function cbAfter(hookData, {oldarglist}))
+//vivaldi.jdhooks.hookModule(moduleName, (moduleInfo, exports) => newExports)
 //vivaldi.jdhooks.onUIReady(function())
 //vivaldi.jdhooks.addStyle(style)
 
@@ -42,17 +40,22 @@
             else {
                 moduleInfo.exports = newfn(moduleInfo, moduleInfo.exports)
             }
+
+            return moduleInfo.exports
         }
     }
 
     //hookClass(className, function(class))
     let hookClassList = {}
     jdhooks._unusedClassHooks = {} //stats
+    let hookClassPrefs = {}
+    let hookClassSettings = {}
 
-    const hookClass = vivaldi.jdhooks.hookClass = (className, cb) => {
+    const hookClass = vivaldi.jdhooks.hookClass = (className, cb, p) => {
         hookClassList[className] = hookClassList[className] || []
         hookClassList[className].push(cb)
-
+        if (p && p.prefs) hookClassPrefs[className] = (hookClassPrefs[className] | []).concat(p.prefs)
+        if (p && p.settings) hookClassSettings[className] = (hookClassSettings[className] || []).concat(p.settings)
         vivaldi.jdhooks._unusedClassHooks[className] = true
     }
 
@@ -89,53 +92,6 @@
                 }
             }
         }
-    }
-
-    //vivaldi.jdhooks.hookSettingsWrapper(moduleName, function(constructor, settingsArray))
-    let hookSettingsWrapperList = {}
-    const hookSettingsWrapper = vivaldi.jdhooks.hookSettingsWrapper = (moduleName, cb) => {
-        const moduleIndex = vivaldi.jdhooks._moduleMap[moduleName]
-        hookSettingsWrapperList[moduleIndex] = hookSettingsWrapperList[moduleIndex] || []
-        hookSettingsWrapperList[moduleIndex].push(cb)
-    }
-
-    //vivaldi.jdhooks.hookForwardRef(typeToDereference, overrideClassCb)
-    const hookForwardRef = vivaldi.jdhooks.hookForwardRef = (typeToDereference, overrideClassCb) => {
-        if (typeToDereference.$$typeof !== Symbol.for("react.forward_ref")) return null
-
-        let typeCacheForwardRef = new WeakMap()
-        function newRender(...e) {
-            let refRendered = typeToDereference.render(...e)
-
-            if (refRendered.$$typeof == Symbol.for("react.element")) {
-                let refRenderedNewType = typeCacheForwardRef.get(refRendered.type)
-                if (!refRenderedNewType) {
-                    class hookRefClass extends refRendered.type {
-                        typeCache = new WeakMap()
-                        constructor(...e) { super(...e) }
-                        render(...e) {
-                            let renderedRefInner = super.render(...e)
-                            let newType = this.typeCache.get(renderedRefInner.type)
-                            if (!newType) {
-                                let updatedType = hookForwardRef(renderedRefInner.type, overrideClassCb)
-                                newType = updatedType ? updatedType : overrideClassCb(renderedRefInner.type)
-                                this.typeCache.set(renderedRefInner.type, newType)
-                            }
-                            renderedRefInner.type = newType
-                            return renderedRefInner
-                        }
-                    }
-                    refRenderedNewType = hookRefClass
-                    typeCacheForwardRef.set(refRendered.type, refRenderedNewType)
-                }
-                refRendered.type = refRenderedNewType
-            } else {
-                console.log("jdhooks.hookForwardRef: unexpected type", refRendered)
-            }
-            return refRendered
-        }
-
-        return { ...typeToDereference, ...{ render: newRender } }
     }
 
     //onUIReady(function)
@@ -523,10 +479,20 @@
             }
         }
 
-        hookModule("common_InsertVivaldiSettings", (moduleInfo, exports) => (cls, settingsKeys) => {
-            const hookCallbacks = hookSettingsWrapperList[callStack[callStack.length - 1]] || []
-            hookCallbacks.forEach(cb => [cls, settingsKeys] = cb(cls, settingsKeys))
-            return exports(cls, settingsKeys)
+        hookModule("common_InsertVivaldiSettings", (moduleInfo, exports) => (type, paramArray) => {
+            if (type && type.prototype) {
+                let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
+                if (className && hookClassSettings[className]) { paramArray = paramArray.concat(hookClassSettings[className]) }
+            }
+            return exports(type, paramArray)
+        })
+
+        hookModule("common_InsertPrefsCache", (moduleInfo, exports) => (type, paramArray) => {
+            if (type && type.prototype) {
+                let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
+                if (className && hookClassPrefs[className]) { paramArray = paramArray.concat(hookClassPrefs[className]) }
+            }
+            return exports(type, paramArray)
         })
 
         //wait for UI

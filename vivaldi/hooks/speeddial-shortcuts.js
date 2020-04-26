@@ -4,20 +4,16 @@
 
 //TODO: cannot display category name :(
 
-vivaldi.jdhooks.hookModule("_VivaldiSettings", function (moduleInfo, exports) {
+vivaldi.jdhooks.hookModule("_VivaldiSettings", (moduleInfo, exports) => {
     let oldGetDefault = exports.getDefault
-
-    //TODO: remove later
-    const devValue = exports.getAllPrefs ? "" : {showInQC: true}
-
     exports.getDefault = name => {
-        if (typeof name == "string" && name.substr(0, 23) == "COMMAND_OPEN_SPEEDDIAL_") return devValue
+        if (typeof name == "string" && name.substr(0, 23) == "COMMAND_OPEN_SPEEDDIAL_") return { showInQC: true }
         return oldGetDefault(name)
     }
     return exports
 })
 
-vivaldi.jdhooks.hookModule('_CommandManager', function (moduleInfo, exports) {
+vivaldi.jdhooks.hookModule('_CommandManager', (moduleInfo, exports) => {
 
     function openSpeedDialItem(i) {
         const UrlFieldActions = vivaldi.jdhooks.require("_UrlFieldActions")

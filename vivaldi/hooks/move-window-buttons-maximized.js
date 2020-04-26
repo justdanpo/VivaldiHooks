@@ -76,11 +76,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
                     width: parseInt(rect.width),
                     height: parseInt(rect.height)
                 },
-                menu: {
-                    items:
-                        //TODO: remove condition later
-                        CommandManager.getVerticalMenu ? CommandManager.getVerticalMenu() : CommandManager.getNamedMenu("vivaldi", true)
-                }
+                menu: { items: CommandManager.getNamedMenu("vivaldi", true) }
             }
             ShowMenu.show(props.id, [props], "bottom")
         }
