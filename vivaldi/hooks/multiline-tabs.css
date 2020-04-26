@@ -44,3 +44,41 @@
     left: 0 !important;
     top: 0 !important;
 }
+
+
+/* fix for small/mini tabs */
+
+.tab-position .tab:hover.tab-small .close,
+.tab-position .tab.force-hover.tab-small .close
+{
+  display: flex;
+}
+
+.tab-position .tab:hover.active.tab-small .close,
+.tab-position .tab.force-hover.active.tab-small .close,
+.linux.alt .tab-position .tab:hover.tab-small:not(.active) .favicon,
+.linux.alt .tab-position .tab.force-hover.tab-small:not(.active) .favicon,
+.mac .tab-position .tab:hover.tab-small:not(.active) .favicon,
+.mac .tab-position .tab.force-hover.tab-small:not(.active) .favicon {
+  display: flex;
+}
+
+.win .tab-position .tab:hover.tab-small.active .title,
+.win .tab-position .tab.force-hover.tab-small.active .title,
+.linux:not(.alt) .tab-position .tab:hover.tab-small.active .title,
+.linux:not(.alt) .tab-position .tab.force-hover.tab-small.active .title {
+  display: flex;
+}
+
+#tabs-container .tab.tab-small.tab-mini .tab-header,
+#tabs-container .tab.pinned.tab-mini .tab-header {
+  justify-content: initial;
+  padding-left: 6px;
+  padding-right: 0;
+  border: nont;
+}
+
+#tabs-container .tab.tab-small.tab-mini .tab-header .title,
+#tabs-container .tab.pinned.tab-mini .tab-header .title {
+  display: flex;
+}

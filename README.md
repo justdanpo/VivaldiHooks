@@ -56,10 +56,6 @@ The easiest way to "uninstall"/disable VivaldiHooks is to delete **{instdir}\viv
 
 ![bookmarks-button.png](screenshots/bookmarks-button.png)
 
-### [extensions-buttons-menu-settings.js](vivaldi/hooks/extensions-buttons-menu-settings.js)
-
-![extensions-buttons-menu-settings.png](screenshots/extensions-buttons-menu-settings.png)
-
 ### [go-button.js](vivaldi/hooks/go-button.js)
 
 ![go-button.png](screenshots/go-button.png)
