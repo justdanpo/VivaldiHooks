@@ -64,7 +64,6 @@
     }
 
     vivaldi.jdhooks.hookClass("createbookmark_createbookmark", origClass => {
-        const React = vivaldi.jdhooks.require("React")
         const ReactDom = vivaldi.jdhooks.require("ReactDOM")
 
         class newCreateBookmarkButton extends origClass {
@@ -80,7 +79,7 @@
             }
 
             componentDidMount() {
-                super.componentDidMount()
+                if (super.componentDidMount) super.componentDidMount()
                 watcher.cdm(this)
 
                 const button = ReactDom.findDOMNode(this)
