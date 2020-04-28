@@ -54,7 +54,7 @@
     const hookClass = vivaldi.jdhooks.hookClass = (className, cb, p) => {
         hookClassList[className] = hookClassList[className] || []
         hookClassList[className].push(cb)
-        if (p && p.prefs) hookClassPrefs[className] = (hookClassPrefs[className] | []).concat(p.prefs)
+        if (p && p.prefs) hookClassPrefs[className] = (hookClassPrefs[className] || []).concat(p.prefs)
         if (p && p.settings) hookClassSettings[className] = (hookClassSettings[className] || []).concat(p.settings)
         vivaldi.jdhooks._unusedClassHooks[className] = true
     }
@@ -228,11 +228,11 @@
             "_PageActions": ["ERROR while creating new tab. Original message"],
             "_PageStore": ["section=Speed-dials&activeSpeedDialIndex=0"],
             "_PageZoom": ["onUIZoomChanged.addListener"],
+            "_PrefCache": ["Unknown prefs property:"],
+            "_PrefKeys": ["vivaldi.downloads.update_default_download_when_saving_as"],
+            "_PrefSet": ["Not known how to make event handler for pref "],
             "_ProgressInfo": ["getProgressInfo", "PAGE_SET_PROGRESS"],
             "_RazerChroma": ["Error setting Razer Chroma color"],
-            "_SettingsGet": ["Unknown prefs property:"],
-            "_SettingsPaths": ["vivaldi.downloads.update_default_download_when_saving_as"],
-            "_SettingsSet": ["Not known how to make event handler for pref "],
             "_ShowMenu": ["menubarMenu.onAction.addListener", "containerGroupFolders"],
             "_ShowUI": ['document.getElementById("app")', "JS init startup"],
             "_UIActions": ["_maybeShowSettingsInWindow"],
@@ -453,13 +453,17 @@
                                         origtype = type
                                         let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
                                         if (className) {
+                                            type.prototype.__jdhooks_instanceof = className
                                             for (cb of hookClassList[className] || []) { type = cb(type) }
                                             delete jdhooks._unusedClassHooks[className]
                                         }
                                         cached.set(origtype, type)
                                     }
                                 }
-                                return imported.createElement(type, ...e)
+                                let r = imported.createElement(type, ...e)
+                                if (type.prototype && type.prototype.__jdhooks_instanceof)
+                                    r.__jdhooks_instanceof = type.prototype.__jdhooks_instanceof
+                                return r
                             }
                         }
                     }
@@ -480,19 +484,30 @@
         }
 
         hookModule("common_InsertVivaldiSettings", (moduleInfo, exports) => (type, paramArray) => {
-            if (type && type.prototype) {
-                let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
-                if (className && hookClassSettings[className]) { paramArray = paramArray.concat(hookClassSettings[className]) }
-            }
-            return exports(type, paramArray)
+            let className = type.__jdhooks_instanceof
+                ? type.__jdhooks_instanceof
+                : type && type.prototype
+                    ? classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
+                    : undefined
+
+            if (className && hookClassSettings[className]) { paramArray = paramArray.concat(hookClassSettings[className]) }
+
+            let r = exports(type, paramArray)
+            if (className) r.__jdhooks_instanceof = className
+            return r
         })
 
         hookModule("common_InsertPrefsCache", (moduleInfo, exports) => (type, paramArray) => {
-            if (type && type.prototype) {
-                let className = classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
-                if (className && hookClassPrefs[className]) { paramArray = paramArray.concat(hookClassPrefs[className]) }
-            }
-            return exports(type, paramArray)
+            let className = type.__jdhooks_instanceof
+                ? type.__jdhooks_instanceof
+                : type && type.prototype
+                    ? classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
+                    : undefined
+            if (className && hookClassPrefs[className]) { paramArray = paramArray.concat(hookClassPrefs[className]) }
+
+            let r = exports(type, paramArray)
+            if (className) r.__jdhooks_instanceof = className
+            return r
         })
 
         //wait for UI

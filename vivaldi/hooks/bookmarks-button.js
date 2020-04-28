@@ -9,7 +9,7 @@ vivaldi.jdhooks.addStyle(`
 
 vivaldi.jdhooks.hookModule("toolbars_Toolbar", (moduleInfo, exports) => {
     const React = vivaldi.jdhooks.require("React")
-    const SettingsPaths = vivaldi.jdhooks.require("_SettingsPaths")
+    const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
     const ShowMenu = vivaldi.jdhooks.require("_ShowMenu")
     const CommandManager = vivaldi.jdhooks.require("_CommandManager")
 
@@ -37,7 +37,7 @@ vivaldi.jdhooks.hookModule("toolbars_Toolbar", (moduleInfo, exports) => {
 
         render() {
             let ret = super.render()
-            if (this.props.name == SettingsPaths.kToolbarsNavigation) {
+            if (this.props.name == PrefKeys.kToolbarsNavigation) {
                 ret.props.children.push(
                     React.createElement(
                         "div", { className: "button-toolbar jdbookmarkbutton" },

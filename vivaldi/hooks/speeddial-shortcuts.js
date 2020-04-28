@@ -17,14 +17,14 @@ vivaldi.jdhooks.hookModule('_CommandManager', (moduleInfo, exports) => {
 
     function openSpeedDialItem(i) {
         const UrlFieldActions = vivaldi.jdhooks.require("_UrlFieldActions")
-        const SettingsPaths = vivaldi.jdhooks.require("_SettingsPaths")
-        const SettingsGet = vivaldi.jdhooks.require('_SettingsGet')
+        const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
+        const PrefCache = vivaldi.jdhooks.require('_PrefCache')
 
         const sdi = vivaldi.jdhooks.require('_BookmarkStore').getSpeeddialFolders()
 
         if (sdi && sdi[0] && sdi[0].children[i - 1]) {
             UrlFieldActions.go([sdi[0].children[i - 1].url], {
-                inCurrent: !SettingsGet.get(SettingsPaths.kQuickCommandsOpenUrlInNewTab),
+                inCurrent: !PrefCache.get(PrefKeys.kQuickCommandsOpenUrlInNewTab),
                 addTypedHistory: false,
                 addTypedSearchHistory: false,
                 enableSearch: true
