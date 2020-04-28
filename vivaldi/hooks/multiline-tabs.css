@@ -1,87 +1,102 @@
-﻿/* Multiline tabs */
-
-#tabs-container {
-    height: auto !important;
+/* Multiline tabs */
+#browser.tabs-bottom,
+#browser.tabs-top {
+  /* fix for small/mini tabs */
 }
-.resize {
-    display: block !important;
+#browser.tabs-bottom #tabs-container,
+#browser.tabs-top #tabs-container {
+  height: auto !important;
 }
-.tab-strip {
-    display: block;
+#browser.tabs-bottom .resize,
+#browser.tabs-top .resize {
+  display: block !important;
 }
-.tab-strip > span {
-    display: inline-block;
+#browser.tabs-bottom .tab-strip,
+#browser.tabs-top .tab-strip {
+  display: block;
 }
-.tab-strip > span > .tab-position {
-    left: 0px !important;
-    position: relative;
-    height: 30px !important;
-    width: auto !important;
+#browser.tabs-bottom .tab-strip > span,
+#browser.tabs-top .tab-strip > span {
+  display: inline-block;
 }
-.tab-strip > span > .tab-position > .tab:not(.pinned){
-    width: 220px !important;
+#browser.tabs-bottom .tab-strip > span > .tab-position,
+#browser.tabs-top .tab-strip > span > .tab-position {
+  left: 0px !important;
+  position: relative;
+  height: 30px !important;
+  width: auto !important;
 }
-.tab-strip > span > .tab-position > .tab.pinned{
-    width: 30px !important;
+#browser.tabs-bottom .tab-strip > span > .tab-position > .tab:not(.pinned),
+#browser.tabs-top .tab-strip > span > .tab-position > .tab:not(.pinned) {
+  width: 220px !important;
 }
-.tab-strip > .newtab {
-    left: 0px !important;
-    top: 0px !important;
-    position: relative !important;
-    display: inline-block;
-    padding: 0;
-    vertical-align: top;
+#browser.tabs-bottom .tab-strip > span > .tab-position > .tab.pinned,
+#browser.tabs-top .tab-strip > span > .tab-position > .tab.pinned {
+  width: 30px !important;
 }
-.tab-header > .favicon > svg {
-    height: 17px;
+#browser.tabs-bottom .tab-strip > .newtab,
+#browser.tabs-top .tab-strip > .newtab {
+  left: 0px !important;
+  top: 0px !important;
+  position: relative !important;
+  display: inline-block;
+  padding: 0;
+  vertical-align: top;
 }
-
-.toolbar-tabbar {
-    float: right;
+#browser.tabs-bottom .tab-header > .favicon > svg,
+#browser.tabs-top .tab-header > .favicon > svg {
+  height: 17px;
 }
-
-.button-toolbar.newtab {
-    left: 0 !important;
-    top: 0 !important;
+#browser.tabs-bottom .toolbar-tabbar,
+#browser.tabs-top .toolbar-tabbar {
+  float: right;
 }
-
-.sync-and-trash-container .synced-tabs-button {
-    align-self: flex-end;
+#browser.tabs-bottom .toolbar-tabbar.newtab,
+#browser.tabs-top .toolbar-tabbar.newtab {
+  left: 0 !important;
+  top: 0 !important;
 }
-
-/* fix for small/mini tabs */
-
-.tab-position .tab:hover.tab-small .close,
-.tab-position .tab.force-hover.tab-small .close
-{
+#browser.tabs-bottom .sync-and-trash-container .synced-tabs-button,
+#browser.tabs-top .sync-and-trash-container .synced-tabs-button {
+  align-self: flex-end;
+}
+#browser.tabs-bottom .tab-position .tab:hover.tab-small .close,
+#browser.tabs-bottom .tab-position .tab.force-hover.tab-small .close,
+#browser.tabs-top .tab-position .tab:hover.tab-small .close,
+#browser.tabs-top .tab-position .tab.force-hover.tab-small .close {
   display: flex;
 }
-
-.tab-position .tab:hover.active.tab-small .close,
-.tab-position .tab.force-hover.active.tab-small .close,
-.linux.alt .tab-position .tab:hover.tab-small:not(.active) .favicon,
-.linux.alt .tab-position .tab.force-hover.tab-small:not(.active) .favicon,
-.mac .tab-position .tab:hover.tab-small:not(.active) .favicon,
-.mac .tab-position .tab.force-hover.tab-small:not(.active) .favicon {
+#browser.tabs-bottom .tab-position .tab:hover.active.tab-small .close,
+#browser.tabs-bottom .tab-position .tab.force-hover.active.tab-small .close, #browser.tabs-bottom.linux.alt .tab-position .tab:hover.tab-small:not(.active) .favicon, #browser.tabs-bottom.linux.alt .tab-position .tab.force-hover.tab-small:not(.active) .favicon, #browser.tabs-bottom.mac .tab-position .tab:hover.tab-small:not(.active) .favicon, #browser.tabs-bottom.mac .tab-position .tab.force-hover.tab-small:not(.active) .favicon,
+#browser.tabs-top .tab-position .tab:hover.active.tab-small .close,
+#browser.tabs-top .tab-position .tab.force-hover.active.tab-small .close,
+#browser.tabs-top.linux.alt .tab-position .tab:hover.tab-small:not(.active) .favicon,
+#browser.tabs-top.linux.alt .tab-position .tab.force-hover.tab-small:not(.active) .favicon,
+#browser.tabs-top.mac .tab-position .tab:hover.tab-small:not(.active) .favicon,
+#browser.tabs-top.mac .tab-position .tab.force-hover.tab-small:not(.active) .favicon {
   display: flex;
 }
-
-.win .tab-position .tab:hover.tab-small.active .title,
-.win .tab-position .tab.force-hover.tab-small.active .title,
-.linux:not(.alt) .tab-position .tab:hover.tab-small.active .title,
-.linux:not(.alt) .tab-position .tab.force-hover.tab-small.active .title {
+#browser.tabs-bottom.win .tab-position .tab:hover.tab-small.active .title, #browser.tabs-bottom.win .tab-position .tab.force-hover.tab-small.active .title, #browser.tabs-bottom.linux:not(.alt) .tab-position .tab:hover.tab-small.active .title, #browser.tabs-bottom.linux:not(.alt) .tab-position .tab.force-hover.tab-small.active .title,
+#browser.tabs-top.win .tab-position .tab:hover.tab-small.active .title,
+#browser.tabs-top.win .tab-position .tab.force-hover.tab-small.active .title,
+#browser.tabs-top.linux:not(.alt) .tab-position .tab:hover.tab-small.active .title,
+#browser.tabs-top.linux:not(.alt) .tab-position .tab.force-hover.tab-small.active .title {
   display: flex;
 }
-
-#tabs-container .tab.tab-small.tab-mini .tab-header,
-#tabs-container .tab.pinned.tab-mini .tab-header {
+#browser.tabs-bottom #tabs-container .tab.tab-small.tab-mini .tab-header,
+#browser.tabs-bottom #tabs-container .tab.pinned.tab-mini .tab-header,
+#browser.tabs-top #tabs-container .tab.tab-small.tab-mini .tab-header,
+#browser.tabs-top #tabs-container .tab.pinned.tab-mini .tab-header {
   justify-content: initial;
   padding-left: 6px;
   padding-right: 0;
-  border: nont;
+  border: none;
 }
-
-#tabs-container .tab.tab-small.tab-mini .tab-header .title,
-#tabs-container .tab.pinned.tab-mini .tab-header .title {
+#browser.tabs-bottom #tabs-container .tab.tab-small.tab-mini .tab-header .title,
+#browser.tabs-bottom #tabs-container .tab.pinned.tab-mini .tab-header .title,
+#browser.tabs-top #tabs-container .tab.tab-small.tab-mini .tab-header .title,
+#browser.tabs-top #tabs-container .tab.pinned.tab-mini .tab-header .title {
   display: flex;
 }
+
+/*# sourceMappingURL=multiline-tabs.css.map */
