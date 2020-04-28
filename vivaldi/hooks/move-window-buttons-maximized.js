@@ -62,6 +62,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     const React = vivaldi.jdhooks.require("React")
     const ShowMenu = vivaldi.jdhooks.require("_ShowMenu")
     const CommandManager = vivaldi.jdhooks.require("_CommandManager")
+    const ToolbarButton = vivaldi.jdhooks.require("toolbars_ToolbarButton")
 
     class newClass extends oldClass {
         constructor(...e) { super(...e) }
@@ -133,14 +134,11 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
                     className: "toolbar toolbar-mainbar MaximizedWindowButtons",
                     id: "vivaldi-button-moved"
                 },
-                    React.createElement("div", { className: "button-toolbar" },
-                        React.createElement("button", {
-                            tabIndex: "-1",
-                            dangerouslySetInnerHTML: {
-                                __html: vivaldi.jdhooks.require("_svg_menu_vivaldi")
-                            },
-                            onClick: this.vivaldiButtonClick.bind(this)
-                        }))
+                    React.createElement(ToolbarButton, {
+                        tooltip: "Menu",
+                        onClick: this.vivaldiButtonClick.bind(this),
+                        image: vivaldi.jdhooks.require("_svg_menu_vivaldi")
+                    })
                 ))
 
             ret.props.children.push(

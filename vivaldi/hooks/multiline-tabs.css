@@ -45,6 +45,9 @@
     top: 0 !important;
 }
 
+.sync-and-trash-container .synced-tabs-button {
+    align-self: flex-end;
+}
 
 /* fix for small/mini tabs */
 

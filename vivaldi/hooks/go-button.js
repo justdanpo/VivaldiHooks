@@ -83,7 +83,6 @@ vivaldi.jdhooks.hookClass("settings_addressbar_AddressBar", oldClass => {
         componentDidMount() {
             if (super.componentDidMount) super.componentDidMount()
             settingsKeys.forEach(key => VivaldiSettings.addListener(key, changeHandler.bind(this)))
-
         }
         componentWillUnmount() {
             if (super.componentWillUnmount) super.componentWillUnmount()
