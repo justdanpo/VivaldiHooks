@@ -1,0 +1,9 @@
+﻿/* Fixes Tab/Window Spacer for different modes and Tab Bar positions */
+
+#browser.horizontal-menu #tabs-container.top {
+    padding-top: 0 /*2px;*/
+}
+
+#browser.native #tabs-container.top {
+    padding-top: 0 !important
+}

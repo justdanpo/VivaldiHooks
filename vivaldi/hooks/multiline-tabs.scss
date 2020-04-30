@@ -4,14 +4,20 @@
 #browser.tabs-top {
     #tabs-container {
         height: auto !important;
-    }
 
-    .resize {
-        display: block !important;
+        .resize {
+            display: block !important;
+        }
+
+        .sync-and-trash-container .synced-tabs-button {
+            align-self: flex-end;
+        }
     }
 
     .tab-strip {
-        display: block;
+        display: flex;
+        flex-wrap: wrap;
+
         & > span {
             display: inline-block;
 
@@ -27,34 +33,24 @@
                 & > .tab.pinned {
                     width: 30px !important;
                 }
+
+                .tab-header > .favicon > svg {
+                    height: 17px;
+                }            
             }
         }
 
-        & > .newtab {
-            left: 0px !important;
-            top: 0px !important;
-            position: relative !important;
-            display: inline-block;
-            padding: 0;
-            vertical-align: top;
+        .toolbar-tabbar {
+            margin-left: auto;
+    
+            .newtab {
+                left: 0 !important;
+                top: 0 !important;
+                position: relative !important;
+                padding: 0;
+                vertical-align: top;
+            }
         }
-    }
-
-    .tab-header > .favicon > svg {
-        height: 17px;
-    }
-
-    .toolbar-tabbar {
-        float: right;
-
-        &.newtab {
-            left: 0 !important;
-            top: 0 !important;
-        }
-    }
-
-    .sync-and-trash-container .synced-tabs-button {
-        align-self: flex-end;
     }
 
     /* fix for small/mini tabs */

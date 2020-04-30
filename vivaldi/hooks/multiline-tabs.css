@@ -7,13 +7,18 @@
 #browser.tabs-top #tabs-container {
   height: auto !important;
 }
-#browser.tabs-bottom .resize,
-#browser.tabs-top .resize {
+#browser.tabs-bottom #tabs-container .resize,
+#browser.tabs-top #tabs-container .resize {
   display: block !important;
+}
+#browser.tabs-bottom #tabs-container .sync-and-trash-container .synced-tabs-button,
+#browser.tabs-top #tabs-container .sync-and-trash-container .synced-tabs-button {
+  align-self: flex-end;
 }
 #browser.tabs-bottom .tab-strip,
 #browser.tabs-top .tab-strip {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
 }
 #browser.tabs-bottom .tab-strip > span,
 #browser.tabs-top .tab-strip > span {
@@ -34,31 +39,21 @@
 #browser.tabs-top .tab-strip > span > .tab-position > .tab.pinned {
   width: 30px !important;
 }
-#browser.tabs-bottom .tab-strip > .newtab,
-#browser.tabs-top .tab-strip > .newtab {
-  left: 0px !important;
-  top: 0px !important;
-  position: relative !important;
-  display: inline-block;
-  padding: 0;
-  vertical-align: top;
-}
-#browser.tabs-bottom .tab-header > .favicon > svg,
-#browser.tabs-top .tab-header > .favicon > svg {
+#browser.tabs-bottom .tab-strip > span > .tab-position .tab-header > .favicon > svg,
+#browser.tabs-top .tab-strip > span > .tab-position .tab-header > .favicon > svg {
   height: 17px;
 }
-#browser.tabs-bottom .toolbar-tabbar,
-#browser.tabs-top .toolbar-tabbar {
-  float: right;
+#browser.tabs-bottom .tab-strip .toolbar-tabbar,
+#browser.tabs-top .tab-strip .toolbar-tabbar {
+  margin-left: auto;
 }
-#browser.tabs-bottom .toolbar-tabbar.newtab,
-#browser.tabs-top .toolbar-tabbar.newtab {
+#browser.tabs-bottom .tab-strip .toolbar-tabbar .newtab,
+#browser.tabs-top .tab-strip .toolbar-tabbar .newtab {
   left: 0 !important;
   top: 0 !important;
-}
-#browser.tabs-bottom .sync-and-trash-container .synced-tabs-button,
-#browser.tabs-top .sync-and-trash-container .synced-tabs-button {
-  align-self: flex-end;
+  position: relative !important;
+  padding: 0;
+  vertical-align: top;
 }
 #browser.tabs-bottom .tab-position .tab:hover.tab-small .close,
 #browser.tabs-bottom .tab-position .tab.force-hover.tab-small .close,
