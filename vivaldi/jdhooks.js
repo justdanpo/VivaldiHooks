@@ -235,6 +235,7 @@
             "_RazerChroma": ["Error setting Razer Chroma color"],
             "_ShowMenu": ["menubarMenu.onAction.addListener", "containerGroupFolders"],
             "_ShowUI": ['document.getElementById("app")', "JS init startup"],
+            "_Theme": ["fgBgHighlight", "kThemeContrastMinimum"],
             "_UIActions": ["_maybeShowSettingsInWindow"],
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiSettings": ["_vivaldiSettingsListener"],
