@@ -79,7 +79,3 @@ The easiest way to "uninstall"/disable VivaldiHooks is to delete **{instdir}\viv
 ### [jdhooks-startup-settings.js](vivaldi/hooks/jdhooks-startup-settings.js)
 
 ![jdhooks-startup-settings.png](screenshots/jdhooks-startup-settings.png)
-
-### [speeddial-items-geometry.js](vivaldi/hooks/speeddial-items-geometry.js)
-
-![speeddial-items-geometry.png](screenshots/speeddial-items-geometry.png)
