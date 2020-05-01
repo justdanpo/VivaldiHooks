@@ -8,20 +8,25 @@ vivaldi.jdhooks.addStyle(`
 
 vivaldi.jdhooks.hookClass("toolbars_Toolbar", origClass => {
     const React = vivaldi.jdhooks.require("React")
+    const ReactDom = vivaldi.jdhooks.require("ReactDOM")
 
-    class mynew extends origClass {
+    return class extends origClass {
         render() {
             let r = super.render()
-
-            let panelToggleIndex = r.props.children.findIndex(c => c.props.name == "PanelToggle")
-            if (-1 < panelToggleIndex) {
-                r.props.children[panelToggleIndex] = React.createElement("div", { className: "paneltogglefooter" }, r.props.children[panelToggleIndex])
-            }
-
+            for (let child of r.props.children)
+                if (child.props.name == "PanelToggle") child.ref = "paneltoggle"
             return r
         }
 
         constructor(...e) { super(...e) }
+
+        componentDidMount() {
+            if (super.componentDidMount) super.componentDidMount()
+            if (this.refs.paneltoggle) {
+                let toggleButton = ReactDom.findDOMNode(this.refs.paneltoggle)
+                if (toggleButton)
+                    toggleButton.classList.add("paneltogglefooter")
+            }
+        }
     }
-    return mynew
 })

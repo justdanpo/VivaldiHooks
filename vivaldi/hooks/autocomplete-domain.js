@@ -20,7 +20,10 @@ vivaldi.jdhooks.hookClass("urlfield_AutocompleteInput_AutocompleteInput", oldCla
 					+ (parsed.hostname ? parsed.hostname : "")
 					+ (parsed.pathname ? parsed.pathname.replace(/^(.*?\/).*/, "$1") : "");
 
-				if (r.typedValue.length < host.length) r.autocompleteValue = host
+				if (r.typedValue.length < host.length) {
+					r.autocompleteValue = host
+					r.autocompleteItem = false
+				}
 			}
 			return r
 		}
