@@ -453,6 +453,7 @@
             "_UIActions": ["_maybeShowSettingsInWindow"],
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiIcons": ["small:", "medium:", "large:"],
+            "_WebViewStore": ["getActiveWebView()", ".WEBVIEW_CLEAR_IF_ACTIVE:"],
 
             "_svg_addressbar_btn_backward": ["M15.2929 20.7071C15.6834 21.0976 16.3166 21.0976 16.7071 20.7071C17.0976 20.3166 17.0976"],
             "_svg_addressbar_btn_fastbackward": ["M9 8C9 7.44772 9.44772 7 10 7C10.5523 7 11 7.44772 11 8V12L15.2929 7.70711C15.9229"],
