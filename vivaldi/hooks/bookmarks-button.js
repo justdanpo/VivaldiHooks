@@ -4,7 +4,7 @@
 {
     const position = { separate: "separate", addressfield: "addressfield" }
 
-    vivaldi.jdhooks.hookModule("_VivaldiSettings", (moduleInfo, exports) => {
+    vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
         let oldGetDefault = exports.getDefault
         exports.getDefault = name => {
             switch (name) {
@@ -22,7 +22,7 @@
             this.VivaldiSettings = undefined
         }
         ctr(obj) {
-            if (!this.VivaldiSettings) this.VivaldiSettings = vivaldi.jdhooks.require("_VivaldiSettings")
+            if (!this.VivaldiSettings) this.VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
             if (!obj.state) obj.state = {}
             obj.state[this.memberName] = this.VivaldiSettings.getKeysSync(this.keys)
         }
@@ -117,7 +117,7 @@
                         React.createElement(ToolbarButton, {
                             tooltip: "Bookmarks",
                             onClick: bookmarksOnClick,
-                            image: vivaldi.jdhooks.require("_svg_panel_bookmarks")
+                            image: vivaldi.jdhooks.require("_svg_bookmarks_large")
                         })
                     )
                 }
@@ -140,7 +140,7 @@
     vivaldi.jdhooks.hookClass("settings_bookmarks_BookmarkBar", origClass => {
         const React = vivaldi.jdhooks.require("React")
         const RadioGroup = vivaldi.jdhooks.require("common_RadioGroup")
-        const VivaldiSettings = vivaldi.jdhooks.require("_VivaldiSettings")
+        const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
 
         class bookmarkButtonSettings extends origClass {
             constructor(...e) {

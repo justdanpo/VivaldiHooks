@@ -1,7 +1,7 @@
 //GO buttons in addressbar
 //Кнопки перехода для адресной и посковой строк
 
-vivaldi.jdhooks.hookModule("_VivaldiSettings", (moduleInfo, exports) => {
+vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
     let oldGetDefault = exports.getDefault
     exports.getDefault = name => {
         switch (name) {
@@ -66,7 +66,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
 vivaldi.jdhooks.hookClass("settings_addressbar_AddressBar", oldClass => {
     const React = vivaldi.jdhooks.require("React")
     const Settings_SettingsSearchCategoryChild = vivaldi.jdhooks.require("settings_SettingsSearchCategoryChild")
-    const VivaldiSettings = vivaldi.jdhooks.require("_VivaldiSettings")
+    const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
 
     const settingsKeys = ["ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED"]
     function changeHandler(oldValue, newValue, key) {

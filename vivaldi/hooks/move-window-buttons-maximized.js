@@ -53,7 +53,7 @@ vivaldi.jdhooks.addStyle(`
 }
 
 .tabs-right#browser.win.win10 .tabs-bottom#browser.win.win10 .tabs-left#browser.win.win10,
-#browser.win.win10 .MaximizedWindowButtons button {
+#browser.win.win10 .MaximizedWindowButtons.window-buttongroup button {
   height: 25px;
 }
 `, "move-window-buttons-maximized.js")

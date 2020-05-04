@@ -9,7 +9,7 @@ vivaldi.jdhooks.addStyle(`
 
 vivaldi.jdhooks.hookClass("settings_startup_StartupSettingsSection", oldClass => {
     const React = vivaldi.jdhooks.require("React")
-    const settings = vivaldi.jdhooks.require("_VivaldiSettings")
+    const settings = vivaldi.jdhooks.require("vivaldiSettings")
     const settings_SettingsSearchCategoryChild = vivaldi.jdhooks.require("settings_SettingsSearchCategoryChild")
 
     let newScripts = []

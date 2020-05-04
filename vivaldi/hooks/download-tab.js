@@ -2,7 +2,7 @@
 //Открывать загрузки во вкладке, а не в панели
 
 {
-    vivaldi.jdhooks.hookModule("_VivaldiSettings", (moduleInfo, exports) => {
+    vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
         let oldGetDefault = exports.getDefault
         exports.getDefault = name => {
             switch (name) {
@@ -20,7 +20,7 @@
             this.VivaldiSettings = undefined
         }
         ctr(obj) {
-            if (!this.VivaldiSettings) this.VivaldiSettings = vivaldi.jdhooks.require("_VivaldiSettings")
+            if (!this.VivaldiSettings) this.VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
             if (!obj.state) obj.state = {}
             obj.state[this.memberName] = this.VivaldiSettings.getKeysSync(this.keys)
         }
@@ -41,7 +41,7 @@
 
     vivaldi.jdhooks.hookClass("settings_downloads_Downloads", oldClass => {
         const React = vivaldi.jdhooks.require("React")
-        const VivaldiSettings = vivaldi.jdhooks.require("_VivaldiSettings")
+        const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
 
         class newDownloadSettings extends oldClass {
             constructor(...e) {
@@ -85,7 +85,7 @@
         var downloadTabPageStore = vivaldi.jdhooks.require("_PageStore");
 
         if (!downloadTabPageStore.getPages().find(page => page.get("url") === "chrome://downloads/")) {
-            vivaldi.jdhooks.require("_PageActions").openURL("vivaldi://downloads", {
+            vivaldi.jdhooks.require("PageActions").openURL("vivaldi://downloads", {
                 singleton: true,
                 inBackground: true,
                 isTyped: false
@@ -94,7 +94,7 @@
     };
 
     vivaldi.jdhooks.hookClass("webpage_WebPageContent", oldClass => {
-        const PrefCache = vivaldi.jdhooks.require("_PrefCache")
+        const PrefCache = vivaldi.jdhooks.require("PrefsCache")
         const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
 
         class downloadTabWebpageContent extends oldClass {
@@ -119,7 +119,7 @@
     }, { settings: ["SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS"] })
 
     vivaldi.jdhooks.hookClass("dialogs_downloadDialog", oldClass => {
-        const VivaldiSettings = vivaldi.jdhooks.require("_VivaldiSettings")
+        const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
 
         class downloadTabDownloadDialog extends oldClass {
             constructor(...e) {

@@ -6,7 +6,7 @@ vivaldi.jdhooks.addStyle(`
 `, "qc-close-tab.js")
 
 vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
-	const PageActions = vivaldi.jdhooks.require("_PageActions")
+	const PageActions = vivaldi.jdhooks.require("PageActions")
 
 	class qc extends cls {
 
