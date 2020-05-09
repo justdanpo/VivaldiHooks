@@ -2,11 +2,9 @@
 //Клик средней кнопкой мыши по кнопке "[+]" открывает ссылку из буфера
 
 vivaldi.jdhooks.hookModule("tabs_NewTab", function (moduleInfo, exports) {
-    const React = vivaldi.jdhooks.require("React")
     const UrlFieldActions = vivaldi.jdhooks.require('_UrlFieldActions')
 
-    class mynew extends exports {
-
+    return class extends exports {
         render() {
             let r = super.render()
 
@@ -23,17 +21,13 @@ vivaldi.jdhooks.hookModule("tabs_NewTab", function (moduleInfo, exports) {
                 document.removeEventListener("paste", getClipboard)
 
                 UrlFieldActions.go([txt], {
-                    inCurrent: !1,
-                    addTypedHistory: !0,
-                    addTypedSearchHistory: !1,
-                    enableSearch: !0
+                    inCurrent: false,
+                    addTypedHistory: true,
+                    addTypedSearchHistory: false,
+                    enableSearch: true
                 })
             }
-
             return r
         }
-
-        constructor(props, ...e) { super(props, ...e) }
     }
-    return mynew
 })

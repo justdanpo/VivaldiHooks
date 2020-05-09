@@ -14,16 +14,15 @@ vivaldi.jdhooks.hookClass("toolbars_Toolbar", origClass => {
         render() {
             let r = super.render()
             for (let child of r.props.children)
-                if (child.props.name == "PanelToggle") child.ref = "paneltoggle"
+                if (child.props.name == "PanelToggle") this.jd_panel_right_toggle_refname = child.ref = child.ref || "jd_panel_right_toggle_ref"
             return r
         }
 
-        constructor(...e) { super(...e) }
-
         componentDidMount() {
             if (super.componentDidMount) super.componentDidMount()
-            if (this.refs.paneltoggle) {
-                let toggleButton = ReactDom.findDOMNode(this.refs.paneltoggle)
+            const ref = this.refs[this.jd_panel_right_toggle_refname]
+            if (ref) {
+                let toggleButton = ReactDom.findDOMNode(ref)
                 if (toggleButton)
                     toggleButton.classList.add("paneltogglefooter")
             }

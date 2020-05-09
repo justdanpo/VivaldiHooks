@@ -126,8 +126,6 @@ vivaldi.jdhooks.hookClass("settings_startup_StartupSettingsSection", oldClass =>
     }
 
     class newSettingsClass extends oldClass {
-        constructor(...e) { super(...e) }
-
         render() {
             let r = super.render()
 

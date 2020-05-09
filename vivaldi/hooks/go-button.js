@@ -29,8 +29,6 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     }
 
     class newUrlBar extends oldClass {
-        constructor(...e) { super(...e) }
-
         render() {
             let r = super.render()
             if (this.props.vivaldiSettings.ADDRESS_BAR_URL_GO_ENABLED) {
@@ -67,63 +65,48 @@ vivaldi.jdhooks.hookClass("settings_addressbar_AddressBar", oldClass => {
     const React = vivaldi.jdhooks.require("React")
     const Settings_SettingsSearchCategoryChild = vivaldi.jdhooks.require("settings_SettingsSearchCategoryChild")
     const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
+    const common_InsertVivaldiSettings = vivaldi.jdhooks.require("common_InsertVivaldiSettings")
 
-    const settingsKeys = ["ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED"]
-    function changeHandler(oldValue, newValue, key) {
-        if (this.state.goButtonSettings[key] != newValue)
-            this.setState(state => ({ goButtonSettings: { ...state.goButtonSettings, [key]: newValue } }))
-    }
-
-    class newAddressBarSettings extends oldClass {
-        constructor(...e) {
-            super(...e)
-            this.state = { ...(this.state || {}), ...{ goButtonSettings: VivaldiSettings.getKeysSync(settingsKeys) } }
-        }
-
-        componentDidMount() {
-            if (super.componentDidMount) super.componentDidMount()
-            settingsKeys.forEach(key => VivaldiSettings.addListener(key, changeHandler.bind(this)))
-        }
-        componentWillUnmount() {
-            if (super.componentWillUnmount) super.componentWillUnmount()
-            settingsKeys.forEach(key => VivaldiSettings.removeListener(key, changeHandler.bind(this)))
-        }
-
+    const Setting = common_InsertVivaldiSettings(class extends React.PureComponent {
         render() {
-            let r = super.render()
-            r.props.children.push(
-                React.createElement(Settings_SettingsSearchCategoryChild, { filter: this.props.filter },
-                    React.createElement("h3", null, "Go button"),
-                    React.createElement("div", { className: "setting-group" },
-                        React.createElement("div", { className: "setting-single" },
-                            React.createElement("label", null,
-                                React.createElement("input", {
-                                    type: "checkbox",
-                                    checked: this.state.goButtonSettings.ADDRESS_BAR_URL_GO_ENABLED,
-                                    onChange: () => VivaldiSettings.set({
-                                        ADDRESS_BAR_URL_GO_ENABLED: !this.state.goButtonSettings.ADDRESS_BAR_URL_GO_ENABLED
-                                    })
-                                }),
-                                React.createElement("span", null, "Go button after addressfield")
-                            )
-                        ),
-                        React.createElement("div", { className: "setting-single" },
-                            React.createElement("label", null,
-                                React.createElement("input", {
-                                    type: "checkbox",
-                                    checked: this.state.goButtonSettings.ADDRESS_BAR_SEARCH_GO_ENABLED,
-                                    onChange: () => VivaldiSettings.set({
-                                        ADDRESS_BAR_SEARCH_GO_ENABLED: !this.state.goButtonSettings.ADDRESS_BAR_SEARCH_GO_ENABLED
-                                    })
-                                }),
-                                React.createElement("span", null, "Go button after searchfield")
-                            )
+            return React.createElement(Settings_SettingsSearchCategoryChild, { filter: this.props.filter },
+                React.createElement("h3", null, "Go button"),
+                React.createElement("div", { className: "setting-group" },
+                    React.createElement("div", { className: "setting-single" },
+                        React.createElement("label", null,
+                            React.createElement("input", {
+                                type: "checkbox",
+                                checked: this.props.vivaldiSettings.ADDRESS_BAR_URL_GO_ENABLED,
+                                onChange: () => VivaldiSettings.set({
+                                    ADDRESS_BAR_URL_GO_ENABLED: !this.props.vivaldiSettings.ADDRESS_BAR_URL_GO_ENABLED
+                                })
+                            }),
+                            React.createElement("span", null, "Go button after addressfield")
+                        )
+                    ),
+                    React.createElement("div", { className: "setting-single" },
+                        React.createElement("label", null,
+                            React.createElement("input", {
+                                type: "checkbox",
+                                checked: this.props.vivaldiSettings.ADDRESS_BAR_SEARCH_GO_ENABLED,
+                                onChange: () => VivaldiSettings.set({
+                                    ADDRESS_BAR_SEARCH_GO_ENABLED: !this.props.vivaldiSettings.ADDRESS_BAR_SEARCH_GO_ENABLED
+                                })
+                            }),
+                            React.createElement("span", null, "Go button after searchfield")
                         )
                     )
                 )
             )
+        }
+    }, ["ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED"])
+
+
+    return class extends oldClass {
+        render() {
+            let r = super.render()
+            r.props.children.push(React.createElement(Setting, this.props))
             return r
         }
     }
-    return newAddressBarSettings
 })

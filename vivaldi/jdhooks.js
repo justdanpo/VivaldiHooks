@@ -1,5 +1,5 @@
 //var result = vivaldi.jdhooks.require(moduleName)
-//vivaldi.jdhooks.hookClass(className, class => newClass, ?{settings:[], pregs:[]})
+//vivaldi.jdhooks.hookClass(className, class => newClass, ?{settings:[], prefs:[]})
 //vivaldi.jdhooks.hookMember(object, memberName, function cbBefore(hookData, {oldarglist}), function cbAfter(hookData, {oldarglist}))
 //vivaldi.jdhooks.hookModule(moduleName, (moduleInfo, exports) => newExports)
 //vivaldi.jdhooks.onUIReady(function())
@@ -31,18 +31,16 @@
         vivaldi.jdhooks._modules[moduleIndex] = (moduleInfo, exports, nrequire) => {
             oldfn(moduleInfo, exports, nrequire)
 
-            const keys = Object.keys(moduleInfo.exports).join(",")
-            if (keys === "a") {
-                moduleInfo.exports = { ...moduleInfo.exports, ...{ a: newfn(moduleInfo, moduleInfo.exports.a) } }
+            if (typeof moduleInfo.exports === "object") {
+                const keys = Object.keys(moduleInfo.exports)
+                if (keys.length === 1) switch (keys[0]) {
+                    case "a":
+                        return moduleInfo.exports = { ...moduleInfo.exports, ...{ a: newfn(moduleInfo, moduleInfo.exports.a) } }
+                    case "default":
+                        return moduleInfo.exports = { ...moduleInfo.exports, ...{ default: newfn(moduleInfo, moduleInfo.exports.default) } }
+                }
             }
-            else if (keys === "default") {
-                moduleInfo.exports = { ...moduleInfo.exports, ...{ default: newfn(moduleInfo, moduleInfo.exports.default) } }
-            }
-            else {
-                moduleInfo.exports = newfn(moduleInfo, moduleInfo.exports)
-            }
-
-            return moduleInfo.exports
+            return moduleInfo.exports = newfn(moduleInfo, moduleInfo.exports)
         }
     }
 
@@ -288,7 +286,6 @@
             "lodash-memoize": ['new TypeError("Expected a function")', ".Cache", ".apply(this,"],
             "lodash": ['"lodash"', "filter|find|map|reject"],
             "moment.js": ["use moment.updateLocale"],
-            "net": [".createServer", ".createConnection"],//dummy; used by stomp
             "node-crypt": ["rotl:", "hexToBytes:"],
             "normalize-url": ["removeQueryParameters:", "stripWWW:"],
             "NoteActions": ["createNotesFromTreeNodes", '"NotesCutIds"'],
@@ -344,7 +341,6 @@
             "react-virtualized": ["ReactVirtualized__Grid", "__reactInternalSnapshotFlag"],
             "React": ["react.production."],
             "ReactDOM": ["react-dom.production."],
-            "Readability": ["First argument to Readability constructor should be a document object."],
             "remarkable-common-entities": ["zwnj:", "RuleDelayed:"],
             "remarkable-common-html_blocks": ['["article"', '"video"].forEach'],
             "remarkable-common-html_re": ["r(\/(?:unquoted|single_quoted|double_quoted)\/)(\"unquoted\""],
@@ -405,17 +401,15 @@
             "remarkable-utils": ["\/\\\\([\\\\!\"#$%&\'()*+,.\\\/:;<=>?@[\\]^_`{|}~-])\/g;"],
             "remarkable": ["Wrong `remarkable` preset, check name/content"],
             "scheduler": ["scheduler.production."],
-            "scrollIntoViewIfNeeded": ["Element is required in scrollIntoViewIfNeeded"],
             "SearchEngineActions": ["setDefaultForSpeedDial", '"SEARCH_ENGINE_COLLECTION"'],
             "setProgressState": ["setProgressState", '"PAGE_SET_PROGRESS"'],
             "Startup": ['document.getElementById("app")', "JS init startup"],
-            "stomp-websocket-stomp-node": [".overTCP", ".overWS", '"tcp://"'],
-            "stomp-websocket-stomp": ["v12.stomp"],
-            "stomp-websocket": [".Stomp", ".exports.overTCP"],
             "SyncActions": ["setEncryptionPassword", '"SYNC_ENGINE_STATE_CHANGED"'],
             "TrashActions": ["Error restoring tab:", "undeletePreviousTab"],
             "turndown": ["is not a string, or an element/document/fragment node.", "turndown:"],
             "url": [".prototype.parseHost"],
+            "urlbarstore": ['"urlbarstore"'],
+            "utf8js": ["https://mths.be/utf8js"],
             "velocity-react-velocity-animate-shim": [".velocityReactServerShim", 'navigator.userAgent.indexOf("Node.js")'],
             "velocity-react-velocity-component": ['"fxqueue"', "_clearVelocityCache"],
             "velocity-react-velocity-helpers": ['"VelocityHelper.animation."'],
@@ -427,33 +421,42 @@
             "vivaldiSettings": ["_vivaldiSettingsListener"],
             "webpack-buildin-module": ["Object.defineProperty(", '"loaded",', ".paths"],
             "webpack-runtime-GlobalRuntimeModule": ['new Function("return this")()'],
-            "WebSocket-Node-browser": ["w3cwebsocket:", '"CONNECTING"'],
             "WindowActions": [".windowPrivate.onMaximized"],
             "yoga-layout": ["computeLayout:", "fillNodes:"],
 
             "_ActionList_DataTemplate": ["CHROME_SET_SESSION:", "CHROME_TABS_API:"],
             "_BookmarkStore": ["validateAsBookmarkBarFolder"],
             "_CommandManager": ['emitChange("shortcut")'],
+            "_CSSTransitionGroup": ['"CSSTransitionGroup"'],
+            "_CSSTransitionGroupChild": ['"CSSTransitionGroupChild"', ".displayName"],
+            "_CSSTransitionGroupChild_flushOnNext": [".default.prototype.flushClassNameAndNodeQueueOnNextFrame"],
             "_decodeDisplayURL": [".removeTrailingSlashWhenNoPath(", ".getDisplayUrl(", "decodeURI("],
             "_getLocalizedMessage": [".i18n.getMessage"],
             "_getPrintableKeyName": ['"BrowserForward"', '"PrintScreen"'],
+            "_HistoryStore": [".VIVALDI_HISTORY_INIT_FILTER:"],
+            "_HotkeyManager": ["handleShortcut:"],
             "_KeyCodes": ["KEY_CANCEL:"],
             "_MouseGesturesHandler": ["onMouseGestureDetection.addListener"],
             "_NavigationInfo": ["getNavigationInfo", "NAVIGATION_SET_STATE"],
+            "_NotesStore": ['"vivaldi/x-notes"'],
             "_OnClickOutside": ["Component lacks a handleClickOutside(event) function for processing outside click events."],
             "_PageStore": ["section=Speed-dials&activeSpeedDialIndex=0"],
             "_PageZoom": ["onUIZoomChanged.addListener"],
+            "_PanelStore": ["getSelectedPanel:", ".PANEL_SET_PANELS:"],
             "_PrefKeys": ["vivaldi.downloads.update_default_download_when_saving_as"],
             "_PrefSet": ["Not known how to make event handler for pref "],
             "_ProgressInfo": ["getProgressInfo", "PAGE_SET_PROGRESS"],
             "_RazerChroma": ["Error setting Razer Chroma color"],
+            "_SearchEnginesStore": ['"vivaldi/x-search-engine"'],
             "_ShowMenu": ["menubarMenu.onAction.addListener", "containerGroupFolders"],
             "_TabSetMediaState": ["static setMediaState", '"PAGE_SET_MEDIASTATE"'],
             "_Theme": ["fgBgHighlight", "kThemeContrastMinimum"],
+            "_TransitionGroup": ['"TransitionGroup"'],
             "_UIActions": ["_maybeShowSettingsInWindow"],
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiIcons": ["small:", "medium:", "large:"],
             "_WebViewStore": ["getActiveWebView()", ".WEBVIEW_CLEAR_IF_ACTIVE:"],
+            "_WindowStore": ['"Attempting to toggle toolbars for a window without minimal UI"'],
 
             "_svg_addressbar_btn_backward": ["M15.2929 20.7071C15.6834 21.0976 16.3166 21.0976 16.7071 20.7071C17.0976 20.3166 17.0976"],
             "_svg_addressbar_btn_fastbackward": ["M9 8C9 7.44772 9.44772 7 10 7C10.5523 7 11 7.44772 11 8V12L15.2929 7.70711C15.9229"],
@@ -504,9 +507,22 @@
             "_svg_window_zoom": ["7h10v1H0V8zm0-6h1v6H0V2zm9"],
             "_svg_window_zoom_mac": ["window-zoom-glyph dpi-standard"],
             "_svg_window_zoom_win10": ["0H2v2H0v8h8V8h2V0H3zm4"],
-            "_svn_write_1": ["M13.414.5c-.398 0-.779.158-1.061.439l-1.061 1.061"],
-            "_svn_write_2": ["M14.05 1.28a.96.96 0 00-1.35 0l-.68.67"],
-            "_svn_write_3": ["M9 16h2.53l7-7.03-2.54-2.4L9 13.46V16zm11.8-9.33a.64.64"],
+            "_svg_write_1": ["M13.414.5c-.398 0-.779.158-1.061.439l-1.061 1.061"],
+            "_svg_write_2": ["M14.05 1.28a.96.96 0 00-1.35 0l-.68.67"],
+            "_svg_write_3": ["M9 16h2.53l7-7.03-2.54-2.4L9 13.46V16zm11.8-9.33a.64.64"],
+
+            //background-bundle.js
+            //"net": [".createServer", ".createConnection"],//dummy; used by stomp
+            //"stomp-websocket-stomp-node": [".overTCP", ".overWS", '"tcp://"'],
+            //"stomp-websocket-stomp": ["v12.stomp"],
+            //"stomp-websocket": [".Stomp", ".exports.overTCP"],
+            //"WebSocket-Node-browser": ["w3cwebsocket:", '"CONNECTING"'],
+
+            //inject-root-bundle.js
+            //"Readability": ["First argument to Readability constructor should be a document object."],
+
+            //inject-all-spatnav-bundle.js
+            //"scrollIntoViewIfNeeded": ["Element is required in scrollIntoViewIfNeeded"],
         }
 
         function replaceAll(str, match, to) { return str.split(match).join(to) }
@@ -541,7 +557,7 @@
 
             let lastJsxFound = undefined
             let jsxNameVars = [] //minified variable name -> displayable name
-            Array.from(fntxtPrepared.matchAll(/([\w\d$]+)\s*[=:]\s*"[^"]+components\/([\-\w\/]+?)\.js[x]?\"/g))
+            Array.from(fntxtPrepared.matchAll(/([\w\d_$]+)\s*[=:]\s*"[^"]+components\/([\-\w\/]+?)\.js[x]?\"/g))
                 .forEach(([$, varName, Name]) => {
                     Name = replaceAll(Name, "/", "_")
                     lastJsxFound = Name
@@ -551,7 +567,7 @@
             if (lastJsxFound) {
                 AddAndCheck(modIndex, lastJsxFound)
 
-                let clsMatches = Array.from(fntxtPrepared.matchAll(/\bclass\s+([$\w\d]+)?\s*extends[\s]+[\w\.]+Component/g))
+                let clsMatches = Array.from(fntxtPrepared.matchAll(/\bclass\s+([\w\d_$]+)?\s*extends[\s]+[\w\.]+Component/g))
 
                 for (i in clsMatches) {
                     let className = clsMatches[i][1]
@@ -560,7 +576,7 @@
                         clsMatches.hasOwnProperty[i + 1] ? clsMatches[i + 1].index : fntxtPrepared.length)
 
                     //source file name from variable(jsxNameVars) or string
-                    let fileNameMatches = /__source:\s*\{\s*fileName:\s*(([\w\d$]+)|(\"[^"]+components\/([\-\w\/]+?)\.js[x]?\")),/.exec(classBodyHere)
+                    let fileNameMatches = /__source:\s*\{\s*fileName:\s*(([\w\d_$]+)|(\"[^"]+components\/([\-\w\/]+?)\.js[x]?\")),/.exec(classBodyHere)
                     if (fileNameMatches) {
                         let classReadableName = fileNameMatches[2] ? jsxNameVars[fileNameMatches[2]] : replaceAll(fileNameMatches[4], "/", "_")
 
@@ -613,7 +629,7 @@
         //override "require" so we can store module indexes for classes extending PureComponent/Component
         //which in turn allows to hook classes
         function overrideRequire(require, moduleIndex) {
-            req = (mod) => {
+            req = mod => {
                 let imported = require(mod)
                 //TODO: check React wrappers?
                 if (0 !== mod) {
@@ -665,13 +681,10 @@
             return req
         }
 
-        let callStack = []
         for (const moduleIndex in modules_list) {
             let oldfn = modules_list[moduleIndex]
             modules_list[moduleIndex] = (moduleInfo, exports, require) => {
-                callStack.push(moduleInfo.i)
                 oldfn(moduleInfo, exports, overrideRequire(require, moduleIndex))
-                callStack.pop()
             }
         }
 
@@ -731,9 +744,14 @@
 
                         retValue = nrequire(vivaldi.jdhooks._moduleMap[module])
                     }
-                    if (retValue.hasOwnProperty("a")) retValue = retValue.a
-                    else
-                        if (retValue.hasOwnProperty("default")) retValue = retValue.default //todo: whitelist?
+                    if (typeof retValue === "object") {
+                        const keys = Object.keys(retValue)
+                        if (keys.length === 1) switch (keys[0]) {
+                            case "a":
+                            case "default":
+                                return retValue[keys[0]]
+                        }
+                    }
 
                     return retValue
                 }

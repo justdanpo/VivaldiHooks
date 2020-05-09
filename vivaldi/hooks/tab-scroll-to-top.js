@@ -6,17 +6,14 @@ vivaldi.jdhooks.hookClass("tabs_Tab", oldClass => {
     const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
 
     return class extends oldClass {
-        constructor(...e) { super(...e) }
-
         render() {
             let r = super.render()
-            if (!r) return r
-            r.props.onMouseDown = (evt) => {
+            if (r) r.props.onMouseDown = evt => {
                 if (evt.button == 0 && this.props.active) {
                     const wv = WebViewStore.getActiveWebView()
                     if (wv) {
                         //Smooth scrolling doesn't work well as you may lost scroll position while scrolling
-                        //const scroll = PrefsCache.get(PrefKeys.kWebpagesSmoothScrollingEnabled) ? "smooth" : "auto";
+                        //const scroll = PrefsCache.get(PrefKeys.kWebpagesSmoothScrollingEnabled) ? "smooth" : "auto"
                         const scroll = "auto"
 
                         function scrollFn(scroll) {

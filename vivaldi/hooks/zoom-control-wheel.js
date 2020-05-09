@@ -6,7 +6,7 @@ vivaldi.jdhooks.onUIReady(function () {
 
     let zoomControl = document.querySelector(".toolbar-statusbar .page-zoom-controls")
     if (!zoomControl)
-        return;
+        return
 
     Array.from(zoomControl.querySelectorAll("button")).concat(
         Array.from(zoomControl.querySelectorAll("input")).concat(

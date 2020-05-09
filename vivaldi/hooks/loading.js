@@ -2,14 +2,14 @@
 
 {
     function isinternalurl(u) {
-        const t = vivaldi.jdhooks.require("url").parse(u);
+        const t = vivaldi.jdhooks.require("url").parse(u)
         return ["vivaldi:", "chrome:", "chrome-extension:"]
             .some(proto => t.protocol && 0 === proto.indexOf(t.protocol))
     }
 
     vivaldi.jdhooks.hookClass("progress_PageloadProgress", cls => {
         const NavigationInfo = vivaldi.jdhooks.require("_NavigationInfo")
-        const PageStore = vivaldi.jdhooks.require("_PageStore")
+        const PageStore = vivaldi.jdhooks.require("_PageStore").a
 
         class progress extends cls {
             constructor(...e) {
@@ -18,7 +18,7 @@
                 let old_onProgressStateStoreChanged = this._onProgressStateStoreChanged
                 this._onProgressStateStoreChanged = () => {
                     const pageid = this.props.pageId
-                    const page = PageStore.getPageById(pageid);
+                    const page = PageStore.getPageById(pageid)
                     const navinfo = NavigationInfo.getNavigationInfo(pageid) || {}
                     const trigger = navinfo.trigger
                     if (page && page.pendingUrl && !isinternalurl(page.pendingUrl)) {
@@ -41,7 +41,7 @@
             }
 
             render() {
-                const page = PageStore.getPageById(this.props.pageId);
+                const page = PageStore.getPageById(this.props.pageId)
                 if (page) {
                     this.props.open = !isinternalurl(page.pendingUrl || page.url)
                 }

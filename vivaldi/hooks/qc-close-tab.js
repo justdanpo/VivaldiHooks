@@ -36,8 +36,6 @@ vivaldi.jdhooks.hookClass("quickCommands_CommandItem", cls => {
 	const getLocalizedMessage = vivaldi.jdhooks.require("_getLocalizedMessage")
 
 	class qcItem extends cls {
-		constructor(...e) { super(...e) }
-
 		render() {
 			let r = super.render()
 

@@ -2,14 +2,7 @@
 
 ## About
 VivaldiHooks is a set of hooks/scripts for Vivaldi browser modding.
-
-It's something close to [VivaldiPatches](https://github.com/justdanpo/VivaldiPatches) but it has some advantages:
-
-- there is no need to add every mod (css/javascript) into **browser.html**: only **jdhooks.js** should be added there, other files are loaded automatically
-- hook scripts are almost Vivaldi-version independent -> there is no need to port mods to every new Vivaldi version
-- there is no need to interact with minified code; this means more complex mods may be done easier; also javascript mods look much more readable than patches
-
-But some of mods cannot be implemented as hooks, so I don't bury VivaldiPatches.
+The main one - `jdhooks.js` - controlls mods loading and provides mod developers a way to change behaviour of Vivaldi internal components.
 
 ## Installation
 ### Automatic (Windows only)
@@ -21,10 +14,9 @@ You may specify a path in a command line:
 
     installhooks.bat C:\programz\Vivaldi-snapshots\1.5.609.8\Application
     installhooks.bat "C:\some path with spaces\Vivaldi\Application"
+    installhooks.bat -nowait C:\programz\Vivaldi-snapshots\1.5.609.8\Application
 
 Another easy way: drag Vivaldi directory and drop it on **installhooks.bat**.
-
-~~Note: **browser.html** will be overwritten.~~
 
 ### Manual
 

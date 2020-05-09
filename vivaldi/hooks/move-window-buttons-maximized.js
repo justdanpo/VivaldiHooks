@@ -65,8 +65,6 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     const ToolbarButton = vivaldi.jdhooks.require("toolbars_ToolbarButton")
 
     class newClass extends oldClass {
-        constructor(...e) { super(...e) }
-
         vivaldiButtonClick(event) {
             const rect = event.target.getBoundingClientRect()
             const props = {
@@ -85,7 +83,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
         render() {
             let ret = super.render()
 
-            let iconClose, iconMinimize, iconZoom;
+            let iconClose, iconMinimize, iconZoom
 
             const platform = window.navigator.platform.indexOf("Linux") >= 0 ?
                 "linux" :
@@ -101,12 +99,12 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
                     iconClose = vivaldi.jdhooks.require("_svg_window_close")
                     iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize")
                     iconZoom = vivaldi.jdhooks.require("_svg_window_zoom")
-                    break;
+                    break
                 case "win10":
                     iconClose = vivaldi.jdhooks.require("_svg_window_close_win10")
                     iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize_win10")
                     iconZoom = vivaldi.jdhooks.require("_svg_window_zoom_win10")
-                    break;
+                    break
                 case "mac":
                     iconClose = vivaldi.jdhooks.require("_svg_window_close_mac")
                     iconMinimize = vivaldi.jdhooks.require("_svg_window_minimize_mac")

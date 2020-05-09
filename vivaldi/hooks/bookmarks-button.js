@@ -141,63 +141,51 @@
         const React = vivaldi.jdhooks.require("React")
         const RadioGroup = vivaldi.jdhooks.require("common_RadioGroup")
         const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
+        const common_InsertVivaldiSettings = vivaldi.jdhooks.require("common_InsertVivaldiSettings")
 
-        class bookmarkButtonSettings extends origClass {
-            constructor(...e) {
-                super(...e)
-                watcher.ctr(this)
-            }
-
+        const Setting = common_InsertVivaldiSettings(class extends React.PureComponent {
             render() {
-                let r = super.render()
-                r.props.children.push(
-                    React.createElement("div", { className: "setting-group" },
-                        React.createElement("h3", {}, "Bookmark Button"),
-                        React.createElement(RadioGroup,
-                            {
-                                name: "bookmark_bar_display",
-                                value: this.state.bbSettings.BOOKMARK_BUTTON_POSITION,
-                                onChange: (evt) => VivaldiSettings.set({ BOOKMARK_BUTTON_POSITION: evt.target.value })
-                            },
-                            React.createElement("div", { className: "setting-single" },
-                                React.createElement("label", {},
-                                    React.createElement("input",
-                                        {
-                                            type: "radio",
-                                            value: position.separate,
-                                        }),
-                                    React.createElement("span", {}, "Separate button")
-                                )
-                            ),
-                            React.createElement("div", { className: "setting-single" },
-                                React.createElement("label", {},
-                                    React.createElement("input",
-                                        {
-                                            type: "radio",
-                                            value: position.addressfield,
-                                        }),
-                                    React.createElement("span", {},
-                                        'Right click on "Add bookmark" button in the address field'
-                                    )
+                return React.createElement("div", { className: "setting-group" },
+                    React.createElement("h3", {}, "Bookmark Button"),
+                    React.createElement(RadioGroup,
+                        {
+                            name: "bookmark_bar_display",
+                            value: this.props.vivaldiSettings.BOOKMARK_BUTTON_POSITION,
+                            onChange: (evt) => VivaldiSettings.set({ BOOKMARK_BUTTON_POSITION: evt.target.value })
+                        },
+                        React.createElement("div", { className: "setting-single" },
+                            React.createElement("label", {},
+                                React.createElement("input",
+                                    {
+                                        type: "radio",
+                                        value: position.separate,
+                                    }),
+                                React.createElement("span", {}, "Separate button")
+                            )
+                        ),
+                        React.createElement("div", { className: "setting-single" },
+                            React.createElement("label", {},
+                                React.createElement("input",
+                                    {
+                                        type: "radio",
+                                        value: position.addressfield,
+                                    }),
+                                React.createElement("span", {},
+                                    'Right click on "Add bookmark" button in the address field'
                                 )
                             )
                         )
-                    ))
+                    )
+                )
+            }
+        }, ["BOOKMARK_BUTTON_POSITION"])
+
+        return class extends origClass {
+            render() {
+                let r = super.render()
+                r.props.children.push(React.createElement(Setting, {}))
                 return r
             }
-
-            componentDidMount() {
-                if (super.componentDidMount) super.componentDidMount()
-                watcher.cdm(this)
-            }
-
-            componentWillUnmount() {
-                watcher.cwu(this)
-                if (super.componentWillUnmount) super.componentWillUnmount()
-            }
         }
-
-        return bookmarkButtonSettings
     })
-
 }
