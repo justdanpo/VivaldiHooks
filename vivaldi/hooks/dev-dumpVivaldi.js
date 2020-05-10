@@ -57,5 +57,5 @@ vivaldi.jdhooks.dumpVivaldi = () => {
             console.log("unknown type", typeof exports, exports)
         }
     }
-    return commonOutput
+    return { modules: commonOutput, classes: Object.values(vivaldi.jdhooks._dbg_classNameCache).sort() }
 }
