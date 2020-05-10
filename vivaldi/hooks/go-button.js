@@ -17,6 +17,33 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     const React = vivaldi.jdhooks.require("React")
     const ToolbarButton = vivaldi.jdhooks.require("toolbars_ToolbarButton")
 
+    //TODO: switch to hookModule wrapping urlfield_UrlBar with common_InsertVivaldiSettings in the future
+    class SettingsWatcher {
+        constructor(memberName, keys) {
+            this.memberName = memberName
+            this.keys = keys
+            this.VivaldiSettings = undefined
+        }
+        ctr(obj) {
+            if (!this.VivaldiSettings) this.VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
+            if (!obj.state) obj.state = {}
+            obj.state[this.memberName] = this.VivaldiSettings.getKeysSync(this.keys)
+        }
+        changeHandler(obj) {
+            return (oldValue, newValue, key) => {
+                obj.setState(state => ({ [this.memberName]: { ...state[this.memberName], [key]: newValue } }))
+            }
+        }
+        cdm(obj) {
+            this.keys.forEach(key => this.VivaldiSettings.addListener(key, this.changeHandler(obj)))
+        }
+        cwu(obj) {
+            this.keys.forEach(key => this.VivaldiSettings.removeListener(key, this.changeHandler(obj)))
+        }
+    }
+
+    let watcher = new SettingsWatcher("gobuttonSettings", ["ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED"])
+
     const buttonImage = '<svg width="26" height="26" viewBox="0 0 26 26"><path d="M 12,4 10.400391,5.5996094 16.5,11.869141 l -13.5,0 0,2.261718 13.5,0 -6.099609,6.269532 L 12,22 21,13 12,4 Z"></path></svg>'
 
     function btn(onclick) {
@@ -29,9 +56,23 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     }
 
     class newUrlBar extends oldClass {
+        constructor(...e){
+            super(...e)
+            watcher.ctr(this)
+        }
+        componentDidMount() {
+            if (super.componentDidMount) super.componentDidMount()
+            watcher.cdm(this)
+        }
+
+        componentWillUnmount() {
+            watcher.cwu(this)
+            if (super.componentWillUnmount) super.componentWillUnmount()
+        }
+
         render() {
             let r = super.render()
-            if (this.props.vivaldiSettings.ADDRESS_BAR_URL_GO_ENABLED) {
+            if (this.state.gobuttonSettings.ADDRESS_BAR_URL_GO_ENABLED) {
                 const idx = r.props.children.findIndex(x => x && (x.props.className == "addressfield"))
                 if (idx > -1) r.props.children.splice(idx + 1, 0,
                     btn((evt) =>
@@ -42,7 +83,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
                     ))
             }
 
-            if (this.props.vivaldiSettings.ADDRESS_BAR_SEARCH_GO_ENABLED) {
+            if (this.state.gobuttonSettings.ADDRESS_BAR_SEARCH_GO_ENABLED) {
                 const idx = r.props.children.findIndex(x => x && (x.ref == "searchField"))
                 if (idx > -1) r.props.children.splice(idx + 1, 0,
                     btn((evt) =>
@@ -59,7 +100,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     }
 
     return newUrlBar
-}, { settings: ["ADDRESS_BAR_URL_GO_ENABLED", "ADDRESS_BAR_SEARCH_GO_ENABLED"] })
+})
 
 vivaldi.jdhooks.hookClass("settings_addressbar_AddressBar", oldClass => {
     const React = vivaldi.jdhooks.require("React")

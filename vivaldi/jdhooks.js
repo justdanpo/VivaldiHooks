@@ -189,7 +189,6 @@
         }
 
         let moduleSignatures = {
-            "autolinker": [".Autolinker", "`splitRegex` must have the 'g' flag set"],
             "BookmarkActions": ["Error removing bookmark tree:"],
             "buffer": ["The buffer module from node.js, for the browser"],
             "charenc": ["stringToBytes(unescape(encodeURIComponent("],
@@ -283,6 +282,7 @@
             "immutable-devtools": ["@@__IMMUTABLE_RECORD__@@", "OrderedMapFormatter"],
             "immutable": ["@@__IMMUTABLE_ITERABLE__@@", '"@@iterator"', "__immutablehash__"],
             "keyMirror": ["keyMirror(...): Argument must be an object."],
+            "linkify": ["`splitRegex` must have the 'g' flag set"],//remarkable plugin
             "lodash-memoize": ['new TypeError("Expected a function")', ".Cache", ".apply(this,"],
             "lodash": ['"lodash"', "filter|find|map|reject"],
             "moment.js": ["use moment.updateLocale"],
@@ -452,7 +452,7 @@
             "_TabSetMediaState": ["static setMediaState", '"PAGE_SET_MEDIASTATE"'],
             "_Theme": ["fgBgHighlight", "kThemeContrastMinimum"],
             "_TransitionGroup": ['"TransitionGroup"'],
-            "_UIActions": ["_maybeShowSettingsInWindow"],
+            "_UIActions": [".runtimePrivate.switchToGuestSession"],
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
             "_VivaldiIcons": ["small:", "medium:", "large:"],
             "_WebViewStore": ["getActiveWebView()", ".WEBVIEW_CLEAR_IF_ACTIVE:"],
@@ -528,7 +528,7 @@
         function replaceAll(str, match, to) { return str.split(match).join(to) }
 
         function AddAndCheck(modIndex, moduleName) {
-            if (("undefined" !== typeof jdhooks._moduleMap[moduleName]) && (jdhooks._moduleMap[moduleName] != modIndex))
+            if (jdhooks._moduleMap[moduleName] && jdhooks._moduleMap[moduleName] != modIndex)
                 console.log(`jdhooks: repeated module name "${moduleName}"`)
 
             if (jdhooks._moduleNames[modIndex]) {
@@ -599,8 +599,10 @@
             for (const moduleName in moduleSignatures) {
                 if (moduleSignatures[moduleName].every(i => -1 < fntxt.indexOf(i))) {
                     found = AddAndCheck(modIndex, moduleName)
-                    if (fastProcessModules) delete moduleSignatures[moduleName]
-                    break
+                    if (fastProcessModules) {
+                        delete moduleSignatures[moduleName]
+                        break
+                    }
                 }
             }
         }
