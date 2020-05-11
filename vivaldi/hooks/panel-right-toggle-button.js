@@ -14,7 +14,7 @@ vivaldi.jdhooks.hookClass("toolbars_Toolbar", origClass => {
         render() {
             let r = super.render()
             for (let child of r.props.children)
-                if (child.props.name == "PanelToggle") this.jd_panel_right_toggle_refname = child.ref = child.ref || "jd_panel_right_toggle_ref"
+                if (child && child.props.name == "PanelToggle") this.jd_panel_right_toggle_refname = child.ref = child.ref || "jd_panel_right_toggle_ref"
             return r
         }
 

@@ -15,32 +15,6 @@
         return exports
     })
 
-    class SettingsWatcher {
-        constructor(memberName, keys) {
-            this.memberName = memberName
-            this.keys = keys
-            this.VivaldiSettings = undefined
-        }
-        ctr(obj) {
-            if (!this.VivaldiSettings) this.VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
-            if (!obj.state) obj.state = {}
-            obj.state[this.memberName] = this.VivaldiSettings.getKeysSync(this.keys)
-        }
-        changeHandler(obj) {
-            return (oldValue, newValue, key) => {
-                obj.setState(state => ({ [this.memberName]: { ...state[this.memberName], [key]: newValue } }))
-            }
-        }
-        cdm(obj) {
-            this.keys.forEach(key => this.VivaldiSettings.addListener(key, this.changeHandler(obj)))
-        }
-        cwu(obj) {
-            this.keys.forEach(key => this.VivaldiSettings.removeListener(key, this.changeHandler(obj)))
-        }
-    }
-
-    let watcher = new SettingsWatcher("bbSettings", ["BOOKMARK_BUTTON_POSITION", "VIVALDI_MENU_POSITION"])
-
     function bookmarksOnClick(event) {
         const CommandManager = vivaldi.jdhooks.require("_CommandManager")
         const ShowMenu = vivaldi.jdhooks.require("_ShowMenu")
@@ -67,20 +41,14 @@
         const ReactDom = vivaldi.jdhooks.require("ReactDOM")
 
         class newCreateBookmarkButton extends origClass {
-            constructor(...e) {
-                super(...e)
-                watcher.ctr(this)
-            }
-
             pointerUp(e) {
-                if (e.button == 2 && this.state.bbSettings.BOOKMARK_BUTTON_POSITION == position.addressfield) {
+                if (e.button == 2 && this.state.jdVivaldiSettings.BOOKMARK_BUTTON_POSITION == position.addressfield) {
                     bookmarksOnClick(e)
                 }
             }
 
             componentDidMount() {
                 if (super.componentDidMount) super.componentDidMount()
-                watcher.cdm(this)
 
                 const button = ReactDom.findDOMNode(this)
                 if (button) button.addEventListener("pointerup", this.pointerUp.bind(this), true)
@@ -90,11 +58,10 @@
                 const button = ReactDom.findDOMNode(this)
                 if (button) button.removeEventListener("pointerup", this.pointerUp, true)
 
-                watcher.cwu(this)
                 if (super.componentWillUnmount) super.componentWillUnmount()
             }
         }
-        return newCreateBookmarkButton
+        return vivaldi.jdhooks.insertWatcher(newCreateBookmarkButton, { settings: ["BOOKMARK_BUTTON_POSITION"] })
     })
 
     vivaldi.jdhooks.hookClass("toolbars_Toolbar", origClass => {
@@ -103,54 +70,41 @@
         const ToolbarButton = vivaldi.jdhooks.require("toolbars_ToolbarButton")
 
         class newClass extends origClass {
-            constructor(...e) {
-                super(...e)
-                watcher.ctr(this)
-            }
-
             render() {
                 let ret = super.render()
-                if (this.props.name == SettingsPaths.kToolbarsNavigation &&
-                    this.state.bbSettings.BOOKMARK_BUTTON_POSITION == position.separate &&
-                    this.state.bbSettings.VIVALDI_MENU_POSITION != "top") {
+                if (this.props.name == SettingsPaths.kToolbarsNavigation) {
                     ret.props.children.push(
-                        React.createElement(ToolbarButton, {
-                            tooltip: "Bookmarks",
-                            onClick: bookmarksOnClick,
-                            image: vivaldi.jdhooks.require("_svg_bookmarks_large")
-                        })
+                        this.state.jdVivaldiSettings.BOOKMARK_BUTTON_POSITION == position.separate &&
+                            this.state.jdVivaldiSettings.VIVALDI_MENU_POSITION != "top"
+
+                            ? React.createElement(ToolbarButton, {
+                                tooltip: "Bookmarks",
+                                onClick: bookmarksOnClick,
+                                image: vivaldi.jdhooks.require("_svg_bookmarks_large")
+                            })
+
+                            : null
                     )
                 }
                 return ret
             }
-
-            componentDidMount() {
-                if (super.componentDidMount) super.componentDidMount()
-                watcher.cdm(this)
-            }
-
-            componentWillUnmount() {
-                watcher.cwu(this)
-                if (super.componentWillUnmount) super.componentWillUnmount()
-            }
         }
-        return newClass
+        return vivaldi.jdhooks.insertWatcher(newClass, { settings: ["BOOKMARK_BUTTON_POSITION", "VIVALDI_MENU_POSITION"] })
     })
 
     vivaldi.jdhooks.hookClass("settings_bookmarks_BookmarkBar", origClass => {
         const React = vivaldi.jdhooks.require("React")
         const RadioGroup = vivaldi.jdhooks.require("common_RadioGroup")
         const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
-        const common_InsertVivaldiSettings = vivaldi.jdhooks.require("common_InsertVivaldiSettings")
 
-        const Setting = common_InsertVivaldiSettings(class extends React.PureComponent {
+        const Setting = vivaldi.jdhooks.insertWatcher(class extends React.PureComponent {
             render() {
                 return React.createElement("div", { className: "setting-group" },
                     React.createElement("h3", {}, "Bookmark Button"),
                     React.createElement(RadioGroup,
                         {
                             name: "bookmark_bar_display",
-                            value: this.props.vivaldiSettings.BOOKMARK_BUTTON_POSITION,
+                            value: this.state.jdVivaldiSettings.BOOKMARK_BUTTON_POSITION,
                             onChange: (evt) => VivaldiSettings.set({ BOOKMARK_BUTTON_POSITION: evt.target.value })
                         },
                         React.createElement("div", { className: "setting-single" },
@@ -178,7 +132,7 @@
                     )
                 )
             }
-        }, ["BOOKMARK_BUTTON_POSITION"])
+        }, { settings: ["BOOKMARK_BUTTON_POSITION"] })
 
         return class extends origClass {
             render() {

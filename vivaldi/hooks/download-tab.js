@@ -16,24 +16,23 @@
     vivaldi.jdhooks.hookClass("settings_downloads_Downloads", oldClass => {
         const React = vivaldi.jdhooks.require("React")
         const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
-        const common_InsertVivaldiSettings = vivaldi.jdhooks.require("common_InsertVivaldiSettings")
 
-        const Setting = common_InsertVivaldiSettings(class extends React.PureComponent {
+        const Setting = vivaldi.jdhooks.insertWatcher(class extends React.PureComponent {
             render() {
                 return React.createElement("div", { className: "setting-single" },
                     React.createElement("label", null,
                         React.createElement("input", {
                             type: "checkbox",
-                            checked: this.props.vivaldiSettings.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS,
+                            checked: this.state.jdVivaldiSettings.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS,
                             onChange: () => VivaldiSettings.set({
-                                SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS: !this.props.vivaldiSettings.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS
+                                SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS: !this.state.jdVivaldiSettings.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS
                             })
                         }),
                         React.createElement("span", null, "Open downloads in new tab instead of panel")
                     )
                 )
             }
-        }, ["SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS"])
+        }, { settings: ["SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS"] })
 
         class newDownloadSettings extends oldClass {
             render() {
@@ -70,7 +69,7 @@
                     if (evt.permission == "download"
                         && PrefCache.get(PrefKeys.kDownloadsStartAutomatically)
                         && PrefCache.get(PrefKeys.kDownloadsOpenPanelOnNew)
-                        && this.props.vivaldiSettings.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS
+                        && this.state.jdVivaldiSettings.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS
                     ) {
                         evt.request.allow()
                         openDownloadTab()
@@ -79,8 +78,8 @@
                 })
             }
         }
-        return downloadTabWebpageContent
-    }, { settings: ["SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS"] })
+        return vivaldi.jdhooks.insertWatcher(downloadTabWebpageContent, { settings: ["SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS"] })
+    })
 
     vivaldi.jdhooks.hookClass("dialogs_downloadDialog", oldClass => {
         const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")

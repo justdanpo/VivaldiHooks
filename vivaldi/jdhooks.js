@@ -1,9 +1,10 @@
 //var result = vivaldi.jdhooks.require(moduleName)
-//vivaldi.jdhooks.hookClass(className, class => newClass, ?{settings:[], prefs:[]})
+//vivaldi.jdhooks.hookClass(className, class => newClass)
 //vivaldi.jdhooks.hookMember(object, memberName, function cbBefore(hookData, {oldarglist}), function cbAfter(hookData, {oldarglist}))
 //vivaldi.jdhooks.hookModule(moduleName, (moduleInfo, exports) => newExports)
 //vivaldi.jdhooks.onUIReady(function())
 //vivaldi.jdhooks.addStyle(style)
+//vivaldi.jdhooks.insertWatcher(cls, {settings:[], prefs:[]})
 
 (function () {
     const jdhooks_module_index = 'jdhooks_module'
@@ -47,12 +48,14 @@
     //hookClass(className, function(class))
     let hookClassList = {}
     jdhooks._unusedClassHooks = {} //stats
-    let hookClassPrefs = {}
-    let hookClassSettings = {}
+    let hookClassPrefs = {}//TODO: remove
+    let hookClassSettings = {}//TODO: remove
 
+    //TODO: remove "p"
     const hookClass = vivaldi.jdhooks.hookClass = (className, cb, p) => {
         hookClassList[className] = hookClassList[className] || []
         hookClassList[className].push(cb)
+        if (p) console.warn(`hookClass(${className}): The third argument will be deleted soon. Use vivaldi.jdhooks.insertWatcher instead`)
         if (p && p.prefs) hookClassPrefs[className] = (hookClassPrefs[className] || []).concat(p.prefs)
         if (p && p.settings) hookClassSettings[className] = (hookClassSettings[className] || []).concat(p.settings)
         vivaldi.jdhooks._unusedClassHooks[className] = true
@@ -96,6 +99,44 @@
     //onUIReady(function)
     vivaldi.jdhooks.onUIReady = _ => document.addEventListener(jdhooks_ui_ready_event, _)
 
+    //insertWatcher(cls, params)
+    const insertWatcher = vivaldi.jdhooks.insertWatcher = (cls, params) => {
+        const vivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
+        const PrefsCache = vivaldi.jdhooks.require("PrefsCache")
+        return class extends cls {
+            constructor(...e) {
+                super(...e)
+
+                this.state = this.state || {}
+                if (params.settings) this.state.jdVivaldiSettings = {
+                    ...this.state.jdVivaldiSettings || {},
+                    ...vivaldiSettings.getKeysSync(params.settings)
+                }
+                if (params.prefs) this.state.jdPrefs = {
+                    ...this.state.jdPrefs || {},
+                    ...PrefsCache.getList(params.prefs)
+                }
+                this.changeSettingsHandler = this.changeSettingsHandler.bind(this)
+                this.changePrefsHandler = this.changePrefsHandler.bind(this)
+            }
+            changeSettingsHandler(oldValue, newValue, key) {
+                this.setState(state => ({ jdVivaldiSettings: { ...state.jdVivaldiSettings, [key]: newValue } }))
+            }
+            changePrefsHandler(oldValue, newValue, key) {
+                this.setState(state => ({ jdPrefs: { ...state.jdPrefs, [key]: newValue } }))
+            }
+            componentDidMount() {
+                if (super.componentDidMount) super.componentDidMount()
+                for (const key of params.settings || []) vivaldiSettings.addListener(key, this.changeSettingsHandler)
+                for (const key of params.prefs || []) PrefsCache.addListener(key, this.changePrefsHandler)
+            }
+            componentWillUnmount() {
+                for (const key of params.prefs || []) PrefsCache.removeListener(key, this.changePrefsHandler)
+                for (const key of params.settings || []) vivaldiSettings.removeListener(key, this.changeSettingsHandler)
+                if (super.componentWillUnmount) super.componentWillUnmount()
+            }
+        }
+    }
     //---------------------------------------------------------------------
 
     function loadHooks(callback) {
@@ -690,6 +731,7 @@
             }
         }
 
+        //TODO: remove
         hookModule("common_InsertVivaldiSettings", (moduleInfo, exports) => (type, paramArray) => {
             let className = type.__jdhooks_instanceof
                 ? type.__jdhooks_instanceof
@@ -704,6 +746,7 @@
             return r
         })
 
+        //TODO: remove
         hookModule("common_InsertPrefsCache", (moduleInfo, exports) => (type, paramArray) => {
             let className = type.__jdhooks_instanceof
                 ? type.__jdhooks_instanceof

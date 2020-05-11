@@ -47,9 +47,9 @@ vivaldi.jdhooks.hookClass("progress_PageloadProgress", oldClass => {
                     const lum = colorAccentBg.luminance()
                     const newColorAccentBg = colorAccentBg.luminance(lum > .5 ? lum - .5 : lum + .5)
 
-                    let idx = r.props.children.findIndex(x => x.type == "progress")
+                    let idx = r.props.children.findIndex(x => x && x.type == "progress")
                     if (idx > -1) {
-                        r.props.children[0].props.style = {
+                        r.props.children[idx].props.style = {
                             opacity: .4,
                             backgroundColor: newColorAccentBg
                         }
