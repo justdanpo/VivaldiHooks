@@ -24,9 +24,38 @@ vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
 		constructor(...e) {
 			super(...e)
 			this.jdUpdateTabs()
+
+			const old_onKeyDown = this.onKeyDown
+			this.onKeyDown = (e => {
+				if (e.shiftKey && e.key == "Delete") {
+					const item = this.state.renderedArray[this.qclist.getSelectedIndex()]
+					if (item.jdOnTabClose) item.jdOnTabClose()
+					e.preventDefault()
+					e.stopPropagation()
+					return
+				}
+				return old_onKeyDown(e)
+			})
 		}
 
-		componentDidUpdate(prevProps, prevState, snapshot) { this.jdUpdateTabs() }
+		qcCloseSetFocusBack(evt) {
+			evt.target.focus()
+		}
+
+		componentDidMount() {
+			if (super.componentDidMount) super.componentDidMount()
+			this.refs.quickCommand.addEventListener("blur", this.qcCloseSetFocusBack)
+		}
+
+		componentWillUnmount() {
+			this.refs.quickCommand.removeEventListener("blur", this.qcCloseSetFocusBack)
+			if (super.componentWillUnmount) super.componentWillUnmount()
+		}
+
+		componentDidUpdate(prevProps, prevState, snapshot) {
+			if (super.componentDidUpdate) super.componentDidUpdate(prevProps, prevState, snapshot)
+			this.jdUpdateTabs()
+		}
 	}
 	return qc
 })
