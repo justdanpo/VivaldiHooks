@@ -25,6 +25,9 @@ vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
 			super(...e)
 			this.jdUpdateTabs()
 
+			this.qcInitialFocus = document.activeElement
+			this.qcFocusLost = false
+
 			const old_onKeyDown = this.onKeyDown
 			this.onKeyDown = (e => {
 				if (e.shiftKey && e.key == "Delete") {
@@ -36,9 +39,12 @@ vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
 				}
 				return old_onKeyDown(e)
 			})
+
+			this.qcCloseSetFocusBack = this.qcCloseSetFocusBack.bind(this)
 		}
 
 		qcCloseSetFocusBack(evt) {
+			this.qcFocusLost = true
 			evt.target.focus()
 		}
 
@@ -50,6 +56,15 @@ vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
 		componentWillUnmount() {
 			this.refs.quickCommand.removeEventListener("blur", this.qcCloseSetFocusBack)
 			if (super.componentWillUnmount) super.componentWillUnmount()
+
+			if (this.qcFocusLost) {
+				if (document.body.contains(this.qcInitialFocus)) {
+					this.qcInitialFocus.focus()
+				} else {
+					const activeWebView = document.querySelector(".active.webpageview webview")
+					if (activeWebView) activeWebView.focus()
+				}
+			}
 		}
 
 		componentDidUpdate(prevProps, prevState, snapshot) {
