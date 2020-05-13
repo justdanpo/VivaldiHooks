@@ -23,7 +23,7 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
                 // Adjust size automatically
                 if (width === -1) {
                     const t = Math.round(this.props.maxWidth / (1.0 * this.props.prefValues[R.kStartpageSpeedDialColumns]));
-                    width = Math.max(Math.min(t, 320), 120)
+                    width = Math.max(Math.min(t, 400), 100)
                 }
                 const height = Math.round(width / sets['widthHeightRatio']),
                     spacing = sets['spacing'];
@@ -58,8 +58,8 @@ vivaldi.jdhooks.hookClass('settings_startpage_StartPage', cls => {
     const React = vivaldi.jdhooks.require('React');
     const settings = vivaldi.jdhooks.require('vivaldiSettings');
     const settSrchCatChild = vivaldi.jdhooks.require('settings_SettingsSearchCategoryChild');
-    // const PrefKeys = vivaldi.jdhooks.require('_PrefKeys');
-    // const PrefSet = vivaldi.jdhooks.require('_PrefSet');
+    const PrefKeys = vivaldi.jdhooks.require('_PrefKeys');
+    const PrefSet = vivaldi.jdhooks.require('_PrefSet');
 
     function setProperty(obj, name, value) {
         if (name in obj) Object.defineProperty(obj, name, { value: value, enumerable: true, configurable: true, writable: true }); else obj[name] = value
@@ -94,47 +94,92 @@ vivaldi.jdhooks.hookClass('settings_startpage_StartPage', cls => {
             }
         }
 
+        onWidthInputChanged(event) {
+            if (event.target && event.target.value !== undefined) {
+                let val = parseInt(event.target.value);
+                if (val < 100) val = -1;
+                PrefSet.set(PrefKeys.kStartpageSpeedDialWidth, val);
+            }
+        }
+
+        onMaxColsInputChanged(event) {
+            if (event.target && event.target.value !== undefined) {
+                let val = parseInt(event.target.value);
+                if (val < 1) val = 1000;
+                PrefSet.set(PrefKeys.kStartpageSpeedDialColumns, val);
+            }
+        }
+
         render() {
+            let tileWidth = this.props.prefValues[PrefKeys.kStartpageSpeedDialWidth];
+            let tileDisplayWidth = tileWidth.toString() + 'px';
+            if (tileWidth < 100) {
+                tileWidth = 90;
+                tileDisplayWidth = 'Auto';
+            }
+            let maxCols = this.props.prefValues[PrefKeys.kStartpageSpeedDialColumns];
+            let maxColsDisplay = maxCols.toString();
+            if (maxCols > 20) {
+                maxCols = 0;
+                maxColsDisplay = 'Auto';
+            }
             return React.createElement(settSrchCatChild,
                 { filter: this.props.filter },
-                React.createElement('div', { className: 'setting-group' },
-                    React.createElement('div', { className: 'setting-single' },
-                        React.createElement('h3', null, 'Width to Height Ratio'),
-                        React.createElement('input', {
-                            type: 'range',
-                            min: 0.5,
-                            max: 2,
-                            step: 0.1,
-                            value: this.state.widthHeightRatio,
-                            onChange: this.onInputChanged.bind(this, 'widthHeightRatio', 'value', parseFloat),
-                            tabIndex: -1
-                        }),
-                        React.createElement('span', null, this.state.widthHeightRatio.toString())),
-                    React.createElement('div', { className: 'setting-single' },
-                        React.createElement('h3', null, 'Spacing between Tiles'),
-                        React.createElement('input', {
-                            type: 'range',
-                            min: 0,
-                            max: 100,
-                            step: 1,
-                            value: this.state.spacing,
-                            onChange: this.onInputChanged.bind(this, 'spacing', 'value', parseInt),
-                            tabIndex: -1
-                        }),
-                        React.createElement('span', null, this.state.spacing.toString() + 'px')),
-                    React.createElement('div', { className: 'setting-single' },
-                        React.createElement('h3', null, 'Margin on the Sides'),
-                        React.createElement('input', {
-                            type: 'range',
-                            min: 0,
-                            max: 200,
-                            step: 5,
-                            value: this.state.edgeMargin,
-                            onChange: this.onInputChanged.bind(this, 'edgeMargin', 'value', parseInt),
-                            tabIndex: -1
-                        }),
-                        React.createElement('span', null, this.state.edgeMargin.toString() + 'px'))
-                )
+                React.createElement('div', { className: 'setting-single' },
+                    React.createElement('h3', null, 'Maximum Columns'),
+                    React.createElement('input', {
+                        type: 'range',
+                        min: 0,
+                        max: 20,
+                        step: 1,
+                        value: maxCols,
+                        onChange: this.onMaxColsInputChanged.bind(this)
+                    }),
+                    React.createElement('span', null, maxColsDisplay)),
+                React.createElement('div', { className: 'setting-single pad-top' },
+                    React.createElement('h3', null, 'Width of Tiles'),
+                    React.createElement('input', {
+                        type: 'range',
+                        min: 90,
+                        max: 400,
+                        step: 10,
+                        value: tileWidth,
+                        onChange: this.onWidthInputChanged.bind(this)
+                    }),
+                    React.createElement('span', null, tileDisplayWidth)),
+                React.createElement('div', { className: 'setting-single pad-top' },
+                    React.createElement('h3', null, 'Width to Height Ratio'),
+                    React.createElement('input', {
+                        type: 'range',
+                        min: 0.5,
+                        max: 2,
+                        step: 0.1,
+                        value: this.state.widthHeightRatio,
+                        onChange: this.onInputChanged.bind(this, 'widthHeightRatio', 'value', parseFloat)
+                    }),
+                    React.createElement('span', null, this.state.widthHeightRatio.toString())),
+                React.createElement('div', { className: 'setting-single pad-top' },
+                    React.createElement('h3', null, 'Spacing between Tiles'),
+                    React.createElement('input', {
+                        type: 'range',
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        value: this.state.spacing,
+                        onChange: this.onInputChanged.bind(this, 'spacing', 'value', parseInt)
+                    }),
+                    React.createElement('span', null, this.state.spacing.toString() + 'px')),
+                React.createElement('div', { className: 'setting-single pad-top' },
+                    React.createElement('h3', null, 'Margin on the Sides'),
+                    React.createElement('input', {
+                        type: 'range',
+                        min: 0,
+                        max: 200,
+                        step: 5,
+                        value: this.state.edgeMargin,
+                        onChange: this.onInputChanged.bind(this, 'edgeMargin', 'value', parseInt)
+                    }),
+                    React.createElement('span', null, this.state.edgeMargin.toString() + 'px'))
             );
         }
     }
@@ -145,8 +190,10 @@ vivaldi.jdhooks.hookClass('settings_startpage_StartPage', cls => {
         }
         render() {
             let sp = super.render();
-            sp.props.children[1].props.children.push(React.createElement(TilesSection, this.props));
-            console.log(sp);
+            let arr = sp.props.children[1].props.children[1].props.children;
+            arr.shift(); arr.shift();
+            let newOptions = React.createElement(TilesSection, this.props);
+            arr.unshift(newOptions);
             return sp;
         }
     }
