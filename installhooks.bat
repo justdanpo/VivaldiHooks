@@ -2,9 +2,11 @@
 
 $srcdir = split-path $env:installhooks_self
 
-$vivargs = $env:installhooks_args -split '\s+'
-$nowait = $vivargs -contains '-nowait'
-$vivpath = $vivargs | Where-Object { $_ -ne '-nowait' }
+if ($env:installhooks_args) {
+  $vivargs = iex "echo $env:installhooks_args"
+  $nowait = $vivargs | Where-Object { $_ -eq '-nowait' }
+  $vivpath = $vivargs | Where-Object { $_ -ne '-nowait' }
+}
 
 if (-Not $vivpath) {
   Try {
