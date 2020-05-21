@@ -2,7 +2,7 @@
 
 vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
     // Could be avoided by using just strings instead of calling this
-    const R = vivaldi.jdhooks.require('_PrefKeys');
+    const PrefKeys = vivaldi.jdhooks.require('_PrefKeys');
     const settings = vivaldi.jdhooks.require('vivaldiSettings');
     class newSDView extends cls {
         constructor(...e) {
@@ -19,34 +19,43 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
                     },
                     ...settings.getSync(['SPEEDDIAL_SIZING'])
                 };
-                let width = this.props.prefValues[R.kStartpageSpeedDialWidth];
+                let width = this.props.prefValues[PrefKeys.kStartpageSpeedDialWidth];
                 // Adjust size automatically
                 if (width === -1) {
-                    const t = Math.round(this.props.maxWidth / (1.0 * this.props.prefValues[R.kStartpageSpeedDialColumns]));
-                    width = Math.max(Math.min(t, 400), 100)
+                    const wth = Math.round(this.props.maxWidth / (1.0 * this.props.prefValues[PrefKeys.kStartpageSpeedDialColumns]));
+                    width = Math.max(Math.min(wth, 400), 100);
                 }
                 const height = Math.round(width / sets['widthHeightRatio']),
-                    spacing = sets['spacing'];
+                      spacing = sets['spacing'];
                 let count = this.state.dialNodes.length;
                 // One more for the ‘plus’ tile
-                this.props.prefValues[R.kStartpageSpeedDialAddButtonVisible] && count++;
-                const totWidth = width + 2 * spacing;
-                let totHeight = height + 2 * spacing;
+                this.props.prefValues[PrefKeys.kStartpageSpeedDialAddButtonVisible] && count++;
+                const spacedWidth = width + 2 * spacing;
+                let spacedHeight = height + 2 * spacing;
                 // Add space for titles
-                "never" !== this.props.prefValues[R.kStartpageSpeedDialTitlesVisible] && (totHeight += 30);
+                if (this.props.prefValues[PrefKeys.kStartpageSpeedDialTitlesVisible] !== "never")
+                    spacedHeight += 30;
                 const margin = sets['edgeMargin'],
-                    maxCols = this.props.prefValues[R.kStartpageSpeedDialColumns] || 1000;
-                let cols = Math.max(1, Math.min(Math.floor((this.props.maxWidth - margin) / totWidth), maxCols));
-                return this.props.maxWidth < totWidth * cols + margin && (cols = 1), {
+                      maxCols = this.props.prefValues[PrefKeys.kStartpageSpeedDialColumns] || 1000;
+                let cols = Math.max(
+                               1,
+                               Math.min(
+                                   Math.floor(
+                                       (this.props.maxWidth - margin)
+                                       / spacedWidth),
+                                   maxCols));
+                if (this.props.maxWidth < (spacedWidth * cols + margin))
+                    cols = 1;
+                return {
                     count: count,
                     cols: cols,
                     rows: Math.ceil(count / cols),
-                    dialWidth: totWidth,
-                    dialHeight: totHeight,
+                    dialWidth: spacedWidth,
+                    dialHeight: spacedHeight,
                     thumbnailWidth: width,
                     thumbnailHeight: height,
                     dialSpace: spacing
-                }
+                };
             };
         }
     }
@@ -190,6 +199,7 @@ vivaldi.jdhooks.hookClass('settings_startpage_StartPage', cls => {
         }
         render() {
             let sp = super.render();
+            // TODO: more update-proof way to achieve this
             let arr = sp.props.children[1].props.children[1].props.children;
             arr.shift(); arr.shift();
             let newOptions = React.createElement(TilesSection, this.props);
