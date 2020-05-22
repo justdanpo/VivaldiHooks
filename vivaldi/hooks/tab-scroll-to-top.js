@@ -1,15 +1,18 @@
-//Click active tab to scroll, click again to restore scroll position. Overrides "Minimize Active Tab".
+//Click active tab to scroll, click again to restore scroll position. Disable "Minimize Active Tab".
 
-vivaldi.jdhooks.hookClass("tabs_Tab", oldClass => {
+vivaldi.jdhooks.hookClass("tabs_TabStrip", oldClass => {
     const WebViewStore = vivaldi.jdhooks.require("_WebViewStore")
     const PrefsCache = vivaldi.jdhooks.require("PrefsCache")
     const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
 
     return class extends oldClass {
-        render() {
-            let r = super.render()
-            if (r) r.props.onMouseDown = evt => {
-                if (evt.button == 0 && this.props.active) {
+        constructor(...e) {
+            super(...e)
+
+            const old_cleanupInternalDragging = this.cleanupInternalDragging
+            this.cleanupInternalDragging = () => {
+
+                if (!this.state.isDragging) {
                     const wv = WebViewStore.getActiveWebView()
                     if (wv) {
                         //Smooth scrolling doesn't work well as you may lost scroll position while scrolling
@@ -29,13 +32,11 @@ vivaldi.jdhooks.hookClass("tabs_Tab", oldClass => {
                         }
 
                         wv.executeScript({ code: "(" + scrollFn + `)('${scroll}')` })
-
-                        evt.stopPropagation()
-                        evt.preventDefault()
                     }
                 }
+
+                old_cleanupInternalDragging()
             }
-            return r
         }
     }
 })
