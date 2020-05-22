@@ -12,7 +12,7 @@ vivaldi.jdhooks.hookClass("tabs_TabStrip", oldClass => {
             const old_cleanupInternalDragging = this.cleanupInternalDragging
             this.cleanupInternalDragging = () => {
 
-                if (!this.state.isDragging) {
+                if (!this.state.isDragging && this.state.draggedActive && this.state.draggedActive.active) {                    
                     const wv = WebViewStore.getActiveWebView()
                     if (wv) {
                         //Smooth scrolling doesn't work well as you may lost scroll position while scrolling
