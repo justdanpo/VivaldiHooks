@@ -4,6 +4,8 @@
 VivaldiHooks is a set of hooks/scripts for Vivaldi browser modding.
 The main one - `jdhooks.js` - controlls mods loading and provides mod developers a way to change behaviour of Vivaldi internal components.
 
+See Wiki for [hooks descriptions](https://github.com/justdanpo/VivaldiHooks/wiki/Hooks) or [developers' howto](https://github.com/justdanpo/VivaldiHooks/wiki/Howto-dev).
+
 ## Installation
 ### Automatic (Windows only)
 Just run **installhooks.bat**. It will find installation path automatically if Vivaldi is set as your default browser.
@@ -63,10 +65,6 @@ The easiest way to "uninstall"/disable VivaldiHooks is to delete **{instdir}\viv
 ### [speeddial-shortcuts.js](vivaldi/hooks/speeddial-shortcuts.js)
 
 ![speeddial-shortcuts.png](screenshots/speeddial-shortcuts.png)
-
-### [zoom-buttons.js](vivaldi/hooks/zoom-buttons.js)
-
-![zoom-buttons.png](screenshots/zoom-buttons.png)
 
 ### [jdhooks-startup-settings.js](vivaldi/hooks/jdhooks-startup-settings.js)
 
