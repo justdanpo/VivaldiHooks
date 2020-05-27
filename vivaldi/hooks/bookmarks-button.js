@@ -71,11 +71,14 @@
 
         class newClass extends origClass {
             render() {
+                //TODO: remove in the future
+                const VIVALDI_MENU_POSITION = this.state.jdVivaldiSettings.VIVALDI_MENU_POSITION || this.state.jdPrefs[SettingsPaths.kMenuDisplay]
+
                 let ret = super.render()
                 if (this.props.name == SettingsPaths.kToolbarsNavigation) {
                     ret.props.children.push(
                         this.state.jdVivaldiSettings.BOOKMARK_BUTTON_POSITION == position.separate &&
-                            this.state.jdVivaldiSettings.VIVALDI_MENU_POSITION != "top"
+                            VIVALDI_MENU_POSITION != "top"
 
                             ? React.createElement(ToolbarButton, {
                                 tooltip: "Bookmarks",
@@ -89,7 +92,12 @@
                 return ret
             }
         }
-        return vivaldi.jdhooks.insertWatcher(newClass, { settings: ["BOOKMARK_BUTTON_POSITION", "VIVALDI_MENU_POSITION"] })
+        return vivaldi.jdhooks.insertWatcher(newClass, {
+            settings: ["BOOKMARK_BUTTON_POSITION",
+                "VIVALDI_MENU_POSITION" //TODO: remove in the future
+            ],
+            prefs: [SettingsPaths.kMenuDisplay]
+        })
     })
 
     vivaldi.jdhooks.hookClass("settings_bookmarks_BookmarkBar", origClass => {

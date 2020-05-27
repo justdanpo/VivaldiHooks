@@ -48,16 +48,10 @@
     //hookClass(className, function(class))
     let hookClassList = {}
     jdhooks._unusedClassHooks = {} //stats
-    let hookClassPrefs = {}//TODO: remove
-    let hookClassSettings = {}//TODO: remove
 
-    //TODO: remove "p"
-    const hookClass = vivaldi.jdhooks.hookClass = (className, cb, p) => {
+    const hookClass = vivaldi.jdhooks.hookClass = (className, cb) => {
         hookClassList[className] = hookClassList[className] || []
         hookClassList[className].push(cb)
-        if (p) console.warn(`hookClass(${className}): The third argument will be deleted soon. Use vivaldi.jdhooks.insertWatcher instead`)
-        if (p && p.prefs) hookClassPrefs[className] = (hookClassPrefs[className] || []).concat(p.prefs)
-        if (p && p.settings) hookClassSettings[className] = (hookClassSettings[className] || []).concat(p.settings)
         vivaldi.jdhooks._unusedClassHooks[className] = true
     }
 
@@ -431,6 +425,7 @@
             "_PrefSet": ["Not known how to make event handler for pref "],
             "_ProgressInfo": ["getProgressInfo", "PAGE_SET_PROGRESS"],
             "_RazerChroma": ["Error setting Razer Chroma color"],
+            "_Search": ["withPageSelection:"],
             "_SearchEnginesStore": ['"vivaldi/x-search-engine"'],
             "_ShowMenu": ["menubarMenu.onAction.addListener", "containerGroupFolders"],
             "_TabSetMediaState": ["static setMediaState", '"PAGE_SET_MEDIASTATE"'],
@@ -673,35 +668,6 @@
                 oldfn(moduleInfo, exports, overrideRequire(require, moduleIndex))
             }
         }
-
-        //TODO: remove
-        hookModule("common_InsertVivaldiSettings", (moduleInfo, exports) => (type, paramArray) => {
-            let className = type.__jdhooks_instanceof
-                ? type.__jdhooks_instanceof
-                : type && type.prototype
-                    ? classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
-                    : undefined
-
-            if (className && hookClassSettings[className]) { paramArray = paramArray.concat(hookClassSettings[className]) }
-
-            let r = exports(type, paramArray)
-            if (className) r.__jdhooks_instanceof = className
-            return r
-        })
-
-        //TODO: remove
-        hookModule("common_InsertPrefsCache", (moduleInfo, exports) => (type, paramArray) => {
-            let className = type.__jdhooks_instanceof
-                ? type.__jdhooks_instanceof
-                : type && type.prototype
-                    ? classNameCache[type.name + "_" + type.prototype.jdhooks_module_index]
-                    : undefined
-            if (className && hookClassPrefs[className]) { paramArray = paramArray.concat(hookClassPrefs[className]) }
-
-            let r = exports(type, paramArray)
-            if (className) r.__jdhooks_instanceof = className
-            return r
-        })
 
         //wait for UI
         hookModule("_RazerChroma", (moduleInfo, exports) => {
