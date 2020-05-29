@@ -1,7 +1,7 @@
 //Move Minimize/Zoom/Close buttons to addressbar when Vivaldi is maximized and tab position is NOT "Top"
 
 vivaldi.jdhooks.addStyle(`
-#browser:not(.native):not(.horizontal-menu):not(.tabs-top).maximized #header { display: none; }
+#browser:not(.popup):not(.native):not(.horizontal-menu):not(.tabs-top).maximized #header { display: none; }
 
 #browser.horizontal-menu .MaximizedWindowButtons,
 #browser.tabs-top .MaximizedWindowButtons,
