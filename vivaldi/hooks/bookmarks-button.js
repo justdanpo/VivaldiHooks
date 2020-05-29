@@ -20,6 +20,8 @@
         const ShowMenu = vivaldi.jdhooks.require("_ShowMenu")
 
         let menu = CommandManager.getNamedMenu("vivaldi", true)
+        if (!menu.length) menu = CommandManager.getNamedMenu("menubar", true)
+
         let idx = menu.findIndex(i => i.labelEnglish == "Bookmarks")
         if (idx > -1) {
             const rect = event.target.getBoundingClientRect()
