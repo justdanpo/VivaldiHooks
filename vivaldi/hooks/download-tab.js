@@ -45,7 +45,7 @@
     })
 
     function openDownloadTab() {
-        var downloadTabPageStore = vivaldi.jdhooks.require("_PageStore").a
+        const downloadTabPageStore = vivaldi.jdhooks.require("_PageStore").a
 
         if (!downloadTabPageStore.getPages().find(page => page.get("url") === "chrome://downloads/")) {
             vivaldi.jdhooks.require("PageActions").openURL("vivaldi://downloads", {
@@ -83,13 +83,17 @@
 
     vivaldi.jdhooks.hookClass("dialogs_downloadDialog", oldClass => {
         const VivaldiSettings = vivaldi.jdhooks.require("vivaldiSettings")
+        const PrefCache = vivaldi.jdhooks.require("PrefsCache")
+        const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
 
         class downloadTabDownloadDialog extends oldClass {
             constructor(...e) {
                 super(...e)
 
                 function doCommon(oldFn, ...e) {
-                    if (VivaldiSettings.getSync("SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS")) {
+                    if (PrefCache.get(PrefKeys.kDownloadsOpenPanelOnNew) &&
+                        VivaldiSettings.getSync("SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS")
+                    ) {
                         this.props.customData.request.allow(...e)
                         this.setState(e => ({ shown: !e.shown }))
                         openDownloadTab()

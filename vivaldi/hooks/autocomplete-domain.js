@@ -8,9 +8,9 @@ vivaldi.jdhooks.hookClass("urlfield_AutocompleteInput_AutocompleteInput", oldCla
 		static getDerivedStateFromProps(input, autocompletedata) {
 			let r = super.getDerivedStateFromProps(input, autocompletedata)
 
-			if (r.autocompleteItem && r.autocompleteValue) {
-				var parsed = url.parse(r.autocompleteValue)
-				var host =
+			if (r.autocompleteItem && r.autocompleteValue && -1 === r.autocompleteValue.indexOf(" ")) {
+				const parsed = url.parse(r.autocompleteValue)
+				const host =
 					(parsed.protocol
 						? parsed.protocol + (parsed.slashes ? "//" : "")
 						: ""
