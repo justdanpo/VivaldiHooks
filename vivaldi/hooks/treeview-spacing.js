@@ -14,45 +14,45 @@ vivaldi.jdhooks.addStyle(`
 `, 'treeview-spacing.js');
 
 vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
-    let oldGetDefault = exports.getDefault;
+    let oldGetDefault = exports.getDefault
     exports.getDefault = name => {
         switch (name) {
-            case "VIVALDI_TREE_ROW_HEIGHT": return 24;
-            default: return oldGetDefault(name);
+            case "VIVALDI_TREE_ROW_HEIGHT": return 24
+            default: return oldGetDefault(name)
         }
     }
-    return exports;
-});
+    return exports
+})
 
 vivaldi.jdhooks.hookClass('common_VivaldiTreeList', cls => {
     const newCls = vivaldi.jdhooks.insertWatcher(class extends cls {
         render() {
-            this.props.rowHeight = this.state.jdVivaldiSettings.VIVALDI_TREE_ROW_HEIGHT;
+            this.props.rowHeight = this.state.jdVivaldiSettings.VIVALDI_TREE_ROW_HEIGHT
 
-            const sup = super.render();
-            sup.props.style['--rowHeight'] = this.props.rowHeight + 'px';
-            return sup;
+            const sup = super.render()
+            sup.props.style['--rowHeight'] = this.props.rowHeight + 'px'
+            return sup
         }
-    }, { settings: ["VIVALDI_TREE_ROW_HEIGHT"] });
-    return newCls;
-});
+    }, { settings: ["VIVALDI_TREE_ROW_HEIGHT"] })
+    return newCls
+})
 
 // Settings
 vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
-    const React = vivaldi.jdhooks.require('React');
-    const settings = vivaldi.jdhooks.require('vivaldiSettings');
-    const settSrchCatChild = vivaldi.jdhooks.require('settings_SettingsSearchCategoryChild');
+    const React = vivaldi.jdhooks.require('React')
+    const settings = vivaldi.jdhooks.require('vivaldiSettings')
+    const settSrchCatChild = vivaldi.jdhooks.require('settings_SettingsSearchCategoryChild')
 
     const TreeSpacingSlider = vivaldi.jdhooks.insertWatcher(class extends React.Component {
         onValueChanged(event) {
             if (event.target && event.target.value) {
-                let newVal = parseInt(event.target.value);
-                settings.set({ ['VIVALDI_TREE_ROW_HEIGHT']: newVal });
+                let newVal = parseInt(event.target.value)
+                settings.set({ ['VIVALDI_TREE_ROW_HEIGHT']: newVal })
             }
         }
 
         render() {
-            const rowHeight = this.state.jdVivaldiSettings.VIVALDI_TREE_ROW_HEIGHT;
+            const rowHeight = this.state.jdVivaldiSettings.VIVALDI_TREE_ROW_HEIGHT
 
             return React.createElement('div', { className: 'setting-group' },
                 React.createElement('h3', null, 'Tree View Row Height'),
@@ -65,23 +65,23 @@ vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
                         value: rowHeight,
                         onChange: this.onValueChanged.bind(this)
                     }),
-                    React.createElement('span', null, rowHeight + 'px')));
+                    React.createElement('span', null, rowHeight + 'px')))
         }
-    }, { settings: ["VIVALDI_TREE_ROW_HEIGHT"] });
+    }, { settings: ["VIVALDI_TREE_ROW_HEIGHT"] })
 
     class newCls extends cls {
         render() {
-            let sup = super.render();
+            let sup = super.render()
 
-            const ts = React.createElement(TreeSpacingSlider, this.props);
+            const ts = React.createElement(TreeSpacingSlider, this.props)
             if (sup.props.children[0] && sup.props.children[0].props && sup.props.children[0].props.children)
-                sup.props.children[0].props.children.push(ts);
+                sup.props.children[0].props.children.push(ts)
             else
-                sup.props.children.push(ts);
+                sup.props.children.push(ts)
 
-            return sup;
+            return sup
         }
     }
 
-    return newCls;
-});
+    return newCls
+})
