@@ -41,7 +41,6 @@ vivaldi.jdhooks.hookClass('common_VivaldiTreeList', cls => {
 vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
     const React = vivaldi.jdhooks.require('React')
     const settings = vivaldi.jdhooks.require('vivaldiSettings')
-    const settSrchCatChild = vivaldi.jdhooks.require('settings_SettingsSearchCategoryChild')
 
     const TreeSpacingSlider = vivaldi.jdhooks.insertWatcher(class extends React.Component {
         onValueChanged(event) {

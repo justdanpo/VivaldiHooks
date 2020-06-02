@@ -8,8 +8,8 @@ vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
                 horizontal: {
                     unpinnedActiveWidthMax: 180,
                     unpinnedInactiveWidthMax: 180,
-                    pinnedActiveWidthMax: 31,
-                    pinnedInactiveWidthMax: 31,
+                    pinnedActiveWidthMax: 32,
+                    pinnedInactiveWidthMax: 32,
                     pinnedAllowShrink: false
                 }
             }
@@ -22,9 +22,9 @@ vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
 vivaldi.jdhooks.hookClass('tabs_TabStrip', cls => {
     const newCls = vivaldi.jdhooks.insertWatcher(class extends cls {
         getTabStyle(info, horz, focus, pin, stack, thumb) {
-            let tabStyle = super.getTabStyle(...arguments);
+            let tabStyle = super.getTabStyle(...arguments)
 
-            const tabSize = this.state.jdVivaldiSettings.TAB_SIZE;
+            const tabSize = this.state.jdVivaldiSettings.TAB_SIZE
             if (horz) {
                 tabStyle.maxWidth = (pin
                     ? (focus
@@ -32,13 +32,88 @@ vivaldi.jdhooks.hookClass('tabs_TabStrip', cls => {
                         : tabSize.horizontal.pinnedInactiveWidthMax)
                     : (focus
                         ? tabSize.horizontal.unpinnedActiveWidthMax
-                        : tabSize.horizontal.unpinnedInactiveWidthMax));
+                        : tabSize.horizontal.unpinnedInactiveWidthMax))
                 if (pin)
-                    tabStyle.flex = tabSize.horizontal.pinnedAllowShrink;
+                    tabStyle.flex = tabSize.horizontal.pinnedAllowShrink
             }
 
-            return tabStyle;
+            return tabStyle
         }
-    }, { settings: ['TAB_SIZE'] });
-    return newCls;
-});
+    }, { settings: ['TAB_SIZE'] })
+    return newCls
+})
+
+// Settings
+vivaldi.jdhooks.hookClass('settings_tabs_TabOptions', cls => {
+    const React = vivaldi.jdhooks.require('React')
+    const settings = vivaldi.jdhooks.require('vivaldiSettings')
+
+    const TabWidthSettings = vivaldi.jdhooks.insertWatcher(class extends React.Component {
+        onSliderChanged(setting, event) {
+            if (event.target && event.target.value) {
+                let newState = this.state.jdVivaldiSettings.TAB_SIZE
+                newState.horizontal = {
+                    ...newState.horizontal,
+                    ...{ [setting]: parseInt([event.target.value]) }
+                }
+                settings.set({ ['TAB_SIZE']: newState })
+            }
+        }
+        onAllowShrinkChanged(event) {
+            if (event.target && event.target.checked !== null) {
+                let newState = this.state.jdVivaldiSettings.TAB_SIZE
+                newState.horizontal = {
+                    ...newState.horizontal,
+                    ...{ ['pinnedAllowShrink']: !!event.target.checked }
+                }
+                settings.set({ ['TAB_SIZE']: newState })
+            }
+        }
+        createSlider(setting, label) {
+            const val = this.state.jdVivaldiSettings.TAB_SIZE.horizontal[setting]
+            return React.createElement('div', { className: 'setting-single' },
+                React.createElement('h3', null, label),
+                React.createElement('input', {
+                    type: 'range',
+                    value: val,
+                    min: 20,
+                    max: 500,
+                    step: 10,
+                    onChange: this.onSliderChanged.bind(this, setting)
+                }),
+                React.createElement('span', null, val + 'px'))
+        }
+        render() {
+            const tabSize = this.state.jdVivaldiSettings.TAB_SIZE
+            return [
+                this.createSlider('unpinnedActiveWidthMax', 'Active Tab Max Width'),
+                this.createSlider('unpinnedInactiveWidthMax', 'Inactive Tab Max Width'),
+                this.createSlider('pinnedActiveWidthMax', 'Active Pinned Tab Max Width'),
+                this.createSlider('pinnedInactiveWidthMax', 'Pinned Tab Max Width'),
+                React.createElement('div', { className: 'setting-single' },
+                    React.createElement('label', null,
+                        React.createElement('input', {
+                            type: 'checkbox',
+                            checked: tabSize.horizontal.pinnedAllowShrink,
+                            onChange: this.onAllowShrinkChanged.bind(this)
+                        }),
+                        React.createElement('span', null, 'Allow Shrinking of Pinned Tabs')))]
+        }
+    }, { settings: ['TAB_SIZE'] })
+
+    class newCls extends cls {
+        render() {
+            let sup = super.render()
+            if (sup.props && sup.props.children) {
+                let section = sup.props.children.find(c =>
+                    c && c.props && c.props.className == 'setting-group tab-min-width')
+                if (section && section.props && section.props.children) {
+                    let custom = React.createElement(TabWidthSettings, this.props)
+                    section.props.children.push(custom)
+                }
+            }
+            return sup
+        }
+    }
+    return newCls
+})
