@@ -6,10 +6,10 @@ vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
         constructor(...e) {
             super(...e)
 
+            let old_onPageStoreChanged = this._onPageStoreChanged
             this._onPageStoreChanged = () => {
-                !1 === this.blockPageStoreChange && this._onFilterChange(this.props.filter, () => {})
+                old_onPageStoreChanged()
                 const e = PageStore.a.getActivePage()
-                e.pinned && (this.lastActivePinnedId = e.id)
                 this.refs.treeList.expandToId(e.id)
             }
         }
