@@ -10,7 +10,10 @@ vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
             this._onPageStoreChanged = () => {
                 old_onPageStoreChanged()
                 const e = PageStore.a.getActivePage()
+                // Expand tree to active tab
                 this.refs.treeList.expandToId(e.id)
+                // Change selection to active tab
+                // this.refs.treeList.selectById(e.id)
             }
         }
     }
