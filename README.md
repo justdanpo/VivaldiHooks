@@ -1,4 +1,5 @@
 # VivaldiHooks
+[![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/about/)
 
 ## About
 VivaldiHooks is a set of hooks/scripts for Vivaldi browser modding.
