@@ -8,8 +8,8 @@ vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
                 horizontal: {
                     unpinnedActiveWidthMax: 180,
                     unpinnedInactiveWidthMax: 180,
-                    pinnedActiveWidthMax: 32,
-                    pinnedInactiveWidthMax: 32,
+                    pinnedActiveWidthMax: 30,
+                    pinnedInactiveWidthMax: 30,
                     pinnedAllowShrink: false
                 }
             }
@@ -52,9 +52,11 @@ vivaldi.jdhooks.hookClass('settings_tabs_TabOptions', cls => {
         onSliderChanged(setting, event) {
             if (event.target && event.target.value) {
                 let newState = this.state.jdVivaldiSettings.TAB_SIZE
+                let newVal = parseInt([event.target.value])
+                if (newVal > 500) newVal = 10000 // Just a really big number
                 newState.horizontal = {
                     ...newState.horizontal,
-                    ...{ [setting]: parseInt([event.target.value]) }
+                    ...{ [setting]: newVal }
                 }
                 settings.set({ ['TAB_SIZE']: newState })
             }
@@ -70,18 +72,20 @@ vivaldi.jdhooks.hookClass('settings_tabs_TabOptions', cls => {
             }
         }
         createSlider(setting, label) {
-            const val = this.state.jdVivaldiSettings.TAB_SIZE.horizontal[setting]
+            let val = this.state.jdVivaldiSettings.TAB_SIZE.horizontal[setting]
+            if (val > 500) val = 510
+            const displ = val > 500 ? 'Auto' : val + 'px'
             return React.createElement('div', { className: 'setting-single' },
                 React.createElement('h3', null, label),
                 React.createElement('input', {
                     type: 'range',
                     value: val,
-                    min: 20,
-                    max: 500,
+                    min: 30, // Less than 30 seems to have no effect
+                    max: 510,
                     step: 10,
                     onChange: this.onSliderChanged.bind(this, setting)
                 }),
-                React.createElement('span', null, val + 'px'))
+                React.createElement('span', null, displ))
         }
         render() {
             const tabSize = this.state.jdVivaldiSettings.TAB_SIZE
