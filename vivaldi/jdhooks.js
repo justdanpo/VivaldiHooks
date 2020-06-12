@@ -433,6 +433,7 @@
             "_TransitionGroup": ['"TransitionGroup"'],
             "_UIActions": [".runtimePrivate.switchToGuestSession"],
             "_UrlFieldActions": ["history.onVisitRemoved.addListener"],
+            "_urlutils": ["this.isVivaldiComponent"],
             "_VivaldiIcons": ["small:", "medium:", "large:"],
             "_WebViewStore": ["getActiveWebView()", ".WEBVIEW_CLEAR_IF_ACTIVE:"],
             "_WindowStore": ['"Attempting to toggle toolbars for a window without minimal UI"'],
