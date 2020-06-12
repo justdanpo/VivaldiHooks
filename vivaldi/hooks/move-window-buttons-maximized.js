@@ -1,7 +1,8 @@
 //Move Minimize/Zoom/Close buttons to addressbar when Vivaldi is maximized and tab position is NOT "Top"
 
 vivaldi.jdhooks.addStyle(`
-#browser:not(.popup):not(.native):not(.horizontal-menu):not(.tabs-top).maximized #header { display: none; }
+#browser:not(.popup):not(.horizontal-menu):not(.tabs-top).maximized #header,
+#browser:not(.popup):not(.horizontal-menu):not(.tabs-top).native #header { display: none; }
 
 #browser.horizontal-menu .MaximizedWindowButtons,
 #browser.tabs-top .MaximizedWindowButtons,
@@ -15,8 +16,11 @@ vivaldi.jdhooks.addStyle(`
 
 #vivaldi-button-moved {
     order: -1;
+    display: none;
 }
 
+#browser:not(.horizontal-menu):not(.tabs-top).maximized #vivaldi-button-moved,
+#browser:not(.horizontal-menu):not(.tabs-top).native #vivaldi-button-moved { display: initial; }
 
 
 /* copypasted from common.css, "#header #titlebar .window-buttongroup" replaced with ".MaximizedWindowButtons" */
@@ -129,7 +133,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
 
             ret.props.children.push(
                 React.createElement("div", {
-                    className: "toolbar toolbar-mainbar MaximizedWindowButtons",
+                    className: "toolbar toolbar-mainbar",
                     id: "vivaldi-button-moved"
                 },
                     React.createElement(ToolbarButton, {
