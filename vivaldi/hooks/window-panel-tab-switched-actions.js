@@ -16,7 +16,7 @@ vivaldi.jdhooks.hookModule('vivaldiSettings', (moduleInfo, exports) => {
 
 vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
     const PageStore = vivaldi.jdhooks.require('_PageStore')
-    const newCls = vivaldi.jdhooks.insertWatcher(class extends cls {
+    return vivaldi.jdhooks.insertWatcher(class extends cls {
         constructor(...e) {
             super(...e)
 
@@ -34,7 +34,6 @@ vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
             }
         }
     }, { settings: ['WINDOW_PANEL_TAB_SWITCHED_ACTIONS'] })
-    return newCls
 })
 
 // Settings
@@ -71,7 +70,7 @@ vivaldi.jdhooks.hookClass('settings_panel_Panel', cls => {
         }
     }, { settings: ['WINDOW_PANEL_TAB_SWITCHED_ACTIONS'] })
 
-    class newCls extends cls {
+    return class extends cls {
         render() {
             let sup = super.render();
             if (sup.props && sup.props.children) {
@@ -81,6 +80,4 @@ vivaldi.jdhooks.hookClass('settings_panel_Panel', cls => {
             return sup
         }
     }
-
-    return newCls
 })

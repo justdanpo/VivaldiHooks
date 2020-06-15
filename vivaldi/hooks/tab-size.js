@@ -20,7 +20,7 @@ vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
 })
 
 vivaldi.jdhooks.hookClass('tabs_TabStrip', cls => {
-    const newCls = vivaldi.jdhooks.insertWatcher(class extends cls {
+    return vivaldi.jdhooks.insertWatcher(class extends cls {
         getTabStyle(info, horz, focus, pin, stack, thumb) {
             let tabStyle = super.getTabStyle(...arguments)
 
@@ -33,14 +33,19 @@ vivaldi.jdhooks.hookClass('tabs_TabStrip', cls => {
                     : (focus
                         ? tabSize.horizontal.unpinnedActiveWidthMax
                         : tabSize.horizontal.unpinnedInactiveWidthMax))
-                if (pin)
-                    tabStyle.flex = tabSize.horizontal.pinnedAllowShrink
+                if (pin) {
+                    if (tabSize.horizontal.pinnedAllowShrink) {
+                        tabStyle.flex = true
+                        delete tabStyle.minWidth
+                    } else {
+                        tabStyle.minWidth = tabStyle.maxWidth
+                    }
+                }
             }
 
             return tabStyle
         }
     }, { settings: ['TAB_SIZE'] })
-    return newCls
 })
 
 // Settings
@@ -105,7 +110,7 @@ vivaldi.jdhooks.hookClass('settings_tabs_TabOptions', cls => {
         }
     }, { settings: ['TAB_SIZE'] })
 
-    class newCls extends cls {
+    return class extends cls {
         render() {
             let sup = super.render()
             if (sup.props && sup.props.children) {
@@ -119,5 +124,4 @@ vivaldi.jdhooks.hookClass('settings_tabs_TabOptions', cls => {
             return sup
         }
     }
-    return newCls
 })

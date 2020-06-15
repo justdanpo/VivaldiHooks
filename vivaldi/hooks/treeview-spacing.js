@@ -25,7 +25,7 @@ vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
 })
 
 vivaldi.jdhooks.hookClass('common_VivaldiTreeList', cls => {
-    const newCls = vivaldi.jdhooks.insertWatcher(class extends cls {
+    return vivaldi.jdhooks.insertWatcher(class extends cls {
         render() {
             this.props.rowHeight = this.state.jdVivaldiSettings.VIVALDI_TREE_ROW_HEIGHT
 
@@ -34,7 +34,6 @@ vivaldi.jdhooks.hookClass('common_VivaldiTreeList', cls => {
             return sup
         }
     }, { settings: ["VIVALDI_TREE_ROW_HEIGHT"] })
-    return newCls
 })
 
 // Settings
@@ -68,7 +67,7 @@ vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
         }
     }, { settings: ["VIVALDI_TREE_ROW_HEIGHT"] })
 
-    class newCls extends cls {
+    return class extends cls {
         render() {
             let sup = super.render()
 
@@ -81,6 +80,4 @@ vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
             return sup
         }
     }
-
-    return newCls
 })
