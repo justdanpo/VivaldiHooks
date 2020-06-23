@@ -40,6 +40,7 @@ vivaldi.jdhooks.hookClass('common_VivaldiTreeList', cls => {
 vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
     const React = vivaldi.jdhooks.require('React')
     const settings = vivaldi.jdhooks.require('vivaldiSettings')
+    const settingsSearchCategoryChild = vivaldi.jdhooks.require('settings_SettingsSearchCategoryChild')
 
     const TreeSpacingSlider = vivaldi.jdhooks.insertWatcher(class extends React.Component {
         onValueChanged(event) {
@@ -52,7 +53,9 @@ vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
         render() {
             const rowHeight = this.state.jdVivaldiSettings.VIVALDI_TREE_ROW_HEIGHT
 
-            return React.createElement('div', { className: 'setting-group' },
+            return React.createElement(settingsSearchCategoryChild,
+                { filter: this.props.filter },
+                React.createElement('div', { className: 'setting-group' },
                 React.createElement('h3', null, 'Tree View Row Height'),
                 React.createElement('div', { className: 'setting-single' },
                     React.createElement('input', {
@@ -63,7 +66,7 @@ vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
                         value: rowHeight,
                         onChange: this.onValueChanged.bind(this)
                     }),
-                    React.createElement('span', null, rowHeight + 'px')))
+                    React.createElement('span', null, rowHeight + 'px'))))
         }
     }, { settings: ["VIVALDI_TREE_ROW_HEIGHT"] })
 

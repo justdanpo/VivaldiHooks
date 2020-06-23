@@ -40,6 +40,7 @@ vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
 vivaldi.jdhooks.hookClass('settings_panel_Panel', cls => {
     const React = vivaldi.jdhooks.require('React')
     const settings = vivaldi.jdhooks.require('vivaldiSettings')
+    const settingsSearchCategoryChild = vivaldi.jdhooks.require('settings_SettingsSearchCategoryChild')
 
     const WPSettings = vivaldi.jdhooks.insertWatcher(class extends React.Component {
         _onCheckBoxChanged(setting, event) {
@@ -63,10 +64,12 @@ vivaldi.jdhooks.hookClass('settings_panel_Panel', cls => {
                     React.createElement('span', null, label)))
         }
         render() {
-            return React.createElement('div', { className: 'setting-group' },
+            return React.createElement(settingsSearchCategoryChild,
+                { filter: this.props.filter },
+                React.createElement('div', { className: 'setting-group' },
                 React.createElement('h3', null, 'Window Panel Actions on Tab Switch'),
                 this._createCheckBox('expandToActive', 'Expand Tree to Active Tab'),
-                this._createCheckBox('selectActive', 'Select Active Tab'))
+                this._createCheckBox('selectActive', 'Select Active Tab')))
         }
     }, { settings: ['WINDOW_PANEL_TAB_SWITCHED_ACTIONS'] })
 
