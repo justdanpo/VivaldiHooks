@@ -1,45 +1,64 @@
 //Zoom with a mouse wheel over a zoom control in a status bar
 
-vivaldi.jdhooks.onUIReady(function () {
+//цифровой индикатор - скролл не работает
+//оба - среднеклик для сброса
 
+vivaldi.jdhooks.hookClass("zoom_ZoomIndicator", oldClass => {
     const uaActions = vivaldi.jdhooks.require("_PageZoom")
+    const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
+    const ReactDom = vivaldi.jdhooks.require("ReactDOM")
 
-    let zoomControl = document.querySelector(".toolbar-statusbar .page-zoom-controls")
-    if (!zoomControl)
-        return
+    return class extends oldClass {
+        constructor(...e) {
+            super(...e)
 
-    Array.from(zoomControl.querySelectorAll("button")).concat(
-        Array.from(zoomControl.querySelectorAll("input")).concat(
-            Array.from(zoomControl.querySelectorAll("span.zoom-percent")))).
-        forEach(control => {
-            control.addEventListener("mousewheel", event => {
-                if (zoomControl.querySelector(".zoom-percent.disabled")) {
+            this.zoomControlWheelJs = {
+                onWheel: (event => {
+                    if (!this.props.disabled) {
+                        if (event.deltaY > 0) uaActions.pageZoomOut()
+                        if (event.deltaY < 0) uaActions.pageZoomIn()
+                    }
+                }).bind(this),
 
-                } else if (control.querySelector('input[type="range"]')) {
+                onPointerDown: (event => {
+                    if (!this.props.disabled && event.button === 1) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                }).bind(this),
 
-                } else {
-                    if (event.deltaY > 0)
-                        uaActions.pageZoomOut()
+                onPointerUp: (event => {
+                    if (!this.props.disabled && event.button === 1) {
+                        uaActions.pageZoomReset()
 
-                    if (event.deltaY < 0)
-                        uaActions.pageZoomIn()
-                }
-            })
+                        event.stopPropagation()
+                        event.preventDefault()
+                    }
+                }).bind(this)
+            }
+        }
 
-            control.addEventListener("pointerdown", event => {
-                if (event.button === 1) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-            })
+        componentDidMount() {
+            if (super.componentDidMount) super.componentDidMount()
 
-            control.addEventListener("pointerup", event => {
-                if (event.button === 1) {
-                    uaActions.pageZoomReset()
+            const control = ReactDom.findDOMNode(this)
+            if (control) {
+                control.addEventListener("mousewheel", this.zoomControlWheelJs.onWheel, true)
+                control.addEventListener("pointerup", this.zoomControlWheelJs.onPointerUp, true)
+                control.addEventListener("pointerdown", this.zoomControlWheelJs.onPointerDown, true)
+            }
+        }
 
-                    event.stopPropagation()
-                    event.preventDefault()
-                }
-            })
-        })
+        componentWillUnmount() {
+            const control = ReactDom.findDOMNode(this)
+            if (control) {
+                control.removeEventListener("mousewheel", this.zoomControlWheelJs.onWheel, true)
+                control.removeEventListener("pointerup", this.zoomControlWheelJs.onPointerUp, true)
+                control.removeEventListener("pointerdown", this.zoomControlWheelJs.onPointerDown, true)
+            }
+
+            if (super.componentWillUnmount) super.componentWillUnmount()
+        }
+
+    }
 })
