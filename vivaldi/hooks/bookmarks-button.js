@@ -43,9 +43,14 @@
         const ReactDom = vivaldi.jdhooks.require("ReactDOM")
 
         class newCreateBookmarkButton extends origClass {
-            pointerUp(e) {
-                if (e.button == 2 && this.state.jdVivaldiSettings.BOOKMARK_BUTTON_POSITION == position.addressfield) {
-                    bookmarksOnClick(e)
+            constructor(...e) {
+                super(...e)
+                this.bookmarksButtonJs = {
+                    pointerUp: (e => {
+                        if (e.button == 2 && this.state.jdVivaldiSettings.BOOKMARK_BUTTON_POSITION == position.addressfield) {
+                            bookmarksOnClick(e)
+                        }
+                    }).bind(this)
                 }
             }
 
@@ -53,12 +58,12 @@
                 if (super.componentDidMount) super.componentDidMount()
 
                 const button = ReactDom.findDOMNode(this)
-                if (button) button.addEventListener("pointerup", this.pointerUp.bind(this), true)
+                if (button) button.addEventListener("pointerup", this.bookmarksButtonJs.pointerUp, true)
             }
 
             componentWillUnmount() {
                 const button = ReactDom.findDOMNode(this)
-                if (button) button.removeEventListener("pointerup", this.pointerUp, true)
+                if (button) button.removeEventListener("pointerup", this.bookmarksButtonJs.pointerUp, true)
 
                 if (super.componentWillUnmount) super.componentWillUnmount()
             }
