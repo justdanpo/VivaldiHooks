@@ -24,7 +24,7 @@ vivaldi.jdhooks.hookClass("settings_startup_StartupSettingsSection", oldClass =>
 
             let newState = {
                 ...{
-                    defaultLoad: true,
+                    defaultLoad: false,
                     scripts: {},
                     scriptNames: []
                 },
@@ -104,7 +104,7 @@ vivaldi.jdhooks.hookClass("settings_startup_StartupSettingsSection", oldClass =>
                                             React.createElement("input",
                                                 {
                                                     type: "checkbox",
-                                                    checked: this.state.scripts[script],
+                                                    checked: this.state.scripts[script] || script == "jdhooks-startup-settings.js",
                                                     onChange: this.toggleScriptState.bind(this, script),
                                                     disabled: script == "jdhooks-startup-settings.js"
                                                 }),
