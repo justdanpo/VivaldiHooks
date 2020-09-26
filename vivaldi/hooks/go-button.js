@@ -31,7 +31,7 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
         render() {
             let r = super.render()
 
-            const idxAddressField = r.props.children.findIndex(x => x && (x.props.className == "addressfield"))
+            const idxAddressField = r.props.children.findIndex(x => x && (x.props.className == "UrlBar-AddressField"))
             if (idxAddressField > -1) r.props.children.splice(idxAddressField + 1, 0,
                 this.state.jdVivaldiSettings.ADDRESS_BAR_URL_GO_ENABLED
                     ? btn((evt) =>
