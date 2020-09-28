@@ -27,10 +27,10 @@ vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
                 const sets = this.state.jdVivaldiSettings.WINDOW_PANEL_TAB_SWITCHED_ACTIONS
                 // Expand tree to active tab
                 if (sets.expandToActive)
-                    this.refs.treeList.expandToId(e.id)
+                    this.refTreeList.current.expandToId(e.id)
                 // Change selection to active tab
                 if (sets.selectActive)
-                    this.refs.treeList.selectById(e.id)
+                    this.refTreeList.current.selectById(e.id)
             }
         }
     }, { settings: ['WINDOW_PANEL_TAB_SWITCHED_ACTIONS'] })
