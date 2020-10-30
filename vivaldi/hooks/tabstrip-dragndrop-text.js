@@ -1,8 +1,8 @@
 //Drag-n-drop text to tabstrip for search
 
 vivaldi.jdhooks.hookClass("tabs_TabStrip", oldClass => {
-    const SearchEnginesStore = vivaldi.jdhooks.require("_SearchEnginesStore").a
-    const WindowStore = vivaldi.jdhooks.require("_WindowStore").a
+    const SearchEnginesStore = vivaldi.jdhooks.require("_SearchEnginesStore")
+    const WindowStore = vivaldi.jdhooks.require("_WindowStore")
     const UrlFieldActions = vivaldi.jdhooks.require("_UrlFieldActions")
 
     return class extends oldClass {

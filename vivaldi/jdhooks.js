@@ -427,7 +427,7 @@
             "_RazerChroma": ["Error setting Razer Chroma color"],
             "_Search": ["withPageSelection:"],
             "_SearchEnginesStore": ['"vivaldi/x-search-engine"'],
-            "_ShowMenu": ["menubarMenu.onAction.addListener", "containerGroupFolders"],
+            "_ShowMenu": ["menubarMenu.onAction.addListener", "emphasized:"],
             "_TabSetMediaState": ["static setMediaState", '"PAGE_SET_MEDIASTATE"'],
             "_Theme": ["fgBgHighlight", "kThemeContrastMinimum"],
             "_TransitionGroup": ['"TransitionGroup"'],
@@ -689,7 +689,7 @@
             if (nrequire[propertyName] && nrequire[propertyName][jdhooks_module_index] && nrequire[propertyName][jdhooks_module_index].name) {
                 let modules_list = nrequire[propertyName]
 
-                jdhooks.require = function (module) {
+                jdhooks.require = function (module, fullExports) {
                     let retValue = null
 
                     if ("number" === typeof module) retValue = nrequire(module)
@@ -699,13 +699,9 @@
 
                         retValue = nrequire(vivaldi.jdhooks._moduleMap[module])
                     }
-                    if (typeof retValue === "object") {
-                        const keys = Object.keys(retValue)
-                        if (keys.length === 1) switch (keys[0]) {
-                            case "a":
-                            case "default":
-                                return retValue[keys[0]]
-                        }
+                    if (typeof retValue === "object" && !fullExports) {
+                        if (retValue.a) return retValue.a
+                        if (retValue.default) return retValue.default
                     }
 
                     return retValue

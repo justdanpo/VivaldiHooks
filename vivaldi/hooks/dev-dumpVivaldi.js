@@ -47,10 +47,14 @@ vivaldi.jdhooks.dumpVivaldi = () => {
         } else if (exports.DOCUMENT_TYPE_NODE) {
             commonOutput.objects[name] = exports.toString()
         } else if (typeof exports == "object") {
-            for (; exports && !exports.hasOwnProperty("valueOf"); exports = exports.__proto__) {
+            for (; exports && !exports.valueOf; exports = exports.__proto__) {
                 for (const k of Object.getOwnPropertyNames(exports)) {
                     commonOutput.objects[name] = commonOutput.objects[name] || {}
-                    commonOutput.objects[name][k] = exports[k]
+                    try {
+                        commonOutput.objects[name][k] = exports[k]
+                    } catch (e) {
+                        console.debug(e)
+                    }
                 }
             }
         } else {
