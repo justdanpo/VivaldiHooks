@@ -7,6 +7,11 @@ vivaldi.jdhooks.addStyle(`
 
 vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
 	const PageActions = vivaldi.jdhooks.require("PageActions")
+	const PageStore = (() => {
+		//TODO: replace with vivaldi.jdhooks.require("_PageStore", true).b after V3.5 is released
+		let ps = vivaldi.jdhooks.require("_PageStore", true)
+		if (ps.a.getPages) return ps.a; return ps.b;
+	})();
 
 	class qc extends cls {
 
@@ -14,8 +19,15 @@ vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
 			for (let idx in this.state.renderedArray) {
 				let item = this.state.renderedArray[idx]
 				if (item.type === "openTab") item.jdOnTabClose = () => {
-					PageActions.closePage(item.command)
-					this.openTabsInAllWindows = this.openTabsInAllWindows.filter(x => x.id != item.id)
+					//TODO: user pageId after 3.5 is released
+					if (item.pageId) {
+						PageActions.closePage(PageStore.getPageById(item.pageId))
+						this.openTabsInAllWindows = this.openTabsInAllWindows.filter(x => x.id != item.pageId)
+					}
+					else {
+						PageActions.closePage(item.command)
+						this.openTabsInAllWindows = this.openTabsInAllWindows.filter(x => x.id != item.id)
+					}
 					this.searchChange(this.state.quickCommandSearchValue, 0)
 				}
 			}
