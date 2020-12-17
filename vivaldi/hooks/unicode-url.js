@@ -4,8 +4,8 @@ vivaldi.jdhooks.hookModule("_decodeDisplayURL", function (moduleInfo, exports) {
     const url = vivaldi.jdhooks.require("url")
     const punycode = vivaldi.jdhooks.require("punycode")
 
-    //temporarily disabled for 3.3
-    if (exports.hasOwnProperty("a")) return exports
+    //temporarily disabled
+    return exports
 
     return inputUrl => {
         let pass1 = exports(inputUrl)

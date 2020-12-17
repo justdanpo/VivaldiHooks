@@ -5,7 +5,6 @@
 
 vivaldi.jdhooks.hookClass("zoom_ZoomIndicator", oldClass => {
     const uaActions = vivaldi.jdhooks.require("_PageZoom")
-    const PrefKeys = vivaldi.jdhooks.require("_PrefKeys")
     const ReactDom = vivaldi.jdhooks.require("ReactDOM")
 
     return class extends oldClass {

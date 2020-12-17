@@ -9,11 +9,7 @@
 
     vivaldi.jdhooks.hookClass("progress_PageloadProgress", cls => {
         const NavigationInfo = vivaldi.jdhooks.require("_NavigationInfo")
-        const PageStore = (() => {
-            //TODO: replace with vivaldi.jdhooks.require("_PageStore", true).b after V3.5 is released
-            let ps = vivaldi.jdhooks.require("_PageStore", true)
-            if (ps.a.getPages) return ps.a; return ps.b;
-        })();
+        const PageStore = vivaldi.jdhooks.require("_PageStore")
 
         class progress extends cls {
             constructor(...e) {

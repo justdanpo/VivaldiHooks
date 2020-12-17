@@ -45,11 +45,7 @@
     })
 
     function openDownloadTab() {
-        const downloadTabPageStore = (() => {
-            //TODO: replace with vivaldi.jdhooks.require("_PageStore", true).b after V3.5 is released
-            let ps = vivaldi.jdhooks.require("_PageStore", true)
-            if (ps.a.getPages) return ps.a; return ps.b;
-        })();
+        const downloadTabPageStore = vivaldi.jdhooks.require("_PageStore")
 
         if (!downloadTabPageStore.getPages().find(page => page.get("url") === "chrome://downloads/")) {
             vivaldi.jdhooks.require("PageActions").openURL("vivaldi://downloads", {
