@@ -120,7 +120,7 @@
                         React.createElement("h3", {}, "Bookmark Button"),
                         React.createElement(RadioGroup,
                             {
-                                name: "bookmark_bar_display",
+                                name: "bookmark_button_position",
                                 value: this.state.jdVivaldiSettings.BOOKMARK_BUTTON_POSITION,
                                 onChange: (evt) => VivaldiSettings.set({ BOOKMARK_BUTTON_POSITION: evt.target.value })
                             },
