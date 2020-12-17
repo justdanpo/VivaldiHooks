@@ -23,7 +23,7 @@ vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
             let old_onPageStoreChanged = this._onPageStoreChanged
             this._onPageStoreChanged = () => {
                 old_onPageStoreChanged()
-                const e = PageStore.a.getActivePage()
+                const e = PageStore.getActivePage()
                 const sets = this.state.jdVivaldiSettings.WINDOW_PANEL_TAB_SWITCHED_ACTIONS
                 // Expand tree to active tab
                 if (sets.expandToActive)
