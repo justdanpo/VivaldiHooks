@@ -1,5 +1,6 @@
 // Change spacing of tree views (may need additional CSS)
 
+(function() {
 vivaldi.jdhooks.addStyle(`
     :root {
         --rowHeight: 24px;
@@ -19,8 +20,7 @@ vivaldi.jdhooks.addStyle(`
     }
 `, 'treeview-spacing.js');
 
-// Odd name to avoid conflicts
-const jdHooksTvwSpcDetails = [
+const spacingDetails = [
     {
         key: 'bookmarks',
         default: 24,
@@ -40,18 +40,6 @@ const jdHooksTvwSpcDetails = [
         default: 24,
         label: 'History',
         settings: 'HISTORY_PANEL'
-    },
-    {
-        key: 'menuEdit',
-        default: 24,
-        label: 'Menu Editor',
-        mimeType: 'vivaldi/x-menuitem'
-    },
-    {
-        key: 'menuEdit',
-        default: 24,
-        label: 'Menu Editor Command Palette',
-        mimeType: 'vivaldi/x-commanditem'
     },
     {
         key: 'notes',
@@ -79,7 +67,7 @@ vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
         switch (name) {
             case "VIVALDI_TREE_ROWS_HEIGHT":
                 const ret = {}
-                for (let det of jdHooksTvwSpcDetails)
+                for (let det of spacingDetails)
                     ret[det.key] = det.default
                 return ret
             default: return oldGetDefault(name)
@@ -94,7 +82,7 @@ vivaldi.jdhooks.hookClass('common_VivaldiTreeList', cls => {
             if (!this.state.jdVivaldiSettings)
                 return false
             if (!this._hookedRowHeightKey) {
-                const details = jdHooksTvwSpcDetails.filter(d => {
+                const details = spacingDetails.filter(d => {
                     return ((d.hasOwnProperty('mimeType') && d.mimeType == this.props.mimeType)
                         || (d.hasOwnProperty('settings') && d.settings == this.props.settings))
                 })
@@ -143,7 +131,7 @@ vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
             // To avoid duplicates (menu editor)
             let usedKeys = []
 
-            jdHooksTvwSpcDetails.forEach(det => {
+            spacingDetails.forEach(det => {
                 if (usedKeys.includes(det.key)) return
 
                 usedKeys.push(det.key)
@@ -182,3 +170,4 @@ vivaldi.jdhooks.hookClass('settings_appearance_Appearance', cls => {
         }
     }
 })
+})()
