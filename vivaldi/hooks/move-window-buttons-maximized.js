@@ -1,5 +1,7 @@
 //Move Minimize/Zoom/Close buttons to addressbar when Vivaldi is maximized and tab position is NOT "Top"
 
+(function () {
+
 vivaldi.jdhooks.addStyle(`
 #browser:not(.popup):not(.horizontal-menu):not(.tabs-top).maximized #header,
 #browser:not(.popup):not(.horizontal-menu):not(.tabs-top).native #header { display: none; }
@@ -20,7 +22,15 @@ vivaldi.jdhooks.addStyle(`
 }
 
 #browser:not(.horizontal-menu):not(.tabs-top).maximized #vivaldi-button-moved,
-#browser:not(.horizontal-menu):not(.tabs-top).native #vivaldi-button-moved { display: initial; }
+#browser:not(.horizontal-menu):not(.tabs-top).native #vivaldi-button-moved {
+    display: initial;
+    flex: 0;
+    padding-right: 34px;
+}
+
+.toolbar-mailbar {
+    --ToolbarItemGap: 4px;
+}
 
 
 /* copypasted from common.css, "#header #titlebar .window-buttongroup" replaced with ".MaximizedWindowButtons" */
@@ -62,7 +72,7 @@ vivaldi.jdhooks.addStyle(`
 }
 `, "move-window-buttons-maximized.js")
 
-vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
+function hookFunction(oldClass) {
     const React = vivaldi.jdhooks.require("React")
     const ShowMenu = vivaldi.jdhooks.require("_ShowMenu")
     const CommandManager = vivaldi.jdhooks.require("_CommandManager")
@@ -156,4 +166,9 @@ vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     }
 
     return newClass
-})
+}
+
+vivaldi.jdhooks.hookClass("urlfield_UrlBar", hookFunction)
+vivaldi.jdhooks.hookClass("mail_MailBar", hookFunction)
+
+})()
