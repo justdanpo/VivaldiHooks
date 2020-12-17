@@ -1,6 +1,0 @@
-/*
-NewTab button doesn't work when pressed near its edges
-Details: https://vivaldi.net/en-US/forum/vivaldi-browser/8944-dead-zone-surrounding-new-tab-button
-*/
-#tabs-container .newtab:active { transform: scale(1.0); }
-#tabs-container .newtab:active svg { transform: scale(.9); }
