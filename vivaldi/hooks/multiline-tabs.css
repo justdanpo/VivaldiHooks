@@ -1,7 +1,7 @@
 /* Multiline tabs */
-#browser.tabs-bottom,
-#browser.tabs-top {
-  /* fix for small/mini tabs */
+#browser.tabs-bottom #tabs-tabbar-container,
+#browser.tabs-top #tabs-tabbar-container {
+  height: auto !important;
 }
 #browser.tabs-bottom #tabs-container,
 #browser.tabs-top #tabs-container {
@@ -93,3 +93,5 @@
 #browser.tabs-top #tabs-container .tab.pinned.tab-mini .tab-header .title {
   display: flex;
 }
+
+/*# sourceMappingURL=multiline-tabs.css.map */

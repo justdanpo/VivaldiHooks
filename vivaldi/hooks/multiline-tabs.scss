@@ -2,6 +2,10 @@
 
 #browser.tabs-bottom,
 #browser.tabs-top {
+    #tabs-tabbar-container {
+        height: auto !important;
+    }
+
     #tabs-container {
         height: auto !important;
 
@@ -53,7 +57,7 @@
         }
     }
 
-    /* fix for small/mini tabs */
+    //fix for small/mini tabs
 
     .tab-position .tab:hover.tab-small .close,
     .tab-position .tab.force-hover.tab-small .close {
