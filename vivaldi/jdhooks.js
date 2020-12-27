@@ -536,8 +536,8 @@
 
             let lastJsxFound = undefined
             let jsxNameVars = [] //minified variable name -> displayable name
-            Array.from(fntxtPrepared.matchAll(/([\w\d_$]+)\s*[=:]\s*"[^"]+components\/([\-\w\/]+?)\.js[x]?\"/g))
-                .forEach(([$, varName, Name]) => {
+            Array.from(fntxtPrepared.matchAll(/([\w\d_$]+)\s*[=:]\s*(\(\w\(\d+\),\s*)?"[^"]+components\/([\-\w\/]+?)\.js[x]?\"/g))
+                .forEach(([$, varName, $$, Name]) => {
                     Name = replaceAll(Name, "/", "_")
                     lastJsxFound = Name
                     jsxNameVars[varName] = Name
