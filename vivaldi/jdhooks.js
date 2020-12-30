@@ -1,7 +1,6 @@
-//var result = vivaldi.jdhooks.require(moduleName)
+//var result = vivaldi.jdhooks.require(moduleName, exportName)
 //vivaldi.jdhooks.hookClass(className, class => newClass)
-//vivaldi.jdhooks.hookMember(object, memberName, function cbBefore(hookData, {oldarglist}), function cbAfter(hookData, {oldarglist}))
-//vivaldi.jdhooks.hookModule(moduleName, (moduleInfo, exports) => newExports)
+//vivaldi.jdhooks.hookModuleExport(moduleName, exportName, export => newExport)
 //vivaldi.jdhooks.onUIReady(function())
 //vivaldi.jdhooks.addStyle(style)
 //vivaldi.jdhooks.insertWatcher(cls, {settings:[], prefs:[]})
@@ -25,9 +24,10 @@
         document.head.appendChild(s)
     }
 
-    //TODO: "exportName"
     //hookModule(moduleName, function(moduleInfo))
     const hookModule = vivaldi.jdhooks.hookModule = (moduleName, newfn) => {
+        console.warn(`hookModule is deprecated and will be removed in the nearest future (called for module ${moduleName})`)
+
         const moduleIndex = vivaldi.jdhooks._moduleMap[moduleName].idx
         const oldfn = vivaldi.jdhooks._modules[moduleIndex]
         vivaldi.jdhooks._modules[moduleIndex] = (moduleInfo, exports, nrequire) => {
@@ -46,6 +46,19 @@
         }
     }
 
+    //hookModuleExport(moduleName, exportName, export => newExport)
+    const hookModuleExport = vivaldi.jdhooks.hookModuleExport = (moduleName, exportName, cb) => {
+        const moduleIndex = vivaldi.jdhooks._moduleMap[moduleName].idx
+        const oldfn = vivaldi.jdhooks._modules[moduleIndex]
+        vivaldi.jdhooks._modules[moduleIndex] = (moduleInfo, exports, nrequire) => {
+            oldfn(moduleInfo, exports, nrequire)
+
+            const fn = vivaldi.jdhooks._moduleMap[moduleName].cached[exportName] || trySignatures(moduleName, exportName, moduleInfo.exports)
+
+            return moduleInfo.exports = fn.updated(moduleInfo.exports, cb(fn.get(moduleInfo.exports)))
+        }
+    }
+
     //hookClass(className, function(class))
     let hookClassList = {}
     jdhooks._unusedClassHooks = {} //stats
@@ -58,6 +71,8 @@
 
     //hookMember(object, memberName, function(hookData,oldarglist), function(hookData,oldarglist))
     const hookMember = vivaldi.jdhooks.hookMember = function (obj, memberName, cbBefore = null, cbAfter = null) {
+        console.warn("hookMember is deprecated and will be removed in the nearest future")
+
         if (!obj.hasOwnProperty(memberName))
             throw `jdhooks.hookMember: wrong member name ${memberName}`
 
@@ -133,6 +148,57 @@
         }
     }
     //---------------------------------------------------------------------
+    const defaultGetFn = {
+        get: o => o,
+        updated: (_, v) => v
+    }
+    function trySignatures(module, exportName, obj) {
+        function getFnByMemberName(memberName) {
+            return {
+                get: o => o[memberName],
+                updated: (o, v) => { return { ...o, [memberName]: v } }
+            }
+        }
+
+        let moduleMap = jdhooks._moduleMap[module]
+        if (obj[exportName])
+            return moduleMap.cached[exportName] = getFnByMemberName(exportName)
+
+        if (exportName == "default" && (Object.keys(obj).length == 1) && obj.a)
+            return moduleMap.cached[exportName] = getFnByMemberName("a")
+
+        if (!moduleMap.exports) {
+            if (Object.keys(obj).length > 1 && obj.b) {
+                console.log(`jdhooks: please check module "${module}" exports`, { exports: obj })
+            }
+            return moduleMap.cached[exportName] = defaultGetFn
+        }
+
+        const exportSig = moduleMap.exports[exportName]
+        if (!exportSig)
+            throw `jdhooks: unknown export ${exportName} for module ${module}`
+
+        function checkExport(exp, exportSig, fn) {
+            let found = false
+            if (typeof exp === "object") {
+                found = exportSig.every(i => exp[i])
+            } else {
+                const expString = exp.toString()
+                found = exportSig.every(i => -1 < expString.indexOf(i))
+            }
+            return found ? fn : undefined
+        }
+
+        const rootExports = checkExport(obj, exportSig, defaultGetFn)
+        if (rootExports) return moduleMap.cached[exportName] = rootExports
+
+        for (const i in obj) {
+            const checkedExport = checkExport(obj[i], exportSig, getFnByMemberName(i))
+            if (checkedExport) return moduleMap.cached[exportName] = checkedExport
+        }
+
+        return undefined
+    }
 
     function loadHooks(callback) {
         chrome.runtime.getPackageDirectoryEntry(_ => _.createReader().readEntries(outerDirItems => {
@@ -382,6 +448,7 @@
             "SearchEngineActions": { signature: ["setDefaultForSpeedDial", '"SEARCH_ENGINE_COLLECTION"'] },
             "setProgressState": { signature: ["setProgressState", '"PAGE_SET_PROGRESS"'] },
             "Startup": { signature: ['document.getElementById("app")', "JS init startup"] },
+            "StatusActions": { signature: [".STATUS_SET_STATUS", "setStatus("] },
             "SyncActions": { signature: ["setEncryptionPassword", '"SYNC_ENGINE_STATE_CHANGED"'] },
             "TrashActions": { signature: ["Error restoring tab:", "undeletePreviousTab"] },
             "turndown": { signature: ["is not a string, or an element/document/fragment node.", "turndown:"] },
@@ -408,7 +475,7 @@
             "_CSSTransitionGroup": { signature: ['"CSSTransitionGroup"'] },
             "_CSSTransitionGroupChild": { signature: ['"CSSTransitionGroupChild"', ".displayName"] },
             "_CSSTransitionGroupChild_flushOnNext": { signature: [".default.prototype.flushClassNameAndNodeQueueOnNextFrame"] },
-            "_decodeDisplayURL": { signature: [".getDisplayUrl(", "decodeURI("] },
+            "_decodeDisplayURL": { signature: [".getDisplayUrl(", "decodeURI("], exports: { "formatUrl": ["view-source:", ".getDisplayUrl"] } },
             "_getLocalizedMessage": { signature: [".i18n.getMessage"] },
             "_getPrintableKeyName": { signature: ['"BrowserForward"', '"PrintScreen"'] },
             "_HistoryStore": { signature: [".VIVALDI_HISTORY_INIT_FILTER:"] },
@@ -432,7 +499,12 @@
             "_TransitionGroup": { signature: ['"TransitionGroup"'] },
             "_UIActions": { signature: [".runtimePrivate.switchToGuestSession"] },
             "_UrlFieldActions": { signature: ["history.onVisitRemoved.addListener"] },
-            "_urlutils": { signature: ["Guest Profile Introduction"] },
+            "_urlutils": {
+                signature: ["Guest Profile Introduction"], exports: {
+                    "default": ["getDisplayUrl"],
+                    "urls": ["actionlog"]
+                }
+            },
             "_VivaldiIcons": { signature: ["small:", "medium:", "large:"] },
             "_WebViewStore": { signature: ["getActiveWebView()", ".WEBVIEW_CLEAR_IF_ACTIVE:"] },
             "_WindowStore": { signature: ['"Attempting to toggle toolbars for a window without minimal UI"'], exports: { "default": ["getVisibleUI"] } },
@@ -515,7 +587,7 @@
                 return true
             }
 
-            jdhooks._moduleMap[moduleName] = { idx: modIndex, cached: {} }
+            jdhooks._moduleMap[moduleName] = { idx: modIndex, cached: { "*": defaultGetFn } }
             jdhooks._moduleNames[modIndex] = moduleName
             return true
         }
@@ -672,9 +744,14 @@
         }
 
         //wait for UI
-        hookModule("_RazerChroma", (moduleInfo, exports) => {
-            return jdhooks.hookMember(exports, "init",
-                (hookData) => document.dispatchEvent(new Event(jdhooks_ui_ready_event)))
+        hookModuleExport("_RazerChroma", "default", oldExports => {
+            return {
+                ...oldExports,
+                init: () => {
+                    document.dispatchEvent(new Event(jdhooks_ui_ready_event))
+                    oldExports.init()
+                }
+            }
         })
     }
 
@@ -699,53 +776,15 @@
                     //unknown module name
                     if (!moduleMap) throw `jdhooks.require: unknown module ${module}`
 
-                    if (moduleMap.cached && moduleMap.cached[exportName]) return moduleMap.cached[exportName]
-
                     const retValue = nrequire(moduleMap.idx)
-
-                    //returns exports as is if exportName is "*"
-                    if (exportName == "*") return retValue
 
                     //returns exports as is if module exports non object value
                     if (typeof retValue !== "object") return retValue
 
-                    if (retValue[exportName]) return retValue[exportName]
+                    if (moduleMap.cached && moduleMap.cached[exportName]) return moduleMap.cached[exportName].get(retValue)
 
-                    if (exportName == "default" && (Object.keys(retValue).length == 1) && retValue.a) return retValue.a
-
-                    if (!moduleMap.exports) {
-                        if (Object.keys(retValue).length > 1 && retValue.b) {
-                            console.log(`jdhooks.require: please check module "${module}" exports`, { exports: retValue })
-                        }
-                        return retValue
-                    }
-
-                    const exportSig = moduleMap.exports[exportName]
-                    if (!exportSig)
-                        throw `jdhooks.require: unknown export ${exportName} for module ${module}`
-
-                    function checkExport(exp, exportSig) {
-                        let found = false
-                        if (typeof exp === "object") {
-                            found = exportSig.every(i => exp[i])
-                        } else {
-                            const expString = exp.toString()
-                            found = exportSig.every(i => -1 < expString.indexOf(i))
-                        }
-                        if (found) {
-                            moduleMap.cached[exportName] = exp
-                            return exp
-                        }
-                        return undefined
-                    }
-
-                    const rootExports = checkExport(retValue, exportSig)
-                    if (rootExports) return rootExports
-
-                    for (const i in retValue) {
-                        const checkedExport = checkExport(retValue[i], exportSig)
-                        if (checkedExport) return checkedExport
-                    }
+                    const getFn = trySignatures(module, exportName, retValue)
+                    if (getFn) return getFn.get(retValue)
 
                     throw `jdhooks.require: cannot find export ${exportName} for module ${module}`
                 }
