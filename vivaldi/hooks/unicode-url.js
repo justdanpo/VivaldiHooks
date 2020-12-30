@@ -1,20 +1,31 @@
 //International Domain Names decoder
 
-vivaldi.jdhooks.hookModule("_decodeDisplayURL", function (moduleInfo, exports) {
+vivaldi.jdhooks.hookModuleExport("_decodeDisplayURL", "formatUrl", oldFn => {
     const url = vivaldi.jdhooks.require("url")
     const punycode = vivaldi.jdhooks.require("punycode")
 
-    //temporarily disabled
-    return exports
+    return arg => {
+        const newUrl = oldFn(arg)
+        let parsed = url.parse(newUrl)
+        if (parsed.host) {
+            parsed.host = punycode.toUnicode(parsed.host)
+            return url.format(parsed)
+        }
+        return newUrl
+    }
+})
 
-    return inputUrl => {
-        let pass1 = exports(inputUrl)
-        if (!pass1) return pass1
+vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
+    const punycode = vivaldi.jdhooks.require("punycode")
+    return class extends oldClass {
+        static getDerivedStateFromProps(props) {
+            if (props.urlFragments.tld && props.urlFragments.tld.indexOf("xn--") === 0) {
 
-        let parsed = url.parse(pass1)
-        if (!parsed.host) return pass1
+                if (props.urlFragments.host) props.urlFragments.host = punycode.toUnicode(props.urlFragments.host)
+                props.urlFragments.tld = punycode.toUnicode(props.urlFragments.tld)
+            }
 
-        parsed.host = punycode.toUnicode(parsed.host)
-        return url.format(parsed)
+            return oldClass.getDerivedStateFromProps(props)
+        }
     }
 })
