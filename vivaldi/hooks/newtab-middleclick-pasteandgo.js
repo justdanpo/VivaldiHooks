@@ -1,7 +1,7 @@
 //MiddleClick on New Tab button to Paste And Go
 //Клик средней кнопкой мыши по кнопке "[+]" открывает ссылку из буфера
 
-vivaldi.jdhooks.hookModule("tabs_NewTab", function (moduleInfo, exports) {
+vivaldi.jdhooks.hookModuleExport("tabs_NewTab", "default", exports => {
     const UrlFieldActions = vivaldi.jdhooks.require('_UrlFieldActions')
 
     return class extends exports {

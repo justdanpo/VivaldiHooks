@@ -77,7 +77,7 @@
         return loadingFavicon
     })
 
-    vivaldi.jdhooks.hookModule("setProgressState", (moduleInfo, exports) => {
+    vivaldi.jdhooks.hookModuleExport("setProgressState", "default", exports => {
         const ProgressInfo = vivaldi.jdhooks.require("_ProgressInfo")
 
         class newClass extends exports {

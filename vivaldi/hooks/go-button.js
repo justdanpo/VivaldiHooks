@@ -1,7 +1,7 @@
 //GO buttons in addressbar
 //Кнопки перехода для адресной и посковой строк
 
-vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
+vivaldi.jdhooks.hookModuleExport("vivaldiSettings", "default", exports => {
     let oldGetDefault = exports.getDefault
     exports.getDefault = name => {
         switch (name) {

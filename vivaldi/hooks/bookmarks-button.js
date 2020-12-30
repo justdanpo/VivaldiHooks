@@ -4,7 +4,7 @@
 {
     const position = { separate: "separate", addressfield: "addressfield" }
 
-    vivaldi.jdhooks.hookModule("vivaldiSettings", (moduleInfo, exports) => {
+    vivaldi.jdhooks.hookModuleExport("vivaldiSettings", "default", exports => {
         let oldGetDefault = exports.getDefault
         exports.getDefault = name => {
             switch (name) {

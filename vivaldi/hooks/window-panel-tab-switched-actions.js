@@ -1,6 +1,6 @@
 // Window panel actions on tab switch
 
-vivaldi.jdhooks.hookModule('vivaldiSettings', (moduleInfo, exports) => {
+vivaldi.jdhooks.hookModuleExport('vivaldiSettings', 'default', exports => {
     let oldGetDefault = exports.getDefault
     exports.getDefault = name => {
         switch (name) {
@@ -67,9 +67,9 @@ vivaldi.jdhooks.hookClass('settings_panel_Panel', cls => {
             return React.createElement(settingsSearchCategoryChild,
                 { filter: this.props.filter },
                 React.createElement('div', { className: 'setting-group' },
-                React.createElement('h3', null, 'Window Panel Actions on Tab Switch'),
-                this._createCheckBox('expandToActive', 'Expand Tree to Active Tab'),
-                this._createCheckBox('selectActive', 'Select Active Tab')))
+                    React.createElement('h3', null, 'Window Panel Actions on Tab Switch'),
+                    this._createCheckBox('expandToActive', 'Expand Tree to Active Tab'),
+                    this._createCheckBox('selectActive', 'Select Active Tab')))
         }
     }, { settings: ['WINDOW_PANEL_TAB_SWITCHED_ACTIONS'] })
 
