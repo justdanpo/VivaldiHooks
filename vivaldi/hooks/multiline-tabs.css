@@ -30,6 +30,7 @@
   position: relative;
   height: 30px !important;
   width: auto !important;
+  transform: inherit !important;
 }
 #browser.tabs-bottom .tab-strip > span > .tab-position > .tab:not(.pinned),
 #browser.tabs-top .tab-strip > span > .tab-position > .tab:not(.pinned) {
