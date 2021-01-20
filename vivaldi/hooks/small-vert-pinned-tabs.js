@@ -1,6 +1,6 @@
 // Small pinned tabs in vertical tab bar
 
-vivaldi.jdhooks.hookModule('yoga-layout', (modInfo, exports) => {
+vivaldi.jdhooks.hookModuleExport("yoga-layout", "", ex => {
     // If it didn't return the yogised layout, normally you'd hook
     // tabs_TabStrip.createFlexBoxLayout
     return function(layout, ...e) {
@@ -63,6 +63,6 @@ vivaldi.jdhooks.hookModule('yoga-layout', (modInfo, exports) => {
                 })
             }
         }
-        return exports(layout, ...e)
+        return ex(layout, ...e)
     }
 })
