@@ -47,11 +47,10 @@
 
         .toolbar-tabbar {
             margin-left: auto;
-    
+            position: relative;
             .newtab {
                 left: 0 !important;
                 top: 0 !important;
-                position: relative !important;
                 padding: 0;
                 vertical-align: top;
             }

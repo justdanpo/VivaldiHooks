@@ -47,12 +47,12 @@
 #browser.tabs-bottom .tab-strip .toolbar-tabbar,
 #browser.tabs-top .tab-strip .toolbar-tabbar {
   margin-left: auto;
+  position: relative;
 }
 #browser.tabs-bottom .tab-strip .toolbar-tabbar .newtab,
 #browser.tabs-top .tab-strip .toolbar-tabbar .newtab {
   left: 0 !important;
   top: 0 !important;
-  position: relative !important;
   padding: 0;
   vertical-align: top;
 }
