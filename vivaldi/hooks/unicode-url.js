@@ -18,14 +18,34 @@ vivaldi.jdhooks.hookModuleExport("_decodeDisplayURL", "formatUrl", oldFn => {
 vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     const punycode = vivaldi.jdhooks.require("punycode")
     return class extends oldClass {
-        static getDerivedStateFromProps(props) {
-            if (props.urlFragments.tld && props.urlFragments.tld.indexOf("xn--") === 0) {
 
-                if (props.urlFragments.host) props.urlFragments.host = punycode.toUnicode(props.urlFragments.host)
-                props.urlFragments.tld = punycode.toUnicode(props.urlFragments.tld)
+        //TODO: remove after 3.7 released
+        static getDerivedStateFromProps(props) {
+
+            if (props.urlFragments) {
+                if (props.urlFragments.tld && props.urlFragments.tld.indexOf("xn--") === 0) {
+
+                    if (props.urlFragments.host) props.urlFragments.host = punycode.toUnicode(props.urlFragments.host)
+                    props.urlFragments.tld = punycode.toUnicode(props.urlFragments.tld)
+                }
             }
 
-            return oldClass.getDerivedStateFromProps(props)
+            const ret = oldClass.getDerivedStateFromProps(props)
+            return ret
+        }
+
+        constructor(...e) {
+            super(...e)
+
+            const oldSetState = this.setState.bind(this)
+            this.setState = (function (state) {
+                if (state.urlFragments && state.urlFragments.tld && state.urlFragments.tld.indexOf("xn--") === 0) {
+
+                    if (state.urlFragments.host) state.urlFragments.host = punycode.toUnicode(state.urlFragments.host)
+                    state.urlFragments.tld = punycode.toUnicode(state.urlFragments.tld)
+                }
+                return oldSetState(state)
+            })
         }
     }
 })

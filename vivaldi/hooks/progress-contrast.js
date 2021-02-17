@@ -26,7 +26,7 @@ vivaldi.jdhooks.hookClass("progress_PageloadProgress", oldClass => {
 
         componentDidMount() {
             if (super.componentDidMount) super.componentDidMount()
-            this.observer.observe(document.body, { attributes: true, attributeFilter: ['style'] })
+            this.observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] })
         }
 
         componentWillUnmount() {
