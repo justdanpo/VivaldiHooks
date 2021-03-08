@@ -22,8 +22,6 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
         constructor(...e) {
             super(...e)
 
-            // To get the original code, search for getSpeedDialGeometry, it’s
-            // just a few matches
             this.getSpeedDialGeometry = () => {
                 const sets = this.state.jdVivaldiSettings.SPEEDDIAL_SIZING
 
@@ -43,9 +41,13 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
                 const spacedWidth = width + 2 * spacing
 
                 let spacedHeight = height + 2 * spacing
+                let bgHeight = height
                 // Add space for titles
-                if (this.props.prefValues[PrefKeys.kStartpageSpeedDialTitlesVisible] !== "never")
-                    spacedHeight += 30
+                const showTitle = this.props.prefValues[PrefKeys.kStartpageSpeedDialTitlesAndFaviconVisible || PrefKeys.kStartpageSpeedDialTitlesVisible]
+                if (showTitle !== "never") {
+                    spacedHeight += 32
+                    bgHeight += 32
+                }
 
                 const margin = sets.edgeMargin
                 const maxCols = this.props.prefValues[PrefKeys.kStartpageSpeedDialColumns] || 1000
@@ -61,6 +63,8 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
                     cols = 1
 
                 return {
+                    backgroundWidth: width,
+                    backgroundHeight: bgHeight,
                     count: count,
                     cols: cols,
                     rows: Math.ceil(count / cols),
