@@ -14,11 +14,17 @@ vivaldi.jdhooks.hookModuleExport("yoga-layout", "", ex => {
                 thisRowWidth = 0,
                 fromTop = 0
             layout.children = layout.children.reduce((ary, elm) => {
-                if (elm.type !== "tab"
-                    // Isn't pinned
-                    || !(elm.tab.page && elm.tab.page.pinned)
-                    // Is stacked, but this is the normal display in 2nd tab bar
-                    || (elm.tab.page.getIn(["extData", "group"]) && elm.tab.get("type") === "tab")) {
+                let keep = false;
+                if (elm.type !== "tab")
+                    keep = true;
+                // Isn't pinned (nor is any other in its stack)
+                if (!keep && !(elm.tab.page && elm.tab.page.pinned)
+                    && (elm.tab.get("type") !== "group" || elm.tab.pages.every(p => !p.pinned)))
+                    keep = true;
+                // Might be pinned, but this is the "normal" display in 2nd tab bar
+                if (!keep && elm.tab.page.getIn(["extData", "group"]) && elm.tab.get("type") === "tab")
+                    keep = true;
+                if (keep) {
                     ary.push(elm)
                     return ary
                 }
@@ -52,7 +58,7 @@ vivaldi.jdhooks.hookModuleExport("yoga-layout", "", ex => {
             if (lastPinned > -1) {
                 // Add a spacer so that normal tabs don't cover pinned
                 layout.children.splice(lastPinned + 1, 0, {
-                    type: "blank",
+                    // Specifying unknown or no `type` unfortunately produces warnings in the console
                     style: {
                         flex: false,
                         height: fromTop + 30,
