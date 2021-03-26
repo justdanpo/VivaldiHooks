@@ -43,7 +43,7 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
                 let spacedHeight = height + 2 * spacing
                 let bgHeight = height
                 // Add space for titles
-                const showTitle = this.props.prefValues[PrefKeys.kStartpageSpeedDialTitlesAndFaviconVisible || PrefKeys.kStartpageSpeedDialTitlesVisible]
+                const showTitle = this.props.prefValues[PrefKeys.kStartpageSpeedDialTitlesVisible]
                 if (showTitle === "always") {
                     spacedHeight += 32
                     bgHeight += 32
