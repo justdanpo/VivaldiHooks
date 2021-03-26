@@ -35,7 +35,7 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
                 const spacing = sets.spacing
 
                 let count = this.state.dialNodes.length
-                // One more for the ‘plus’ tile
+                // One more for the "plus" tile
                 if (this.props.prefValues[PrefKeys.kStartpageSpeedDialAddButtonVisible]) count++
 
                 const spacedWidth = width + 2 * spacing
@@ -44,7 +44,7 @@ vivaldi.jdhooks.hookClass('speeddial_SpeedDialView', cls => {
                 let bgHeight = height
                 // Add space for titles
                 const showTitle = this.props.prefValues[PrefKeys.kStartpageSpeedDialTitlesAndFaviconVisible || PrefKeys.kStartpageSpeedDialTitlesVisible]
-                if (showTitle !== "never") {
+                if (showTitle === "always") {
                     spacedHeight += 32
                     bgHeight += 32
                 }
