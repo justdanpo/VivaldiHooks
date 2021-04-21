@@ -41,21 +41,19 @@ vivaldi.jdhooks.hookClass("quickCommands_QuickCommandSearch", cls => {
 				return old_onKeyDown(e)
 			})
 
-			this.qcCloseSetFocusBack = this.qcCloseSetFocusBack.bind(this)
-		}
-
-		qcCloseSetFocusBack(evt) {
-			this.qcFocusLost = true
-			evt.target.focus()
+			this.qcCloseSetFocusBack = (evt => {
+				this.qcFocusLost = true
+				evt.target.focus()
+			}).bind(this)
 		}
 
 		componentDidMount() {
-			if (super.componentDidMount) super.componentDidMount()
-			this.refs.quickCommand.addEventListener("blur", this.qcCloseSetFocusBack)
+			if (super.componentDidMount) { super.componentDidMount() }
+			(this.refs.quickCommand || this.refs.quickCommandHint).addEventListener("blur", this.qcCloseSetFocusBack)
 		}
 
 		componentWillUnmount() {
-			this.refs.quickCommand.removeEventListener("blur", this.qcCloseSetFocusBack)
+			(this.refs.quickCommand || this.refs.quickCommandHint).removeEventListener("blur", this.qcCloseSetFocusBack)
 			if (super.componentWillUnmount) super.componentWillUnmount()
 
 			if (this.qcFocusLost) {

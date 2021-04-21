@@ -71,8 +71,10 @@
                         && PrefCache.get(PrefKeys.kDownloadsOpenPanelOnNew)
                         && this.state.jdVivaldiSettings.SHOW_DOWNLOADTAB_FOR_NEW_DOWNLOADS
                     ) {
+                        evt.preventDefault()
                         evt.request.allow()
                         openDownloadTab()
+                        return
                     }
                     return old_handleOnPermissionRequest(evt)
                 })

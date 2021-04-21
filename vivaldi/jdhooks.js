@@ -493,7 +493,7 @@
             "_RazerChroma": { signature: ["Error setting Razer Chroma color"] },
             "_Search": { signature: ["withPageSelection:"] },
             "_SearchEnginesStore": { signature: ['"vivaldi/x-search-engine"'], exports: { "default": ["getCurrentSD"] } },
-            "_ShowMenu": { signature: ["menubarMenu.onAction.addListener", "emphasized:"] },
+            "_ShowMenu": { signature: ["menubarMenu.onAction.addListener", ".menu.expandId"] },
             "_Theme": { signature: ["fgBgHighlight", "colorAccentBgDarker:"] },
             "_TransitionGroup": { signature: ['"TransitionGroup"'] },
             "_UIActions": { signature: [".runtimePrivate.switchToGuestSession"] },

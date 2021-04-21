@@ -2,7 +2,7 @@
 
 (function () {
 
-vivaldi.jdhooks.addStyle(`
+    vivaldi.jdhooks.addStyle(`
 #browser:not(.popup):not(.horizontal-menu):not(.tabs-top).maximized #header,
 #browser:not(.popup):not(.horizontal-menu):not(.tabs-top).native #header { display: none; }
 
@@ -89,7 +89,11 @@ function hookFunction(oldClass) {
                     width: parseInt(rect.width),
                     height: parseInt(rect.height)
                 },
-                menu: { items: CommandManager.getNamedMenu("vivaldi", true) }
+                menu: {
+                    items: CommandManager.getNamedMenu("vivaldi", true),
+                    expandId: "",
+                    preferred: []
+                }
             }
             ShowMenu.show(props.id, [props], "bottom")
         }

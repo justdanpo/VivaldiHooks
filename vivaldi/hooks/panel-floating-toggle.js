@@ -44,9 +44,9 @@ vivaldi.jdhooks.hookClass("panels_panel", cls => {
                         PrefKeys.kPanelsAsOverlayEnabled,
                         !this.state.jdPrefs[PrefKeys.kPanelsAsOverlayEnabled]),
                     dangerouslySetInnerHTML: {
-                        __html: this.state.jdPrefs[PrefKeys.kPanelsAsOverlayEnabled]
+                        __html: `<span>${this.state.jdPrefs[PrefKeys.kPanelsAsOverlayEnabled]
                             ? iconFloatingOn
-                            : iconFloatingOff
+                            : iconFloatingOff}</span>`
                     }
                 })
             }

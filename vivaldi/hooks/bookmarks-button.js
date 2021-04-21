@@ -19,11 +19,11 @@
         const CommandManager = vivaldi.jdhooks.require("_CommandManager")
         const ShowMenu = vivaldi.jdhooks.require("_ShowMenu")
 
-        let menu = CommandManager.getNamedMenu("vivaldi", true)
-        if (!menu.length) menu = CommandManager.getNamedMenu("menubar", true)
+        const menu = CommandManager.getNamedMenu("vivaldi", true)
+            .concat(CommandManager.getNamedMenu("menubar", true))
 
-        let idx = menu.findIndex(i => i.labelEnglish == "Bookmarks")
-        if (idx > -1) {
+        const bookmarks = menu.find(i => i.commandName == "MENU_BOOKMARKS")
+        if (bookmarks) {
             const rect = event.target.getBoundingClientRect()
             const props = {
                 id: 0,
@@ -33,7 +33,11 @@
                     width: parseInt(rect.width),
                     height: parseInt(rect.height)
                 },
-                menu: { items: menu[idx].items }
+                menu: {
+                    items: bookmarks.items,
+                    expandId: "",
+                    preferred: []
+                }
             }
             ShowMenu.show(props.id, [props], "bottom")
         }
