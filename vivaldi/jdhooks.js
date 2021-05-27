@@ -394,7 +394,7 @@
             "normalize-url": { signature: ["removeQueryParameters:", "stripWWW:"] },
             "NoteActions": { signature: ["createNotesFromTreeNodes", '"NotesCutIds"'] },
             "Object.Assign": { signature: ["Object.assign cannot be called with null or undefined"] },
-            "PageActions": { signature: ['"if (document.pictureInPictureElement) { document.exitPictureInPicture() }"'], exports: { "default": ["createTabStack"] } },
+            "PageActions": { signature: ["moveDroppedTabs:", "https://vivaldi.com/newfeatures?hl="], exports: { "default": ["createTabStack"] } },
             "PanelActions": { signature: ["setPanelResizable", '"PANEL_SHOW_CONTENT"'] },
             "PrefsCache": { signature: ["Unknown prefs property:"] },
             "process": { signature: ["process.binding is not supported"] },

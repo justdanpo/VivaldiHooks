@@ -18,22 +18,6 @@ vivaldi.jdhooks.hookModuleExport("_decodeDisplayURL", "formatUrl", oldFn => {
 vivaldi.jdhooks.hookClass("urlfield_UrlBar", oldClass => {
     const punycode = vivaldi.jdhooks.require("punycode")
     return class extends oldClass {
-
-        //TODO: remove after 3.7 released
-        static getDerivedStateFromProps(props) {
-
-            if (props.urlFragments) {
-                if (props.urlFragments.tld && props.urlFragments.tld.indexOf("xn--") === 0) {
-
-                    if (props.urlFragments.host) props.urlFragments.host = punycode.toUnicode(props.urlFragments.host)
-                    props.urlFragments.tld = punycode.toUnicode(props.urlFragments.tld)
-                }
-            }
-
-            const ret = oldClass.getDerivedStateFromProps(props)
-            return ret
-        }
-
         constructor(...e) {
             super(...e)
 
