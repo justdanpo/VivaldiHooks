@@ -470,7 +470,7 @@
             "yoga-layout": { signature: ["computeLayout:", "fillNodes:"] },
 
             "_ActionList_DataTemplate": { signature: ["CHROME_SET_SESSION:", "CHROME_TABS_API:"] },
-            "_BookmarkStore": { signature: ["validateAsBookmarkBarFolder"] },
+            "_BookmarkStore": { signature: ["validateAsBookmarkBarFolder"], exports: { "default": ["validateAsBookmarkBarFolder"] } },
             "_CommandManager": { signature: ['emitChange("shortcut")'] },
             "_CSSTransitionGroup": { signature: ['"CSSTransitionGroup"'] },
             "_CSSTransitionGroupChild": { signature: ['"CSSTransitionGroupChild"', ".displayName"] },
