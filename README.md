@@ -7,6 +7,9 @@ The main one - `jdhooks.js` - controlls mods loading and provides mod developers
 
 See Wiki for [hooks descriptions](https://github.com/justdanpo/VivaldiHooks/wiki/Hooks) or [developers' howto](https://github.com/justdanpo/VivaldiHooks/wiki/Howto-dev).
 
+## Download
+If you don't use `git` you may always download VivaldiHooks archive [here](https://github.com/justdanpo/VivaldiHooks/archive/refs/heads/master.zip).
+
 ## Installation
 ### Automatic (Windows only)
 Just run **installhooks.bat**. It will find installation path automatically if Vivaldi is set as your default browser.
