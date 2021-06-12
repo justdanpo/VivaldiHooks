@@ -1,6 +1,6 @@
 // Small pinned tabs in vertical tab bar
 
-vivaldi.jdhooks.hookModuleExport("yoga-layout", "", ex => {
+vivaldi.jdhooks.hookModuleExport("yoga-layout", "", exprt => {
     // If it didn't return the yogised layout, normally you'd hook
     // tabs_TabStrip.createFlexBoxLayout
     return function(layout, ...e) {
@@ -58,7 +58,7 @@ vivaldi.jdhooks.hookModuleExport("yoga-layout", "", ex => {
             if (lastPinned > -1) {
                 // Add a spacer so that normal tabs don't cover pinned
                 layout.children.splice(lastPinned + 1, 0, {
-                    // Specifying unknown or no `type` unfortunately produces warnings in the console
+                    type: "blank",
                     style: {
                         flex: false,
                         height: fromTop + 30,
@@ -67,8 +67,12 @@ vivaldi.jdhooks.hookModuleExport("yoga-layout", "", ex => {
                     },
                     tab: {} // Don't crash/error pls
                 })
+                const ret = exprt(layout, ...e)
+                // Avoid actually rendering it
+                layout.children[lastPinned + 1].layout = undefined
+                return ret
             }
         }
-        return ex(layout, ...e)
+        return exprt(layout, ...e)
     }
 })
