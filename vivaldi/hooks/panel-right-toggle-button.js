@@ -1,7 +1,7 @@
 // Moves Panel Toggle button to the right when Panel Position is set to "Right Side"
 
 vivaldi.jdhooks.addStyle(`
-#main.right + div .paneltogglefooter {
+#main.right + footer .paneltogglefooter {
   order:100
 }
 `, "panel-right-toggle-button.js")
@@ -13,7 +13,10 @@ vivaldi.jdhooks.hookClass("toolbars_Toolbar", origClass => {
         render() {
             let r = super.render()
             for (let child of r.props.children)
-                if (child && child.props.name == "PanelToggle") this.jd_panel_right_toggle_refname = child.ref = child.ref || "jd_panel_right_toggle_ref"
+                if (child?.props?.name == "PanelToggle") {
+                    this.jd_panel_right_toggle_refname = child.ref ??= "jd_panel_right_toggle_ref"
+                    break
+                }
             return r
         }
 
