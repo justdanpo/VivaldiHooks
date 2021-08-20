@@ -123,9 +123,9 @@ vivaldi.jdhooks.hookClass('settings_tabs_TabOptions', cls => {
                 React.createElement('input', {
                     type: 'range',
                     value: val,
-                    min: 30, // Less than 30 seems to have no effect
+                    min: 5,
                     max: canAuto ? maxLimit + 10 : maxLimit,
-                    step: 10,
+                    step: 1,
                     onChange: this.onSliderChanged.bind(this, dir, setting)
                 }),
                 React.createElement('span', null, displ))

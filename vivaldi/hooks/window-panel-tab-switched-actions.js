@@ -15,7 +15,7 @@ vivaldi.jdhooks.hookModuleExport('vivaldiSettings', 'default', exports => {
 })
 
 vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
-    const PageStore = vivaldi.jdhooks.require('_PageStore')
+    const NavigationInfo = vivaldi.jdhooks.require('_NavigationInfo')
     return vivaldi.jdhooks.insertWatcher(class extends cls {
         constructor(...e) {
             super(...e)
@@ -23,14 +23,14 @@ vivaldi.jdhooks.hookClass('tabs_WindowTree', cls => {
             let old_onPageStoreChanged = this._onPageStoreChanged
             this._onPageStoreChanged = () => {
                 old_onPageStoreChanged()
-                const e = PageStore.getActivePage()
+                const activeId = NavigationInfo.c.getActivePage().id
                 const sets = this.state.jdVivaldiSettings.WINDOW_PANEL_TAB_SWITCHED_ACTIONS
                 // Expand tree to active tab
                 if (sets.expandToActive)
-                    this.refTreeList.current.expandToId(e.id)
+                    this.refTreeList.current?.expandToId(activeId)
                 // Change selection to active tab
                 if (sets.selectActive)
-                    this.refTreeList.current.selectById(e.id)
+                    this.refTreeList.current?.selectById(activeId)
             }
         }
     }, { settings: ['WINDOW_PANEL_TAB_SWITCHED_ACTIONS'] })
